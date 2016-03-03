@@ -1,0 +1,22 @@
+{
+  "name": "chomex",
+  "version": "0.0.7",
+  "description": "Chrome Extension Routing Kit",
+  "main": "chomex.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/otiai10/chomex.git"
+  },
+  "keywords": [
+    "chrome"
+  ],
+  "author": "otiai10",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/otiai10/chomex/issues"
+  },
+  "homepage": "https://github.com/otiai10/chomex#readme"
+}

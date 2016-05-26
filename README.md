@@ -37,15 +37,18 @@ chrome.runtime.onMessage.addListener(router.listener());
 ```javascript
 // content_script.js
 // just like a client
-chrome.runtime.sendMessage(null, {action: '/hello', name: 'otiai10'}, (res) => {
+import { Client } from 'chomex';
+
+const client = new Client(chrome.runtime);
+
+client.message({action: '/hello', name: 'otiai10'}).then((res) => {
   console.log(res);
 });
 // OUTPUT:
 // {status:200, data: 'hello, otiai10!'}
 
 
-// Async response
-chrome.runtime.sendMessage(null, {action: '/foo'}, (res) => {
+client.message({action: '/foo'}).then((res) => {
   console.log(res);
 });
 // OUTPUT:

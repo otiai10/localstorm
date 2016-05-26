@@ -9,23 +9,16 @@ Example
 `background.js`
 
 ```javascript
-// background.js
-// just like a server
-import { MessageRouter } from 'chomex';
+// in background.js, like a server
+import { Router } from 'chomex';
 
-var router = new MessageRouter();
+let router = new Router();
 
-// Add some handlerFunc to this router
-router.on('/hello', (message, sender) => {
-    return {data: message.name};
+router.on('/hello', (message) => {
+  return {data: message.name};
 });
-
-// You can return promise in handlerFunc
-router.on('/foo', (message, sender) => {
-    const p = new Promise((resolve) => {
-      setTimeout(() => resolve('This is foo.'), 3000);
-    });
-    return p;
+router.on('/foo', (message) => {
+  return Promise.resolve('This is foo.');
 });
 
 // This is what you're used to on developing Chrome Extension.

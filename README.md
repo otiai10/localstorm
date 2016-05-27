@@ -1,7 +1,11 @@
 Chomex
 ========
 
-Chrome Extension Minimum Routing Kit
+Chrome Extension Minimum Routing Kit.
+
+It's used in these projects
+
+- [github.com/otiai10/kcwidget](https://github.com/otiai10/kcwidget/blob/develop/src/js/background.js)
 
 Example
 =========

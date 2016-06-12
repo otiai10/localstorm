@@ -1,4 +1,4 @@
-export default class Client {
+export class Client {
   constructor(module, method = 'sendMessage', strict = false) {
     this.module = module;
 

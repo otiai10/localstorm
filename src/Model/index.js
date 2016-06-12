@@ -16,7 +16,7 @@
 // }
 // Storage.use();
 
-export default class Model {
+export class Model {
   constructor(props, id, ns) {
     this._props = props || {};
     this._id = id;

@@ -1,8 +1,7 @@
 module.exports = {
   entry: "./src/chomex.js",
   output: {
-    path: "lib",
-    filename: "chomex.js"
+    filename: "lib/chomex.js"
   },
   module: {
     loaders: [

@@ -8,4 +8,4 @@ const chomex = {
   Router,
 };
 
-export default chomex;
+module.exports = chomex;

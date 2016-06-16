@@ -1,6 +1,6 @@
 {
   "name": "chomex",
-  "version": "0.0.33",
+  "version": "0.0.34",
   "description": "Chrome Extension Routing Kit",
   "main": "lib/chomex.js",
   "files": [
@@ -9,6 +9,7 @@
   ],
   "scripts": {
     "build": "babel src --out-dir lib",
+    "release": "npm build && npm publish",
     "test": "jest"
   },
   "repository": {

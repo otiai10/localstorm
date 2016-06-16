@@ -54,7 +54,7 @@ export class Router {
   }
 }
 
-export class SequenceRouter {
+export class SerialRouter {
   constructor(length = 4) {
     this.routes = [];
     this.poollength = length;

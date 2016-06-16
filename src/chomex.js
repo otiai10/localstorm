@@ -1,12 +1,12 @@
 import {Model} from './Model';
 import {Client} from './Client';
-import {Router, SequenceRouter} from './Router';
+import {Router, SerialRouter} from './Router';
 
 const chomex = {
   Model,
   Client,
   Router,
-  SequenceRouter,
+  SerialRouter,
 };
 
 module.exports = chomex;

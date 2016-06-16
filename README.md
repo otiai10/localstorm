@@ -1,4 +1,4 @@
-Chomex
+chomex [![Build Status](https://travis-ci.org/otiai10/chomex.svg?branch=master)](https://travis-ci.org/otiai10/chomex)
 ========
 
 Chrome Extension Minimum Routing Kit.

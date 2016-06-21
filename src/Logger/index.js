@@ -4,6 +4,10 @@ export class Logger {
   }}) {
     this.writer = writer;
   }
+  misc(tag, body) {
+    let [_tag, _body] = (arguments.length >= 2) ? [tag, body] : [this.fromStack(), tag];
+    this.writer.write(`%c[${_tag}]`, 'color: #ddd; font-weight: bold;', _body);
+  }
   info(tag, body) {
     let [_tag, _body] = (arguments.length >= 2) ? [tag, body] : [this.fromStack(), tag];
     this.writer.write(`%c[${_tag}]%c`, 'color: blue; font-weight: bold;', '', _body);

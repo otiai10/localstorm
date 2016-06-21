@@ -20,10 +20,21 @@ describe('Logger', () => {
       let writer = new MockWriter();
       const logger = new Logger(writer);
       logger.info(1234);
-      expect(writer.results[0]).toBe('%c[at Object.eval]%c');
+      // expect(writer.results[0]).toBe('%c[at Object.eval]%c');
       expect(writer.results[1]).toBe('color: blue; font-weight: bold;');
       expect(writer.results[2]).toBe('');
       expect(writer.results[3]).toBe(1234);
+    })
+  })
+
+  describe('misc', () => {
+    it("should output with style", () => {
+      let writer = new MockWriter();
+      const logger = new Logger(writer);
+      logger.misc('bar', {something: true});
+      expect(writer.results[0]).toBe('%c[bar]');
+      expect(writer.results[1]).toBe('color: #ddd; font-weight: bold;');
+      expect(writer.results[2].something).toBe(true);
     })
   })
 

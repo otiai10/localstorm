@@ -1,18 +1,22 @@
 export class Logger {
-  constructor(writer = {write() {
+  constructor(level = Logger.DEBUG, writer = {write() {
     console.log(...arguments);
   }}) {
+    this.level = level;
     this.writer = writer;
   }
   misc(tag, body) {
+    if (this.level > DEBUG) return;
     let [_tag, _body] = (arguments.length >= 2) ? [tag, body] : [this.fromStack(), tag];
     this.writer.write(`%c[${_tag}]`, 'color: #ddd; font-weight: bold;', _body);
   }
   info(tag, body) {
+    if (this.level > INFO) return;
     let [_tag, _body] = (arguments.length >= 2) ? [tag, body] : [this.fromStack(), tag];
     this.writer.write(`%c[${_tag}]%c`, 'color: blue; font-weight: bold;', '', _body);
   }
   warn(tag, body) {
+    if (this.level > WARN) return;
     let [_tag, _body] = (arguments.length >= 2) ? [tag, body] : [this.fromStack(), tag];
     this.writer.write(`%c[${_tag }]%c`, 'color: orange; font-weight: bold;', '', _body);
   }
@@ -20,6 +24,10 @@ export class Logger {
     return (new Error()).stack.split('\n')[depth].trim();//.split(' ').slice(0,2).join(' ')
   }
 }
+
+export const DEBUG = 0;
+export const INFO  = 1;
+export const WARN  = 2;
 
 export class DummyLogger {
   misc() {}

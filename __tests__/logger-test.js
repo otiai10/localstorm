@@ -42,11 +42,11 @@ describe('Logger', () => {
     })
   })
 
-  describe('misc', () => {
+  describe('debug', () => {
     it("should output with style", () => {
       let writer = new MockWriter();
       const logger = new Logger(DEBUG, writer);
-      logger.misc('bar', {something: true});
+      logger.debug('bar', {something: true});
       expect(writer.results[0]).toBe('%c[bar]');
       expect(writer.results[1]).toBe('color: #ddd; font-weight: bold;');
       expect(writer.results[2].something).toBe(true);

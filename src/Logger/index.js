@@ -1,11 +1,11 @@
 export class Logger {
-  constructor(level = Logger.DEBUG, writer = {write() {
+  constructor(level = DEBUG, writer = {write() {
     console.log(...arguments);
   }}) {
     this.level = level;
     this.writer = writer;
   }
-  misc(tag, body) {
+  debug(tag, body) {
     if (this.level > DEBUG) return;
     let [_tag, _body] = (arguments.length >= 2) ? [tag, body] : [this.fromStack(), tag];
     this.writer.write(`%c[${_tag}]`, 'color: #ddd; font-weight: bold;', _body);
@@ -30,7 +30,7 @@ export const INFO  = 1;
 export const WARN  = 2;
 
 export class DummyLogger {
-  misc() {}
+  debug() {}
   info() {}
   warn() {}
 }

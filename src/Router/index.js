@@ -103,7 +103,7 @@ export class SerialRouter {
   listen(detail) {
     this.sequencepool.unshift(detail);
     this.sequencepool = this.sequencepool.slice(0, this.poollength);
-    // this.logger.misc(this.constructor.name, this.sequencepool);
+    this.logger.debug(this.constructor.name, this.sequencepool);
     const handlerFunc = this.match();
     if (handlerFunc) {
       this.logger.info(this.constructor.name, handlerFunc.name);

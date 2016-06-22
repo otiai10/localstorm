@@ -1,6 +1,9 @@
+import {DummyLogger} from '../Logger';
+
 export class Router {
-  constructor() {
+  constructor(logger = (new DummyLogger())) {
     this.routes = {};
+    this.logger = logger;
   }
   keyFromMessage(message) {
     if (typeof(message) == 'string') return {key:message,params:{}};
@@ -20,7 +23,10 @@ export class Router {
   }
   listen(message, sender, sendResponse) {
     try {
-      const response = this.match(message, sender).call({message, sender}, message, sender);
+      const handlerFunc = this.match(message, sender);
+      if (!handlerFunc) return false;
+      this.logger.info(this.constructor.name, handlerFunc.name);
+      const response = handlerFunc.call({message, sender}, message, sender);
       if (response instanceof Promise) {
         response.then(res => {
           sendResponse(this.formatResponse(res));
@@ -55,10 +61,11 @@ export class Router {
 }
 
 export class SerialRouter {
-  constructor(length = 4) {
+  constructor(length = 4, logger = (new DummyLogger())) {
     this.routes = [];
     this.poollength = length;
     this.sequencepool = [];
+    this.logger = logger;
     for (let i = 0; i < length; i++) { this.sequencepool.push({}); }
   }
   on(matcher, handlerFunc) {
@@ -96,8 +103,12 @@ export class SerialRouter {
   listen(detail) {
     this.sequencepool.unshift(detail);
     this.sequencepool = this.sequencepool.slice(0, this.poollength);
+    // this.logger.misc(this.constructor.name, this.sequencepool);
     const handlerFunc = this.match();
-    if (handlerFunc) handlerFunc.call({sequence: this.sequencepool.slice(0)}, detail);
+    if (handlerFunc) {
+      this.logger.info(this.constructor.name, handlerFunc.name);
+      handlerFunc.call({sequence: this.sequencepool.slice(0)}, detail);
+    }
     return true;
   }
   listener() {

@@ -1,12 +1,14 @@
 import {DummyLogger} from '../Logger';
 
 export class Router {
-  constructor(logger = (new DummyLogger())) {
+  constructor(keyname = 'action', logger = (new DummyLogger())) {
+    this.keyname = keyname;
     this.routes = {};
     this.logger = logger;
   }
   keyFromMessage(message) {
     if (typeof(message) == 'string') return {key:message,params:{}};
+    if (typeof(message[this.keyname]) == 'string') return {key:message[this.keyname],params:{}};
     if (typeof(message.act) == 'string') return {key:message.act,params:{}};
     if (typeof(message.action) == 'string') return {key:message.action,params:{}};
     return {key:'__notfound',params:{}};
@@ -21,7 +23,7 @@ export class Router {
     }
     return {status: 200, data: (response.data || response)};
   }
-  listen(message, sender, sendResponse) {
+  listen(message, sender, sendResponse = () => {}) {
     try {
       const handlerFunc = this.match(message, sender);
       if (!handlerFunc) return false;

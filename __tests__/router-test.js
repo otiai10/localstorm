@@ -1,5 +1,17 @@
 jest.unmock('../src/Router');
-import {SerialRouter} from '../src/Router';
+import {Router, SerialRouter} from '../src/Router';
+
+describe('Router', () => {
+  it("should match with another keyname", () => {
+    let router = new Router();
+    let flag = 0;
+    router.on('/foo/bar', (message) => {
+      flag += 1;
+    });
+    router.listen({act: '/foo/bar'});
+    expect(flag).toBe(1);
+  })
+})
 
 describe('SerialRouter', () => {
   it("should match an series of targets", () => {

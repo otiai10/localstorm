@@ -11,6 +11,26 @@ describe('Router', () => {
     router.listen({act: '/foo/bar'});
     expect(flag).toBe(1);
   })
+  describe("resolveFunc for constructor", () => {
+    it("should change resolve rule", () => {
+      let count = {x: 0, y:0};
+      const resolveFunc = (message) => {
+        return (message.match(/foo/)) ? {name:'xx'} : {name:'yy'};
+      }
+      let router = new Router(resolveFunc);
+      router.on('xx', (message) => { count.x += 1 });
+      router.on('yy', (message) => { count.y += 1 });
+
+      router.listen('foobar');
+      router.listen('foobar');
+      router.listen('foobar');
+      router.listen('spamham');
+      router.listen('spamham');
+
+      expect(count.x).toBe(3);
+      expect(count.y).toBe(2);
+    })
+  })
 })
 
 describe('SerialRouter', () => {

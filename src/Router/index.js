@@ -1,18 +1,32 @@
 import {DummyLogger} from '../Logger';
 
 export class Router {
-  constructor(keyname = 'action', logger = (new DummyLogger())) {
-    this.keyname = keyname;
+  constructor(resolveFunc = null, logger = (new DummyLogger())) {
+    this.resolveFunc = resolveFunc;
     this.routes = {};
     this.logger = logger;
   }
-  keyFromMessage(message) {
-    if (typeof(message) == 'string') return {key:message,params:{}};
-    if (typeof(message[this.keyname]) == 'string') return {key:message[this.keyname],params:{}};
-    if (typeof(message.act) == 'string') return {key:message.act,params:{}};
-    if (typeof(message.action) == 'string') return {key:message.action,params:{}};
-    return {key:'__notfound',params:{}};
+
+  resolveRoute(message, sender) {
+    if (typeof this.resolveFunc == 'function') {
+      return this.resolveFunc(message, sender);
+    } else {
+      return this._resolveFunc(message, sender);
+    }
   }
+
+  _resolveFunc(message) {
+    if (typeof(message.act) == 'string') return {
+      name: message.act, params: {}
+    };
+    if (typeof(message.action) == 'string') return {
+      name: message.action, params: {}
+    };
+    return {
+      name: '__notfound', params: {}
+    };
+  }
+
   on(action, handlerFunc) {
     this.routes = this.routes || {};
     this.routes[action] = handlerFunc;
@@ -56,7 +70,8 @@ export class Router {
     };
   }
   match(message, sender) {
-    let handlerFunc = this.routes[this.keyFromMessage(message).key];
+    const {name, params} = this.resolveRoute(message, sender);
+    let handlerFunc = this.routes[name];
     if (!handlerFunc) handlerFunc = this.NotFoundController;
     return handlerFunc;
   }

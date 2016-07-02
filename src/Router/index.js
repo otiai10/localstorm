@@ -16,6 +16,9 @@ export class Router {
   }
 
   _resolveFunc(message) {
+    if (typeof(message) == 'string') return {
+      name: message, params: {}
+    };
     if (typeof(message.act) == 'string') return {
       name: message.act, params: {}
     };

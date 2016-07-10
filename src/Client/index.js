@@ -71,6 +71,11 @@ export class Client {
   }
   message() {
     let args = new Array(...arguments);
+    if (typeof args[0] == 'string' && typeof args[1] == 'object') {
+      args[1].action = args[0];
+      args = args.slice(1);
+    }
+    console.log(args);
     return new Promise((resolve, reject) => {
       this.module[this.method].call(this, ...this.args(args, resolve, reject));
     })

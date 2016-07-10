@@ -26,8 +26,8 @@ export class Model {
   static all() {
     const _ns = this.name;
     const raw = localStorage.getItem(_ns);
-    const all = JSON.parse(raw || '{}');
-    return all || {};
+    const all = JSON.parse(raw || 'null');
+    return all || this.default;
   }
   static find(id) {
     const all = this.all();

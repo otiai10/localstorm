@@ -30,6 +30,16 @@ describe('Model', () => {
       let foo = new Foo();
       expect(foo.foo()).toBe("this is foo!")
   })
+  describe('all', () => {
+    it('should return all saved models', () => {
+      let foo = new Foo({});
+      foo.save();
+      let all = Foo.all();
+      expect(Object.keys(all).length).toBe(1)
+      expect(Object.keys(all)[0]).toBe(foo._id);
+      expect(all[foo._id]._id).toBe(foo._id);
+    })
+  })
   describe('save', () => {
     it("should generate _id", () => {
       let foo = new Foo();

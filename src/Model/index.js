@@ -17,7 +17,7 @@
 // Storage.use();
 
 export class Model {
-  constructor(props, id, ns) {
+  constructor(props = {}, id, ns) {
     this._props = props || {};
     this._id = id;
     this._ns = ns || this.constructor.name;
@@ -27,7 +27,7 @@ export class Model {
     const _ns = this.name;
     const raw = localStorage.getItem(_ns);
     const all = JSON.parse(raw || 'null');
-    return all || this.default;
+    return all || this.default || {};
   }
   static find(id) {
     const all = this.all();
@@ -54,6 +54,13 @@ export class Model {
     all[this._id] = this.encode();
     localStorage.setItem(this.constructor.name, JSON.stringify(all));
     return this;
+  }
+  delete() {
+    let all = this.constructor.all();
+    if (!this._id) return false;
+    if (delete all[this._id] === false) return false;
+    localStorage.setItem(this.constructor.name, JSON.stringify(all));
+    return true;
   }
   error(err) {
     this.errors = this.errors || [];

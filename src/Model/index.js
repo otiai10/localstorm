@@ -17,20 +17,36 @@
 // Storage.use();
 
 export class Model {
-  constructor(props, id, ns) {
+  constructor(props = {}, id, ns) {
     this._props = props || {};
     this._id = id;
     this._ns = ns || this.constructor.name;
     this.decode(props);
   }
-  static all() {
+
+  /**
+   * it returns all saved entities **as Objects**
+   */
+  static _all() {
     const _ns = this.name;
     const raw = localStorage.getItem(_ns);
     const all = JSON.parse(raw || 'null');
-    return all || this.default;
+    return all || this.default || {};
   }
+  /**
+   * it returs all saved entities **as Models**
+   */
+  static all() {
+    let all = this._all();
+    Object.keys(all).map(_id => {
+      let _this = new this(all[_id], _id, this.name);
+      all[_id] = _this.decode(all[_id]);
+    })
+    return all;
+  }
+
   static find(id) {
-    const all = this.all();
+    const all = this._all();
     const _id = String(id);
     if (all[_id]) {
       let _this = new this(all[_id], _id, this.name);
@@ -41,7 +57,7 @@ export class Model {
     }
   }
   static where(fltr = () => { return false }) {
-    const all = this.all();
+    const all = this._all();
     let _res = [];
     Object.keys(all).map(_id => {
       if (fltr(all[_id])) _res.push(all[_id]);
@@ -49,11 +65,18 @@ export class Model {
     return _res;
   }
   save() {
-    let all = this.constructor.all();
+    let all = this.constructor._all();
     if (!this._id) this._id = this.constructor.nextID(all);
     all[this._id] = this.encode();
     localStorage.setItem(this.constructor.name, JSON.stringify(all));
     return this;
+  }
+  delete() {
+    let all = this.constructor._all();
+    if (!this._id) return false;
+    if (delete all[this._id] === false) return false;
+    localStorage.setItem(this.constructor.name, JSON.stringify(all));
+    return true;
   }
   error(err) {
     this.errors = this.errors || [];

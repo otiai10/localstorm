@@ -1,6 +1,6 @@
 {
   "name": "chomex",
-  "version": "0.0.43",
+  "version": "0.0.45",
   "description": "Chrome Extension Routing Kit",
   "main": "lib/chomex.js",
   "files": [
@@ -36,6 +36,9 @@
     "webpack": "^1.13.1"
   },
   "jest": {
-    "verbose": true
+    "verbose": true,
+    "unmockedModulePathPatterns": [
+      "<rootDir>/src/chomex"
+    ]
   }
 }

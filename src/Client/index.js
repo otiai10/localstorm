@@ -75,7 +75,6 @@ export class Client {
       args[1].action = args[0];
       args = args.slice(1);
     }
-    console.log(args);
     return new Promise((resolve, reject) => {
       this.module[this.method].call(this, ...this.args(args, resolve, reject));
     })

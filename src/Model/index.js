@@ -57,7 +57,7 @@ export class Model {
     }
   }
   static filter(fn = () => { return false }) {
-    const all = this._all();
+    const all = this.all();
     let _res = [];
     Object.keys(all).map(_id => {
       if (fn(all[_id])) _res.push(all[_id]);

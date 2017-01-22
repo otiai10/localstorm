@@ -58,4 +58,17 @@ describe('Model', () => {
       expect(bar).toBe(undefined);
     })
   })
+  describe('filter', () => {
+    it('should return filtered models', () => {
+      [0,1,2,3,4,5,6,7,8,9].map(i => {
+        let foo = new Foo({seq:i}, `foo-${i}`);
+        foo.save();
+      });
+      expect(Foo.filter(foo => foo.seq % 2 == 0).length).toBe(5);
+      expect(Foo.filter(foo => foo.seq % 3 == 0).length).toBe(4);
+      expect(Foo.filter(foo => foo.seq % 5 == 0).length).toBe(2);
+      let foo = Foo.filter(foo => foo.seq % 2 == 0).pop();
+      expect(foo.constructor.name).toBe("Foo");
+    })
+  })
 })

@@ -56,11 +56,11 @@ export class Model {
       return _this.decode(this.default[_id]);
     }
   }
-  static where(fltr = () => { return false }) {
+  static filter(fn = () => { return false }) {
     const all = this._all();
     let _res = [];
     Object.keys(all).map(_id => {
-      if (fltr(all[_id])) _res.push(all[_id]);
+      if (fn(all[_id])) _res.push(all[_id]);
     });
     return _res;
   }

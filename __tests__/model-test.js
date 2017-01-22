@@ -10,6 +10,9 @@ var localStorageMock = (function() {
     setItem: function(key, value) {
       store[key] = value.toString();
     },
+    removeItem: function(key) {
+      delete store[key];
+    },
     clear: function() {
       store = {};
     }
@@ -69,6 +72,17 @@ describe('Model', () => {
       expect(Foo.filter(foo => foo.seq % 5 == 0).length).toBe(2);
       let foo = Foo.filter(foo => foo.seq % 2 == 0).pop();
       expect(foo.constructor.name).toBe("Foo");
+    })
+  })
+  describe('drop', () => {
+    it('should remove everything from this namespace', () => {
+      [10,11,12,13,14,15,16].map(i => {
+        let foo = new Foo({seq:i}, `foo-${i}`);
+        foo.save();
+      });
+      expect(Foo.filter(() => true).length).not.toBe(0);
+      Foo.drop();
+      expect(Foo.filter(() => true).length).toBe(0);
     })
   })
 })

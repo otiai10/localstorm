@@ -45,6 +45,10 @@ export class Model {
     return all;
   }
 
+  static drop() {
+    localStorage.removeItem(this.name);
+  }
+
   static find(id) {
     const all = this._all();
     const _id = String(id);

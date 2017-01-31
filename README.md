@@ -5,10 +5,16 @@ Chrome Extension Minimum Routing Kit.
 
 It's used in these projects
 
-- [github.com/otiai10/kcwidget](https://github.com/otiai10/kcwidget/blob/develop/src/js/background.js)
+- [github.com/otiai10/kanColleWidget](https://github.com/otiai10/kanColleWidget/blob/master/src/js/entrypoints/background.js)
 
-Example
-=========
+# Features
+
+- Router
+  - Controllers should be the same interface defined by Chrome
+- Model
+  - is simple accessor for `localStorage` like ActiveRecord
+
+# Example
 
 ## `background.js` like as a server
 

@@ -48,7 +48,13 @@ export class Model {
   static drop() {
     localStorage.removeItem(this.name);
   }
-
+  static create(dict) {
+    if (typeof dict != "object") return;
+    let all = this._all();
+    const _id = dict._id || this.nextID(all);
+    let model = new this(dict, _id);
+    return model.save();
+  }
   static find(id) {
     const all = this._all();
     const _id = String(id);

@@ -53,9 +53,7 @@ describe('Model', () => {
   })
   describe('update', () => {
     it('should update properties of this (as a short hand for `save`)', () => {
-      let foo = new Foo();
-      foo.name = "otiai10";
-      foo.save();
+      let foo = Foo.create({name: "otiai10"})
       let bar = Foo.find(foo._id);
       expect(bar.name).toBe("otiai10");
       expect(bar.update({name: "otiai20"})).toBe(true);
@@ -64,9 +62,7 @@ describe('Model', () => {
     })
     describe("when given parameter is not a dictionary", () => {
       it('should return false', () => {
-        let foo = new Foo();
-        foo.name = "otiai10";
-        foo.save();
+        let foo = Foo.create({name: "otiai10"})
         let bar = Foo.find(foo._id);
         expect(bar.update("name", "otiai30")).toBe(false);
         expect(bar.errors.length).toBe(1);
@@ -81,6 +77,15 @@ describe('Model', () => {
       expect(foo.delete()).toBe(true);
       let bar = Foo.find("foo");
       expect(bar).toBe(undefined);
+    })
+  })
+  describe('create', () => {
+    it('should construct and `save` instance with properties', () => {
+      let foo = Foo.create({name:"otiai40"});
+      expect(foo._id).not.toBe(undefined);
+      let baz = Foo.find(foo._id);
+      expect(baz.name).not.toBe(undefined);
+      expect(baz.name).toBe(foo.name);
     })
   })
   describe('filter', () => {

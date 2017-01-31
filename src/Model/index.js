@@ -82,9 +82,17 @@ export class Model {
     localStorage.setItem(this.constructor.name, JSON.stringify(all));
     return true;
   }
+  update(dict) {
+    if (typeof dict != "object")
+      return this.error("Argument for `update` must be key-value dictionary");
+    // TODO: filter preserved keywords
+    Object.keys(dict).map(key => this[key] = dict[key]);
+    return !!this.save();
+  }
   error(err) {
     this.errors = this.errors || [];
     this.errors.push(err);
+    return false;
   }
   decode(obj) {
     Object.keys(obj).map(key => {

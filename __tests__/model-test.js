@@ -51,6 +51,28 @@ describe('Model', () => {
       expect(foo._id).not.toBe(undefined);
     })
   })
+  describe('update', () => {
+    it('should update properties of this (as a short hand for `save`)', () => {
+      let foo = new Foo();
+      foo.name = "otiai10";
+      foo.save();
+      let bar = Foo.find(foo._id);
+      expect(bar.name).toBe("otiai10");
+      expect(bar.update({name: "otiai20"})).toBe(true);
+      let baz = Foo.find(foo._id);
+      expect(baz.name).toBe("otiai20");
+    })
+    describe("when given parameter is not a dictionary", () => {
+      it('should return false', () => {
+        let foo = new Foo();
+        foo.name = "otiai10";
+        foo.save();
+        let bar = Foo.find(foo._id);
+        expect(bar.update("name", "otiai30")).toBe(false);
+        expect(bar.errors.length).toBe(1);
+      })
+    })
+  })
   describe('delete', () => {
     it('should delete data from storage', () => {
       let foo = new Foo({}, "foo");

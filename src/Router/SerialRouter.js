@@ -19,6 +19,7 @@ export class SerialRouter {
                 if (typeof m == 'object') return function(detail) {
                     return Object.keys(m).every(key => {
                         if (m[key] instanceof RegExp) return m[key].test(detail[key]);
+                        if (typeof m[key] == 'string') return m[key] == detail[key];
                         return false;
                     });
                 };

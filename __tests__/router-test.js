@@ -1,5 +1,5 @@
-jest.unmock('../src/Router');
-import {Router, SerialRouter} from '../src/Router';
+jest.unmock('../src/Router/Router');
+import {Router} from '../src/Router/Router';
 
 describe('Router', () => {
     it('should match with another keyname', () => {
@@ -30,21 +30,5 @@ describe('Router', () => {
             expect(count.x).toBe(3);
             expect(count.y).toBe(2);
         });
-    });
-});
-
-describe('SerialRouter', () => {
-    it('should match an series of targets', () => {
-        let srouter = new SerialRouter();
-        let flag = 0;
-        srouter.on([{foo: /xxx/}, true, {bar: /aaa/}], () => {
-            flag += 1;
-        });
-
-        srouter.listen({bar: 'aaabbbccc'});
-        srouter.listen({something: 'anything'});
-        srouter.listen({foo: 'xxx'});
-
-        expect(flag).toBe(1);
     });
 });

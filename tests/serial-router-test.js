@@ -33,4 +33,29 @@ describe('SerialRouter', () => {
             expect(flag).toBe(1);
         });
     });
+    describe('when resolver func is given', () => {
+        it('should match controllers by given rules', () => {
+            const resolver = {
+                x: (val = '') => {
+                    const [prefix, ] = val.split('/');
+                    return prefix;
+                },
+                y: (val = '') => {
+                    const [ ,suffix] = val.split('.');
+                    return suffix;
+                }
+            };
+            let flag = 0;
+            let r = new SerialRouter(3, resolver);
+            r.on([{y: 'salt'}, true, {x: 'sugar'}], () => {
+                flag += 100;
+            });
+            expect(flag).toBe(0);
+
+            r.listen({x: 'sugar/soul'});
+            r.listen({z: 'anything'});
+            r.listen({y: 'summer.salt'});
+            expect(flag).toBe(100);
+        });
+    });
 });

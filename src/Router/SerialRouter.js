@@ -1,11 +1,17 @@
 import {DummyLogger} from '../Logger';
 
 export class SerialRouter {
-    constructor(length = 4, logger = (new DummyLogger())) {
+    constructor(length = 4, resolver = {}) {
         this.routes = [];
         this.poollength = length;
         this.sequencepool = [];
-        this.logger = logger;
+        this.resolver = (() => {
+            let r = {};
+            Object.keys(resolver).map(key => {
+                if (typeof resolver[key] == 'function') r[key] = resolver[key];
+            });
+            return r;
+        })();
         for (let i = 0; i < length; i++) { this.sequencepool.push({}); }
     }
     on(matcher, handlerFunc) {
@@ -16,10 +22,16 @@ export class SerialRouter {
         if (Array.isArray(matcher) && matcher.length != 0) {
             const funcs = matcher.map((m) => {
                 if (typeof m == 'boolean') return () => { return m; };
-                if (typeof m == 'object') return function(detail) {
+                if (typeof m == 'object') return (detail) => {
                     return Object.keys(m).every(key => {
                         if (m[key] instanceof RegExp) return m[key].test(detail[key]);
-                        if (typeof m[key] == 'string') return m[key] == detail[key];
+                        if (typeof m[key] == 'string') {
+                            if (typeof this.resolver[key] == 'function') {
+                                return m[key] == this.resolver[key](detail[key], detail);
+                            } else {
+                                return m[key] == detail[key];
+                            }
+                        }
                         return false;
                     });
                 };
@@ -44,10 +56,12 @@ export class SerialRouter {
     listen(detail) {
         this.sequencepool.unshift(detail);
         this.sequencepool = this.sequencepool.slice(0, this.poollength);
-        this.logger.debug(this.constructor.name, this.sequencepool);
+        // TODO: Logger should be global for this module.
+        // this.logger.debug(this.constructor.name, this.sequencepool);
         const handlerFunc = this.match();
         if (handlerFunc) {
-            this.logger.info(this.constructor.name, handlerFunc.name);
+            // TODO: Logger should be global for this module.
+            // this.logger.info(this.constructor.name, handlerFunc.name);
             handlerFunc.call({sequence: this.sequencepool.slice(0)}, detail);
         }
         return true;

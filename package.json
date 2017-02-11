@@ -38,8 +38,12 @@
   },
   "jest": {
     "verbose": true,
+    "testRegex": "tests/.*-test\\.js$",
     "unmockedModulePathPatterns": [
       "<rootDir>/src/chomex"
+    ],
+    "setupFiles": [
+      "./tests/mock/runtime.js"
     ]
   }
 }

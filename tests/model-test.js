@@ -1,4 +1,4 @@
-jest.unmock(       '../src/Model');
+jest.unmock('../src/Model');
 
 // TODO: move this mock to mock file
 var localStorageMock = (function() {

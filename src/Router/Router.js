@@ -157,10 +157,10 @@ export class Router {
      * @private
      * @static
      */
-    static _NotFoundController() {
+    static _NotFoundController(message) {
         return {
             status: 404,
-            message: `routing not found for "${this.message.action || this.message.act}"`,
+            message: `routing not found for "${message.action || message.act}"`,
         };
     }
 }

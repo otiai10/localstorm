@@ -1,5 +1,13 @@
+/**
+ * `Client` makes it easy to send message to background
+ * and enable to handle response with Promise.
+ * @constructor
+ * @param {object} module is expected to be like [chrome.runtime], which has `sendMessage` method.
+ * @param {bool} strict specifies the response promise to be with `status: 200`, otherwise rejection of Promise would be thrown.
+ * @param {string} method is a method name which should be invoked, belonging to `module`.
+ */
 export class Client {
-    constructor(module, method = 'sendMessage', strict = false) {
+    constructor(module, strict = true, method = 'sendMessage') {
         this.module = module;
 
         switch (typeof(method)) {
@@ -18,65 +26,82 @@ export class Client {
             throw `this module doesn't have valid method with name "${this.method}"`;
         }
     }
-    args(args, resolve, reject) {
 
-        const strict = ((_default) => {
-            if (typeof(args[args.length - 1]) == 'boolean') {
-                return args.pop();
-            } else {
-                return _default;
-            }
-        })(this.strict);
-
-        const anyway = (response, _res, _rej) => {
-            const status = parseInt(response.status);
-            if (status < 200 || 400 <= status) {
-                if (strict) {
-                    _rej(response);
-                }
-            } else {
-                _res(response);
-            }
-        };
-
-        const promisefy = (result = {}) => {
-            if (result instanceof Promise) {
-                result.then((response) => {
-                    anyway(response, resolve, reject);
-                }).catch(err => {
-                    anyway({
-                        status: 500,
-                        error: err,
-                        data: err,
-                    });
-                });
-            } else {
-                anyway(result, resolve, reject);
-            }
-        };
-
-        if (typeof(args[args.length - 1]) == 'function') {
-            // Replace the last argument for `addListener`
-            const cb = args[args.length - 1];
-            args[args.length - 1] = (responseFromBackend) => {
-                return promisefy(cb(responseFromBackend));
-            };
-        } else {
-            // Append the last argument which is wrapped by promise.
-            args.push((responseFromBackend) => {
-                promisefy(responseFromBackend);
-            });
-        }
-        return args;
-    }
+    /**
+     * `message` is a shorthand to send message to (for example) background.
+     * @param {string} name might be routing name to match (or to be resolved).
+     * @param {object} params might be parameters to pass to controller.
+     * @return {Promise} Result Promise
+     */
     message() {
         let args = new Array(...arguments);
+        // If the first argument is string, it might represent "action".
         if (typeof args[0] == 'string' && typeof args[1] == 'object') {
             args[1].action = args[0];
             args = args.slice(1);
         }
         return new Promise((resolve, reject) => {
-            this.module[this.method].call(this, ...this.args(args, resolve, reject));
+            this.module[this.method].call(
+              this,
+              ...this._expandArgumentsForChromeMethod(args, resolve, reject)
+            );
         });
+    }
+
+    /**
+     * `_expandArgumentsForChromeMethod` expands given arguments to `message` method,
+     * so that the original method of (for example) `chrome.runtime.sendMessage`
+     * can handle that arguments.
+     * @param {array} args arguments give to `message` method.
+     * @param {function} resolve to resolve Response Promise.
+     * @param {function} reject to reject Response Promise.
+     */
+    _expandArgumentsForChromeMethod(args, resolve, reject) {
+
+        const strict = this._isStrictMode(args);
+
+        // If the last argument of `message` is function, respect it and invoke.
+        if (typeof args[args.length - 1] == 'function') {
+            // Replace the last argument as Callback for chrome interface.
+            const cb = args[args.length - 1];
+            args[args.length - 1] = (responseFromBackend) => {
+                cb(responseFromBackend);
+                this._finally(strict, responseFromBackend, resolve, reject);
+                return true;
+            };
+        } else {
+            // Append callback to satisfy chrome interface.
+            const _cb = (responseFromBackend) => {
+                this._finally(strict, responseFromBackend, resolve, reject);
+                return true;
+            };
+            args.push(_cb);
+        }
+        return args;
+    }
+
+    /**
+     * `_isStrictMode`
+     * @private
+     * @param {array} givenArgs
+     * @return {bool}
+     */
+    _isStrictMode(givenArgs) {
+        if (typeof(givenArgs[givenArgs.length - 1]) == 'boolean') {
+            return givenArgs[givenArgs.length - 1];
+        }
+        return this.strict;
+    }
+
+    /**
+     * `_finally` just dispatch resolve / reject conditions.
+     */
+    _finally(strict, response, resolve, reject) {
+        const status = parseInt(response.status);
+        if (strict && (status < 200 || 400 <= status)) {
+            reject(response);
+        } else {
+            resolve(response);
+        }
     }
 }

@@ -58,4 +58,21 @@ describe('SerialRouter', () => {
             expect(flag).toBe(100);
         });
     });
+    describe('when given resolver is simple function and given matchers are string', () => {
+        it('should match controllers according to resolver', () => {
+            const resolver = (detail) => {
+                return [detail.x, detail.y].join('.');
+            };
+            let flag = 0;
+            let r = new SerialRouter(3, resolver);
+            r.on(['jack.daniels', true, 'early.times'], () => {
+                flag += 17;
+            });
+
+            r.listen({x:'early',y:'times'});
+            r.listen({z:'anything'});
+            r.listen({x:'jack',y:'daniels'});
+            expect(flag).toBe(17);
+        });
+    });
 });

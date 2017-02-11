@@ -6,6 +6,7 @@ export class SerialRouter {
         this.poollength = length;
         this.sequencepool = [];
         this.resolver = (() => {
+            if (typeof resolver == 'function') return resolver;
             let r = {};
             Object.keys(resolver).map(key => {
                 if (typeof resolver[key] == 'function') r[key] = resolver[key];
@@ -21,21 +22,27 @@ export class SerialRouter {
         }
         if (Array.isArray(matcher) && matcher.length != 0) {
             const funcs = matcher.map((m) => {
-                if (typeof m == 'boolean') return () => { return m; };
-                if (typeof m == 'object') return (detail) => {
-                    return Object.keys(m).every(key => {
-                        if (m[key] instanceof RegExp) return m[key].test(detail[key]);
-                        if (typeof m[key] == 'string') {
-                            if (typeof this.resolver[key] == 'function') {
-                                return m[key] == this.resolver[key](detail[key], detail);
-                            } else {
-                                return m[key] == detail[key];
+                switch (typeof m) {
+                case 'boolean': return () => { return m; };
+                case 'string':
+                    if (typeof this.resolver != 'function') throw 'resolver must be given when you use simple string matcher';
+                    return (detail) => m == this.resolver(detail);
+                case 'object':
+                    return (detail) => {
+                        return Object.keys(m).every(key => {
+                            if (m[key] instanceof RegExp) return m[key].test(detail[key]);
+                            if (typeof m[key] == 'string') {
+                                if (typeof this.resolver[key] == 'function') {
+                                    return m[key] == this.resolver[key](detail[key], detail);
+                                } else {
+                                    return m[key] == detail[key];
+                                }
                             }
-                        }
-                        return false;
-                    });
-                };
-                return () => { return false; };
+                            return false;
+                        });
+                    };
+                default: return () => false;
+                }
             });
             const matchFunc = (sequence) => {
                 return funcs.every((fn, i) => {

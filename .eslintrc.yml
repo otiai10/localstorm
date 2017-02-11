@@ -1,0 +1,26 @@
+env:
+  browser: true
+  es6: true
+  jest: true
+extends: ['eslint:recommended']
+parserOptions:
+  ecmaFeatures:
+    classes: true
+  sourceType: module
+rules:
+  no-console: 0
+  indent:
+    - error
+    - 4
+  linebreak-style:
+    - error
+    - unix
+  quotes:
+    - error
+    - single
+  semi:
+    - error
+    - always
+globals:
+    require: true
+    module: true

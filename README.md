@@ -5,9 +5,9 @@ chomex
 
 Chrome Extension Minimum Routing Kit.
 
-It's used in these projects
+would look like these
 
-- [github.com/otiai10/kanColleWidget](https://github.com/otiai10/kanColleWidget/blob/master/src/js/entrypoints/background.js)
+- [otiai10/kanColleWidget: MessageRoutes.js](https://github.com/otiai10/kanColleWidget/blob/develop/src/js/Components/Routes/MessageRoutes.js)
 
 # Features
 

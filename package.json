@@ -1,6 +1,6 @@
 {
   "name": "chomex",
-  "version": "0.0.56",
+  "version": "0.0.57",
   "description": "Chrome Extension Routing Kit",
   "main": "lib/chomex.js",
   "files": [

@@ -31,4 +31,28 @@ describe('Router', () => {
             expect(count.y).toBe(2);
         });
     });
+    describe('when matched controller doesn\'t return anything', () => {
+        it('should return status 500 with message', () => {
+            let router = new Router();
+            router.on('xx', () => { });
+            const NiceController = () => { };
+            router.on('yy', NiceController);
+            return Promise.all([
+                new Promise(resolve => {
+                    router.listen({act: 'xx'}, {}, (res) => {
+                        expect(res.status).toBe(500);
+                        expect(res.message).toBe('`(anonymous controller)`: Response should be defined. ex) return true;');
+                        resolve();
+                    });
+                }),
+                new Promise(resolve => {
+                    router.listen({act: 'yy'}, {}, (res) => {
+                        expect(res.status).toBe(500);
+                        expect(res.message).toBe('`NiceController`: Response should be defined. ex) return true;');
+                        resolve();
+                    });
+                })
+            ]);
+        });
+    });
 });

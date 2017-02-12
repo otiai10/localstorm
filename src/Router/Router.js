@@ -62,6 +62,10 @@ export class Router {
             // TODO: e.g. https://developer.chrome.com/apps/notifications#event-onButtonClicked
             const response = controllerFunc.call({message, sender}, message, sender);
 
+            if (typeof response == 'undefined') {
+                throw `\`${controllerFunc.name || '(anonymous controller)'}\`: Response should be defined. ex) return true;`;
+            }
+
             // `response` can be Promise, but if it's not, just send it as a respone.
             if (!(response instanceof Promise)) {
                 sendResponse(this._formatResponse(response));

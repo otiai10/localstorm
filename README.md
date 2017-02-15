@@ -16,6 +16,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   switch(message.action) {
   case "/users/get":
     GetUser.apply(sender, [message, sendResponse]);
+    break;
   default:
     NotFound.apply(sender, [message, sendResponse]);
   }

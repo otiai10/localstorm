@@ -1,7 +1,9 @@
 chomex
 ========
 
+[![Latest Stable Version](https://img.shields.io/npm/v/chomex.svg)](https://www.npmjs.com/package/chomex)
 [![Build Status](https://travis-ci.org/otiai10/chomex.svg?branch=master)](https://travis-ci.org/otiai10/chomex) [![Dependency Status](https://gemnasium.com/badges/github.com/otiai10/chomex.svg)](https://gemnasium.com/github.com/otiai10/chomex)
+[![NPM Downloads](https://img.shields.io/npm/dt/chomex.svg)](https://www.npmjs.com/package/chomex)
 
 Chrome Extension Minimum Routing Kit.
 

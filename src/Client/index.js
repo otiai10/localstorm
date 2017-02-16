@@ -28,6 +28,19 @@ export class Client {
     }
 
     /**
+     * `connect` provides a client for long-lived connected port client.
+     * @see https://developer.chrome.com/extensions/runtime#method-connect
+     * @see https://developer.chrome.com/extensions/tabs#method-connect
+     * @param {object} module is either `chrome.runtime` or `chrome.tabs`
+     * @param {string} id     might be either `extensionId` or `tabId`
+     * @param {object} info   might be `connectInfo`
+     */
+    static connect(module, id = null, info = {}) {
+        let port = module.connect(id, info);
+        return new this(port, true, 'postMessage');
+    }
+
+    /**
      * `message` is a shorthand to send message to (for example) background.
      * @param {string} name might be routing name to match (or to be resolved).
      * @param {object} params might be parameters to pass to controller.
@@ -42,7 +55,7 @@ export class Client {
         }
         return new Promise((resolve, reject) => {
             this.module[this.method].call(
-              this,
+              this.module,
               ...this._expandArgumentsForChromeMethod(args, resolve, reject)
             );
         });

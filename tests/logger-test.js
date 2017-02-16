@@ -9,9 +9,9 @@ describe('Logger', () => {
 
     describe('levels', () => {
         it('should be static variable, representing log levels', () => {
-            expect(DEBUG).toBe(0);
-            expect(INFO).toBe(1);
-            expect(WARN).toBe(2);
+            expect(DEBUG).to.equal(0);
+            expect(INFO).to.equal(1);
+            expect(WARN).to.equal(2);
         });
     });
 
@@ -20,25 +20,24 @@ describe('Logger', () => {
             let writer = new MockWriter();
             const logger = new Logger(INFO, writer);
             logger.info('foo', 1234);
-            expect(writer.results[0]).toBe('%c[foo]%c');
-            expect(writer.results[1]).toBe('color: blue; font-weight: bold;');
-            expect(writer.results[2]).toBe('');
-            expect(writer.results[3]).toBe(1234);
+            expect(writer.results[0]).to.equal('%c[foo]%c');
+            expect(writer.results[1]).to.equal('color: blue; font-weight: bold;');
+            expect(writer.results[2]).to.equal('');
+            expect(writer.results[3]).to.equal(1234);
         });
         it('should output with auto-generated tag when it recieve only one arg', () => {
             let writer = new MockWriter();
             const logger = new Logger(INFO, writer);
             logger.info(1234);
-      // expect(writer.results[0]).toBe('%c[at Object.eval]%c');
-            expect(writer.results[1]).toBe('color: blue; font-weight: bold;');
-            expect(writer.results[2]).toBe('');
-            expect(writer.results[3]).toBe(1234);
+            expect(writer.results[1]).to.equal('color: blue; font-weight: bold;');
+            expect(writer.results[2]).to.equal('');
+            expect(writer.results[3]).to.equal(1234);
         });
         it('should NOT output anything if log level is higher than INFO', () => {
             let writer = new MockWriter();
             const logger = new Logger(WARN, writer);
             logger.info(1234);
-            expect(writer.results).toBe(undefined);
+            expect(writer.results).to.equal(undefined);
         });
     });
 
@@ -47,9 +46,9 @@ describe('Logger', () => {
             let writer = new MockWriter();
             const logger = new Logger(DEBUG, writer);
             logger.debug('bar', {something: true});
-            expect(writer.results[0]).toBe('%c[bar]');
-            expect(writer.results[1]).toBe('color: #ddd; font-weight: bold;');
-            expect(writer.results[2].something).toBe(true);
+            expect(writer.results[0]).to.equal('%c[bar]');
+            expect(writer.results[1]).to.equal('color: #ddd; font-weight: bold;');
+            expect(writer.results[2].something).to.equal(true);
         });
     });
 
@@ -58,10 +57,10 @@ describe('Logger', () => {
             let writer = new MockWriter();
             const logger = new Logger(WARN, writer);
             logger.warn('bar', {something: true});
-            expect(writer.results[0]).toBe('%c[bar]%c');
-            expect(writer.results[1]).toBe('color: orange; font-weight: bold;');
-            expect(writer.results[2]).toBe('');
-            expect(writer.results[3].something).toBe(true);
+            expect(writer.results[0]).to.equal('%c[bar]%c');
+            expect(writer.results[1]).to.equal('color: orange; font-weight: bold;');
+            expect(writer.results[2]).to.equal('');
+            expect(writer.results[3].something).to.equal(true);
         });
     });
 });

@@ -32,6 +32,7 @@
     "babel-loader": "^6.2.4",
     "babel-preset-es2015": "^6.9.0",
     "babel-preset-stage-0": "^6.5.0",
+    "chai": "^3.5.0",
     "coffee-script": "^1.12.3",
     "eslint": "^3.15.0",
     "jest-cli": "^18.1.0",
@@ -43,6 +44,7 @@
     "unmockedModulePathPatterns": [
       "<rootDir>/src/chomex"
     ],
+    "setupTestFrameworkScriptFile": "./tests/mock/setup-script.js",
     "setupFiles": [
       "./tests/mock/runtime.js"
     ]

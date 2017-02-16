@@ -12,7 +12,7 @@ describe('SerialRouter', () => {
             srouter.listen({bar: 'aaabbbccc'});
             srouter.listen({something: 'anything'});
             srouter.listen({foo: 'xxx'});
-            expect(flag).toBe(1);
+            expect(flag).to.equal(1);
         });
     });
     describe('when Regexp are given as match conditions', () => {
@@ -25,12 +25,12 @@ describe('SerialRouter', () => {
             srouter.listen({bar: 'aaabbbccc'});
             srouter.listen({something: 'anything'});
             srouter.listen({foo: 'xxx'});
-            expect(flag).toBe(0);
+            expect(flag).to.equal(0);
 
             srouter.listen({bar: 'aaabbbccc'});
             srouter.listen({something: 'anything'});
             srouter.listen({foo: '/user/12345'});
-            expect(flag).toBe(1);
+            expect(flag).to.equal(1);
         });
     });
     describe('when resolver func is given', () => {
@@ -50,12 +50,12 @@ describe('SerialRouter', () => {
             r.on([{y: 'salt'}, true, {x: 'sugar'}], () => {
                 flag += 100;
             });
-            expect(flag).toBe(0);
+            expect(flag).to.equal(0);
 
             r.listen({x: 'sugar/soul'});
             r.listen({z: 'anything'});
             r.listen({y: 'summer.salt'});
-            expect(flag).toBe(100);
+            expect(flag).to.equal(100);
         });
     });
     describe('when given resolver is simple function and given matchers are string', () => {
@@ -72,7 +72,7 @@ describe('SerialRouter', () => {
             r.listen({x:'early',y:'times'});
             r.listen({z:'anything'});
             r.listen({x:'jack',y:'daniels'});
-            expect(flag).toBe(17);
+            expect(flag).to.equal(17);
         });
     });
 });

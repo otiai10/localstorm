@@ -31,41 +31,41 @@ class Foo extends chomex.Model {
 describe('Model', () => {
     it('should have customized method', () => {
         let foo = new Foo();
-        expect(foo.foo()).to.equal('this is foo!');
+        foo.foo().should.equal('this is foo!');
     });
     describe('all', () => {
         it('should return all saved models', () => {
             let foo = new Foo({});
             foo.save();
             let all = Foo.all();
-            expect(Object.keys(all).length).to.equal(1);
-            expect(Object.keys(all)[0]).to.equal(foo._id);
-            expect(all[foo._id]._id).to.equal(foo._id);
+            Object.keys(all).length.should.equal(1);
+            Object.keys(all)[0].should.equal(foo._id);
+            all[foo._id]._id.should.equal(foo._id);
         });
     });
     describe('save', () => {
         it('should generate _id', () => {
             let foo = new Foo();
-            expect(foo._id).to.equal(undefined);
+            expect(foo._id).be.undefined;
             foo.save();
-            expect(foo._id).not.to.equal(undefined);
+            foo._id.should.not.be.undefined;
         });
     });
     describe('update', () => {
         it('should update properties of this (as a short hand for `save`)', () => {
             let foo = Foo.create({name: 'otiai10'});
             let bar = Foo.find(foo._id);
-            expect(bar.name).to.equal('otiai10');
-            expect(bar.update({name: 'otiai20'})).to.equal(true);
+            bar.name.should.equal('otiai10');
+            bar.update({name: 'otiai20'}).should.equal(true);
             let baz = Foo.find(foo._id);
-            expect(baz.name).to.equal('otiai20');
+            baz.name.should.equal('otiai20');
         });
         describe('when given parameter is not a dictionary', () => {
             it('should return false', () => {
                 let foo = Foo.create({name: 'otiai10'});
                 let bar = Foo.find(foo._id);
-                expect(bar.update('name', 'otiai30')).to.equal(false);
-                expect(bar.errors.length).to.equal(1);
+                bar.update('name', 'otiai30').should.equal(false);
+                bar.errors.length.should.equal(1);
             });
         });
     });
@@ -73,19 +73,19 @@ describe('Model', () => {
         it('should delete data from storage', () => {
             let foo = new Foo({}, 'foo');
             foo.save();
-            expect(foo._id).not.to.equal(undefined);
-            expect(foo.delete()).to.equal(true);
+            expect(foo._id).not.to.be.undefined;
+            foo.delete().should.equal(true);
             let bar = Foo.find('foo');
-            expect(bar).to.equal(undefined);
+            expect(bar).to.be.undefined;
         });
     });
     describe('create', () => {
         it('should construct and `save` instance with properties', () => {
             let foo = Foo.create({name:'otiai40'});
-            expect(foo._id).not.to.equal(undefined);
+            foo._id.should.not.be.undefined;
             let baz = Foo.find(foo._id);
-            expect(baz.name).not.to.equal(undefined);
-            expect(baz.name).to.equal(foo.name);
+            baz.name.should.not.be.undefined;
+            baz.name.should.equal(foo.name);
         });
     });
     describe('filter', () => {
@@ -94,11 +94,11 @@ describe('Model', () => {
                 let foo = new Foo({seq:i}, `foo-${i}`);
                 foo.save();
             });
-            expect(Foo.filter(foo => foo.seq % 2 == 0).length).to.equal(5);
-            expect(Foo.filter(foo => foo.seq % 3 == 0).length).to.equal(4);
-            expect(Foo.filter(foo => foo.seq % 5 == 0).length).to.equal(2);
+            Foo.filter(foo => foo.seq % 2 == 0).length.should.equal(5);
+            Foo.filter(foo => foo.seq % 3 == 0).length.should.equal(4);
+            Foo.filter(foo => foo.seq % 5 == 0).length.should.equal(2);
             let foo = Foo.filter(foo => foo.seq % 2 == 0).pop();
-            expect(foo.constructor.name).to.equal('Foo');
+            foo.constructor.name.should.equal('Foo');
         });
     });
     describe('drop', () => {
@@ -107,9 +107,9 @@ describe('Model', () => {
                 let foo = new Foo({seq:i}, `foo-${i}`);
                 foo.save();
             });
-            expect(Foo.filter(() => true).length).not.to.equal(0);
+            Foo.filter(() => true).length.should.not.equal(0);
             Foo.drop();
-            expect(Foo.filter(() => true).length).to.equal(0);
+            Foo.filter(() => true).length.should.equal(0);
         });
     });
 });

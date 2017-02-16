@@ -9,7 +9,7 @@ describe('Router', () => {
             flag += 1;
         });
         router.listen({act: '/foo/bar'});
-        expect(flag).to.equal(1);
+        flag.should.equal(1);
     });
     describe('resolveFunc for constructor', () => {
         it('should change resolve rule', () => {
@@ -27,8 +27,8 @@ describe('Router', () => {
             router.listen('spamham');
             router.listen('spamham');
 
-            expect(count.x).to.equal(3);
-            expect(count.y).to.equal(2);
+            count.x.should.equal(3);
+            count.y.should.equal(2);
         });
     });
     describe('when matched controller doesn\'t return anything', () => {
@@ -40,15 +40,15 @@ describe('Router', () => {
             return Promise.all([
                 new Promise(resolve => {
                     router.listen({act: 'xx'}, {}, (res) => {
-                        expect(res.status).to.equal(500);
-                        expect(res.message).to.equal('`(anonymous controller)`: Response should be defined. ex) return true;');
+                        res.status.should.equal(500);
+                        res.message.should.equal('`(anonymous controller)`: Response should be defined. ex) return true;');
                         resolve();
                     });
                 }),
                 new Promise(resolve => {
                     router.listen({act: 'yy'}, {}, (res) => {
-                        expect(res.status).to.equal(500);
-                        expect(res.message).to.equal('`NiceController`: Response should be defined. ex) return true;');
+                        res.status.should.equal(500);
+                        res.message.should.equal('`NiceController`: Response should be defined. ex) return true;');
                         resolve();
                     });
                 })

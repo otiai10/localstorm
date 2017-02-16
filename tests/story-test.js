@@ -13,8 +13,8 @@ describe('Story: Use Router via Client', () => {
 
         const client = new Client(window.chrome.runtime);
         return client.message('foo', {abc: true}).then(res => {
-            expect(res.request.abc).to.equal(true);
-            expect(true).to.equal(true);
+            res.request.abc.should.be.true;
+            true.should.be.true;
         });
     });
     it('Client Result Promise should be resolved even when registered controller returns plain object', () => {
@@ -26,8 +26,8 @@ describe('Story: Use Router via Client', () => {
 
         const client = new Client(window.chrome.runtime);
         return client.message('foo', {abc: true}).then(res => {
-            expect(res.request.abc).to.equal(true);
-            expect(true).to.equal(true);
+            res.request.abc.should.be.true;
+            true.should.be.true;
         });
     });
     it('Client Promise should be rejected if routing is not found', (done) => {
@@ -39,8 +39,8 @@ describe('Story: Use Router via Client', () => {
 
         const client = new Client(window.chrome.runtime);
         return client.message('bar', {abc: true}).catch(err => {
-            expect(err.status).to.equal(404);
-            expect(err.message).to.equal('routing not found for "bar"');
+            err.status.should.equal(404);
+            err.message.should.equal('routing not found for "bar"');
             done();
         });
     });

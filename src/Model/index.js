@@ -51,7 +51,7 @@ export class Model {
     static create(dict) {
         if (typeof dict != 'object') return;
         let all = this._all();
-        const _id = dict._id || this.nextID(all);
+        const _id = dict._id || this.__nextID(all);
         let model = new this(dict, _id);
         return model.save();
     }
@@ -76,7 +76,7 @@ export class Model {
     }
     save() {
         let all = this.constructor._all();
-        if (!this._id) this._id = this.constructor.nextID(all);
+        if (!this._id) this._id = this.constructor.__nextID(all);
         all[this._id] = this.encode();
         localStorage.setItem(this.constructor.name, JSON.stringify(all));
         return this;
@@ -115,7 +115,27 @@ export class Model {
         return encoded;
     }
 
-    static nextID(/* TODO: generate next ID with regarding all entities */) {
+    static __nextID(all) {
+        if (typeof this.nextID === 'function') {
+            const id = this.nextID(all);
+            if (id === undefined || id === null) {
+                console.error('customized `nextID` function provides invalid ID');
+                return this.timestampID;
+            }
+            return id;
+        }
+        return this.timestampID();
+    }
+    static nextID(/* all */) {
+        return this.timestampID(); // for default
+    }
+    static timestampID() {
         return String(Date.now());
+    }
+    static sequentialID(all) {
+        return (Object.keys(all)
+          .map(id => parseInt(id))
+          .sort((prev, next) => prev < next)
+          .pop() || 0) + 1;
     }
 }

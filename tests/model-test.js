@@ -28,6 +28,9 @@ class Foo extends chomex.Model {
     }
 }
 
+class Spam extends chomex.Model {}
+class Ham  extends chomex.Model {}
+
 describe('Model', () => {
     it('should have customized method', () => {
         let foo = new Foo();
@@ -110,6 +113,47 @@ describe('Model', () => {
             Foo.filter(() => true).length.should.not.equal(0);
             Foo.drop();
             Foo.filter(() => true).length.should.equal(0);
+        });
+    });
+
+    describe('static nextID', () => {
+        it('should generate next ID by current timestamp in default', () => {
+            const now = Date.now();
+            expect(chomex.Model.nextID()).to.be.within(now - 10, now + 10);
+        });
+        it('should be called when new model is saved', () => {
+            const now = Date.now();
+            let foo = new Foo();
+            foo.save();
+            expect(foo._id).to.be.within(now - 100, now + 100);
+        });
+        it('should be customized by setting function, like serial id', () => {
+            const nextID = (all) => {
+                return Object.keys(all).length;
+            };
+            Foo.nextID = nextID;
+            let foo = Foo.create({});
+            foo._id.should.equal(1);
+            let bar = Foo.create({});
+            bar._id.should.equal(2);
+        });
+        it('should be replaced by prepared functions: e.g. `sequentialID`', () => {
+            Spam.nextID = chomex.Model.sequentialID;
+            let foo = Spam.create({});
+            foo._id.should.equal(1);
+            let bar = Spam.create({});
+            bar._id.should.equal(2);
+            foo.delete();
+            let baz = Spam.create({});
+            baz._id.should.equal(3);
+        });
+        describe('when invalid `nextID` is set', () => {
+            it('should be failed over with `timestampID`', () => {
+                const now = Date.now();
+                Ham.nextID = 'not-function';
+                let foo = Ham.create({});
+                expect(foo._id).to.be.within(now - 100, now + 100);
+            });
         });
     });
 });

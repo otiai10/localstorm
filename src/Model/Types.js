@@ -14,7 +14,13 @@ const createTypeChecker = (typename, validate) => {
     return checker;
 };
 const Types = {
-    string: createTypeChecker('string', value => typeof value == 'string'),
+    string: createTypeChecker('string',   value => typeof value == 'string'),
+    number: createTypeChecker('number',   value => typeof value == 'number'),
+    object: createTypeChecker('object',   value => typeof value == 'object'),
+    bool:   createTypeChecker('bool',     value => typeof value == 'boolean'),
+    array:  createTypeChecker('array',    value => Array.isArray(value)),
+    // localStorage cannot store function ;)
+    // func:   createTypeChecker('function', value => typeof value == 'function'),
 };
 
 export default Types;

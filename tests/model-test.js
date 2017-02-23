@@ -39,6 +39,13 @@ class Toto extends chomex.Model {
         description: chomex.Model.Types.string,
     }
 }
+class User extends chomex.Model {
+    static schema = {
+        name:  chomex.Model.Types.string.isRequired,
+        age:   chomex.Model.Types.number.isRequired,
+        langs: chomex.Model.Types.array.isRequired,
+    }
+}
 
 describe('Model', () => {
     it('should have customized method', () => {
@@ -187,7 +194,23 @@ describe('Model', () => {
                     foo.save();
                     ng('saving without title SHOULD throw error, but it was successful');
                 } catch(err) {
-                    console.log(err);
+                    err.should.equal('title is marked as required');
+                    ok();
+                }
+            });
+        });
+        describe('for basic primitives which are able to be stored in localStorage', () => {
+            let foo = User.new({
+                name: 'otiai10',
+                age: '21',
+                langs: ['go', 'javascript', 'swift']
+            });
+            return new Promise((ok, ng) => {
+                try {
+                    foo.save();
+                    ng('saving without title SHOULD throw error, but it was successful');
+                } catch(err) {
+                    err.should.equal('age is not number');
                     ok();
                 }
             });

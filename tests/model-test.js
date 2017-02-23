@@ -29,6 +29,7 @@ class Foo extends chomex.Model {
 }
 
 class Bar  extends chomex.Model {}
+Bar.template = {name:'', age: 20};
 class Spam extends chomex.Model {}
 class Ham  extends chomex.Model {}
 
@@ -121,6 +122,10 @@ describe('Model', () => {
             let bar = Bar.new();
             expect(bar).to.be.an.instanceof(Bar);
             expect(bar._id).to.be.undefined;
+            expect(bar.name).to.not.be.undefined;
+            bar.name.should.equal('');
+            expect(bar.age).to.not.be.undefined;
+            bar.age.should.equal(20);
             expect(bar.save()._id).to.not.be.undefined;
         });
     });

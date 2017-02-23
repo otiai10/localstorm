@@ -23,8 +23,8 @@ export class Model {
         this._ns = ns || this.constructor.name;
         this.decode(props);
     }
-    static new() {
-        return new this();
+    static new(template = this.template || {}) {
+        return new this(template);
     }
 
   /**

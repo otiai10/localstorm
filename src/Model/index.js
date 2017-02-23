@@ -1,3 +1,4 @@
+import Types from './Types';
 // class Storage {
 //   static __driver;
 //   static use(istorage = (window || {}).localStorage) {
@@ -17,6 +18,9 @@
 // Storage.use();
 
 export class Model {
+
+    static Types = Types
+
     constructor(props = {}, id, ns) {
         this._props = props || {};
         this._id = id;
@@ -80,6 +84,7 @@ export class Model {
     save() {
         let all = this.constructor._all();
         if (!this._id) this._id = this.constructor.__nextID(all);
+        this._validate(); // TODO: should be response object??
         all[this._id] = this.encode();
         localStorage.setItem(this.constructor.name, JSON.stringify(all));
         return this;
@@ -116,6 +121,12 @@ export class Model {
             if (this.hasOwnProperty(prop)) encoded[prop] = this[prop];
         }
         return encoded;
+    }
+    _validate() {
+        if (!this.constructor.schema) return null;
+        Object.keys(this.constructor.schema).map(propName => {
+            this.constructor.schema[propName](this[propName], propName);
+        });
     }
 
     static __nextID(all) {

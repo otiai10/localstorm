@@ -33,6 +33,13 @@ Bar.template = {name:'', age: 20};
 class Spam extends chomex.Model {}
 class Ham  extends chomex.Model {}
 
+class Toto extends chomex.Model {
+    static schema = {
+        title:       chomex.Model.Types.string.isRequired,
+        description: chomex.Model.Types.string,
+    }
+}
+
 describe('Model', () => {
     it('should have customized method', () => {
         let foo = new Foo();
@@ -166,6 +173,23 @@ describe('Model', () => {
                 Ham.nextID = 'not-function';
                 let foo = Ham.create({});
                 expect(foo._id).to.be.within(now - 100, now + 100);
+            });
+        });
+    });
+    describe('schema', () => {
+        // TODO: write more cases
+        it('should validate props', () => {
+            let foo = Toto.new({
+                description: 'this is description',
+            });
+            return new Promise((ok, ng) => {
+                try {
+                    foo.save();
+                    ng('saving without title SHOULD throw error, but it was successful');
+                } catch(err) {
+                    console.log(err);
+                    ok();
+                }
             });
         });
     });

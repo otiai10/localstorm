@@ -23,6 +23,9 @@ export class Model {
         this._ns = ns || this.constructor.name;
         this.decode(props);
     }
+    static new() {
+        return new this();
+    }
 
   /**
    * it returns all saved entities **as Objects**

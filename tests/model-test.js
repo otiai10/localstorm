@@ -28,6 +28,7 @@ class Foo extends chomex.Model {
     }
 }
 
+class Bar  extends chomex.Model {}
 class Spam extends chomex.Model {}
 class Ham  extends chomex.Model {}
 
@@ -115,7 +116,14 @@ describe('Model', () => {
             Foo.filter(() => true).length.should.equal(0);
         });
     });
-
+    describe('new', () => {
+        it('should be an alias for constructor expression', () => {
+            let bar = Bar.new();
+            expect(bar).to.be.an.instanceof(Bar);
+            expect(bar._id).to.be.undefined;
+            expect(bar.save()._id).to.not.be.undefined;
+        });
+    });
     describe('static nextID', () => {
         it('should generate next ID by current timestamp in default', () => {
             const now = Date.now();

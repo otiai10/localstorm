@@ -13,6 +13,27 @@ const createTypeChecker = (typename, validate) => {
     checker.isRequired = checkType.bind(null, true);
     return checker;
 };
+
+const _createRecursiveTypeChecker = (structName, iterateNames) => {
+     // e.g. shape
+    const generate = (validations = {}) => {
+        let checkRoot = (required, rootValue, rootName) => {
+            if (required && typeof rootValue == 'undefined') throw `${rootName} is marked as required`;
+            iterateNames(validations).map(fieldName => {
+                const validation = validations[fieldName];
+                const value      = rootValue[fieldName];
+                validation(value, fieldName);
+            });
+        };
+        let check        = checkRoot.bind(null, false);
+        check.isRequired = checkRoot.bind(null, true);
+        return check;
+    };
+    // let generator = generate.bind(null, false);
+    // generator.isRequired = generate.bind(null, true);
+    return generate;
+};
+
 const Types = {
     string: createTypeChecker('string',   value => typeof value == 'string'),
     number: createTypeChecker('number',   value => typeof value == 'number'),
@@ -21,6 +42,7 @@ const Types = {
     array:  createTypeChecker('array',    value => Array.isArray(value)),
     // localStorage cannot store function ;)
     // func:   createTypeChecker('function', value => typeof value == 'function'),
+    shape: _createRecursiveTypeChecker('shape', value => Object.keys(value))
 };
 
 export default Types;

@@ -47,6 +47,19 @@ class User extends chomex.Model {
     }
 }
 
+class Game extends chomex.Model {
+    static schema = {
+        size: chomex.Model.Types.shape({
+            width:  chomex.Model.Types.number.isRequired,
+            height: chomex.Model.Types.number,
+        }).isRequired,
+        offset: chomex.Model.Types.shape({
+            left: chomex.Model.Types.number,
+            top:  chomex.Model.Types.number,
+        })
+    }
+}
+
 describe('Model', () => {
     it('should have customized method', () => {
         let foo = new Foo();
@@ -213,6 +226,66 @@ describe('Model', () => {
                     err.should.equal('age is not number');
                     ok();
                 }
+            });
+        });
+        describe('shape', () => {
+            describe('when required shape is missing', () => {
+                let foo = Game.new({
+                    offset: {}
+                });
+                return new Promise((ok, ng) => {
+                    try {
+                        foo.save();
+                        ng('saving without title SHOULD throw error, but it was successful');
+                    } catch(err) {
+                        err.should.equal('size is marked as required');
+                        ok();
+                    }
+                });
+            });
+            describe('when required shape is given but not satisfied', () => {
+                let foo = Game.new({
+                    size:   {},
+                    offset: {},
+                });
+                return new Promise((ok, ng) => {
+                    try {
+                        foo.save();
+                        ng('saving without title SHOULD throw error, but it was successful');
+                    } catch(err) {
+                        err.should.equal('width is marked as required');
+                        ok();
+                    }
+                });
+            });
+            describe('when required shape is given but not satisfied', () => {
+                let foo = Game.new({
+                    size:   {width:200, height:100},
+                    offset: {},
+                });
+                return new Promise((ok, ng) => {
+                    try {
+                        foo.save();
+                        ok();
+                    } catch(err) {
+                        ng('satisfied model should be saved');
+                    }
+                });
+            });
+            describe('when required shapes are given but invalid fields passed', () => {
+                let foo = Game.new({
+                    size:   {width:200, height:100},
+                    offset: {left: 'string string'},
+                });
+                return new Promise((ok, ng) => {
+                    try {
+                        foo.save();
+                        ng('saving without title SHOULD throw error, but it was successful');
+                    } catch(err) {
+                        err.should.equal('left is not number');
+                        ok();
+                    }
+                });
             });
         });
     });

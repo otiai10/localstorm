@@ -75,6 +75,12 @@ describe('Model', () => {
             all[foo._id]._id.should.equal(foo._id);
         });
     });
+    describe('list', () => {
+        it('should return all saved models but as a array', () => {
+            Foo.new({}).save();
+            expect(Foo.list()).to.be.an.instanceof(Array);
+        });
+    });
     describe('save', () => {
         it('should generate _id', () => {
             let foo = new Foo();

@@ -52,6 +52,14 @@ export class Model {
         return all;
     }
 
+    /**
+     * list is an alias of `Model.filter(() => true);`
+     * @return {array} of model instances
+     */
+    static list() {
+        return this.filter();
+    }
+
     static drop() {
         localStorage.removeItem(this.name);
     }
@@ -73,7 +81,7 @@ export class Model {
             return _this.decode(this.default[_id]);
         }
     }
-    static filter(fn = () => { return false; }) {
+    static filter(fn = () => true) {
         const all = this.all();
         let _res = [];
         Object.keys(all).map(_id => {

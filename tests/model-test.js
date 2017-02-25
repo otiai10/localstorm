@@ -1,26 +1,10 @@
 jest.unmock('../src/Model');
-
-// TODO: move this mock to mock file
-var localStorageMock = (function() {
-    var store = {};
-    return {
-        getItem: function(key) {
-            return store[key];
-        },
-        setItem: function(key, value) {
-            store[key] = value.toString();
-        },
-        removeItem: function(key) {
-            delete store[key];
-        },
-        clear: function() {
-            store = {};
-        }
-    };
-})();
-Object.defineProperty(window, 'localStorage', { value: localStorageMock });
+jest.unmock('../src/Model/OnMemoryStorage');
 
 import chomex from '../src/chomex';
+import OnMemoryStorage from '../src/Model/OnMemoryStorage';
+
+Object.defineProperty(window, 'localStorage', { value: new OnMemoryStorage()});
 
 class Foo extends chomex.Model {
     foo() {
@@ -293,6 +277,40 @@ describe('Model', () => {
                     }
                 });
             });
+        });
+    });
+    describe('useStorage', () => {
+        it('should replace localStorage', () => {
+            let storage = new OnMemoryStorage({Hoge: {1: {name:'otiai10'}}});
+            chomex.Model.useStorage(storage);
+            class Hoge extends chomex.Model {}
+            Hoge.find(1).name.should.equal('otiai10');
+            chomex.Model.useStorage(window.localStorage);
+            expect(Hoge.find(1)).to.be.undefined;
+        });
+        it('should raise error if given storage doesn\'t satisfy Storage interface', () => {
+            return Promise.all([
+                new Promise((ok, ng) => {
+                    let storage = {};
+                    try {
+                        chomex.Model.useStorage(storage);
+                        ng('invalid assignment to storage SHOULD RAISE ERROR');
+                    } catch(err) {
+                        err.should.equal('`getItem` of Storage interface is missing');
+                        ok();
+                    }
+                }),
+                new Promise((ok, ng) => {
+                    let storage = {getItem: () => {}, setItem: () => {}, removeItem: () => {}};
+                    try {
+                        chomex.Model.useStorage(storage);
+                        ng('invalid assignment to storage SHOULD RAISE ERROR');
+                    } catch(err) {
+                        err.should.equal('`getItem` of Storage must accept at least 1 argument');
+                        ok();
+                    }
+                }),
+            ]);
         });
     });
 });

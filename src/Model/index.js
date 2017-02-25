@@ -1,25 +1,33 @@
 import Types from './Types';
-// class Storage {
-//   static __driver;
-//   static use(istorage = (window || {}).localStorage) {
-//     // TODO: validate
-//     Storage.__driver = istorage;
-//   }
-//   static getItem(key) {
-//     let res = Storage.__driver.getItem(key);
-//     if (res instanceof Promise) return res;
-//     return Promise.resolve(res);
-//   }
-//   static setItem(key, value) {
-//     Storage.__driver.setItem(key, value);
-//     return Promise.resolve({key, value});
-//   }
-// }
-// Storage.use();
+
+import OnMemoryStorage from './OnMemoryStorage';
 
 export class Model {
 
     static Types = Types
+
+    static __storage = (window.localStorage || new OnMemoryStorage);
+    static useStorage(storage = {}) {
+        if (typeof storage.getItem !== 'function') {
+            throw '`getItem` of Storage interface is missing';
+        }
+        if (typeof storage.setItem !== 'function') {
+            throw '`setItem` of Storage interface is missing';
+        }
+        if (typeof storage.removeItem !== 'function') {
+            throw 'it doesn\'t satisfy expected Storage interface';
+        }
+        if (storage.getItem.length < 1) {
+            throw '`getItem` of Storage must accept at least 1 argument';
+        }
+        if (storage.setItem.length < 2) {
+            throw '`setItem` of Storage must accept at least 2 argument';
+        }
+        if (storage.removeItem.length < 1) {
+            throw '`removeItem` of Storage must accept at least 1 argument';
+        }
+        this.__storage = storage;
+    }
 
     constructor(props = {}, id, ns) {
         this._props = props || {};
@@ -36,7 +44,7 @@ export class Model {
    */
     static _all() {
         const _ns = this.name;
-        const raw = localStorage.getItem(_ns);
+        const raw = this.__storage.getItem(_ns);
         const all = JSON.parse(raw || 'null');
         return all || this.default || {};
     }
@@ -61,7 +69,7 @@ export class Model {
     }
 
     static drop() {
-        localStorage.removeItem(this.name);
+        this.__storage.removeItem(this.name);
     }
     static create(dict) {
         if (typeof dict != 'object') return;
@@ -94,14 +102,14 @@ export class Model {
         if (!this._id) this._id = this.constructor.__nextID(all);
         this._validate(); // TODO: should be response object??
         all[this._id] = this.encode();
-        localStorage.setItem(this.constructor.name, JSON.stringify(all));
+        this.constructor.__storage.setItem(this.constructor.name, JSON.stringify(all));
         return this;
     }
     delete() {
         let all = this.constructor._all();
         if (!this._id) return false;
         if (delete all[this._id] === false) return false;
-        localStorage.setItem(this.constructor.name, JSON.stringify(all));
+        this.constructor.__storage.setItem(this.constructor.name, JSON.stringify(all));
         return true;
     }
     update(dict) {

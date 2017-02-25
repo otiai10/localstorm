@@ -93,6 +93,8 @@ chrome.notifications.onClicked.addListener(router.listener());
 
 I hope you ain't gonna need it
 
+[👉 For more information](https://github.com/otiai10/chomex/tree/master/src/Model/README.md)
+
 ```javascript
 // You can create models like ActiveRecord.
 class User extends chomex.Model {}

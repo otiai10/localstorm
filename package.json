@@ -48,7 +48,7 @@
     ],
     "setupTestFrameworkScriptFile": "./tests/mock/setup-script.js",
     "setupFiles": [
-      "./tests/mock/runtime.js"
+      "./tests/mock/chrome.js"
     ]
   }
 }

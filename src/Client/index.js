@@ -49,9 +49,14 @@ export class Client {
     message() {
         let args = new Array(...arguments);
         // If the first argument is string, it might represent "action".
-        if (typeof args[0] == 'string' && typeof args[1] == 'object') {
-            args[1].action = args[0];
-            args = args.slice(1);
+        // Ensure the first argument to be an Object.
+        if (typeof args[0] == 'string') {
+            if (typeof args[1] == 'object') {
+                args[1].action = args[0];
+                args = args.slice(1);
+            } else {
+                args[0] = {action:args[0]};
+            }
         }
         return new Promise((resolve, reject) => {
             this.module[this.method].call(
@@ -79,7 +84,7 @@ export class Client {
             const cb = args[args.length - 1];
             args[args.length - 1] = (responseFromBackend) => {
                 cb(responseFromBackend);
-                this._finally(strict, responseFromBackend, resolve, reject);
+                resolve(); // resolve anyway
                 return true;
             };
         } else {

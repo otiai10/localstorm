@@ -35,7 +35,7 @@ export class Model {
         this._ns = ns || this.constructor.name;
         this.decode(props);
     }
-    static new(template = this.template || {}) {
+    static new(template = Object.assign({}, this.template || {})) {
         return new this(template);
     }
 

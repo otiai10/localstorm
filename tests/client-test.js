@@ -7,6 +7,10 @@ beforeAll(() => {
     let r = new Router();
     r.on('/echo', (message) => Promise.resolve({echo: message}));
     window.chrome.runtime.onMessage.addListener(r.listener());
+
+    let tabr = new Router();
+    tabr.on('/echo', (message) => Promise.resolve({echo: message}));
+    window.chrome.tabs.onMessage.addListener(tabr.listener());
 });
 
 describe('Client', () => {
@@ -51,6 +55,17 @@ describe('Client', () => {
                         resolve();
                     }))
                 ]);
+            });
+        });
+    });
+    describe('tab', () => {
+        it('should provide TabClient', () => {
+            let client = new Client(window.chrome.tabs);
+            return client.tab(100).message('/echo').then(res => {
+                console.log(res.data.echo.tab.id);
+                expect(res.data.echo.tab.id).not.be.undefined;
+                res.data.echo.tab.id.should.equal(100);
+                return Promise.resolve();
             });
         });
     });

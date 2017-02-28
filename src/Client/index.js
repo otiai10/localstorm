@@ -122,4 +122,29 @@ export class Client {
             resolve(response);
         }
     }
+
+    /**
+     * tab
+     */
+    tab(tabId, strict = true, method = 'sendMessage') {
+        return new TabClient(tabId, this.module, strict, method);
+    }
+}
+
+/**
+ * TabClient converts given arguments to arguments for chrome.tabs.sendMessage
+ * because it requires `tabId` for the first argument.
+ */
+class TabClient extends Client {
+    constructor(tabId, module, strict = true, method = 'sendMessage') {
+        super(module, strict, method);
+        this.tabId = tabId;
+    }
+    /**
+     * @override
+     */
+    _expandArgumentsForChromeMethod(args, resolve, reject) {
+        args.unshift(this.tabId);
+        return super._expandArgumentsForChromeMethod(args, resolve, reject);
+    }
 }

@@ -68,5 +68,14 @@ describe('Client', () => {
                 return Promise.resolve();
             });
         });
+        describe('static method `for`', () => {
+            it('should be just a shorthand of constructing TabClient directly', () => {
+                return Client.for(window.chrome.tabs, 123).message('/echo').then(res => {
+                    expect(res.data.echo.tab.id).not.be.undefined;
+                    res.data.echo.tab.id.should.equal(123);
+                    return Promise.resolve();
+                });
+            });
+        });
     });
 });

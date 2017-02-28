@@ -7,9 +7,20 @@ chomex
 
 Chrome Extension Messaging Routing Kit.
 
+- [Router](https://github.com/otiai10/chomex/tree/master/src/Router/README.md) to handle `onMessage` with routes expression
+- [Client](https://github.com/otiai10/chomex/tree/master/src/Client/README.md) to Promisify `sendMessage`
+- [Model](https://github.com/otiai10/chomex/tree/master/src/Model/README.md) to access to `localStorage` like `ActiveRecord`
+
+# Installation
+
+```sh
+yarn add chomex
+# npm install chomex
+```
+
 # Why?
 
-## `.onMessage.addListener` like a server
+### `.onMessage` like a server
 
 _NEVER_
 
@@ -36,7 +47,7 @@ chrome.runtime.onMessage.addListener(router.listener());
 
 _Happy :)_
 
-## `.sendMessage` like a client
+### `.sendMessage` like a client
 
 _NEVER_
 
@@ -63,26 +74,37 @@ client.message("/users/get", {id:123}).then(response => {
 
 _Happy :)_
 
-# Features
-
-- **Router**
-  - can dispatch messages to specific controllers
-- **Client**
-  - can send messages to `background.js` and handle response as `Promise` object
-- **Model**
-  - is simple accessor for `localStorage` like ActiveRecord
-    - You ain't gonna need it ;)
-
-# Messaging Example
+# Examples
 
 `background.js` as a server
 
 ```javascript
-import {Router} from 'chomex';
-import {UserController} from './your/controllers';
+import {Router, Model} from 'chomex';
 
+// Define your model
+class User extends Model {
+  static schema = {
+    name: Model.Types.string.isRequired,
+    age:  Model.Types.number,
+  }
+}
+
+// Define your routes
 let router = new Router();
-router.on("/users/get", UserController.Get);
+router.on("/users/create", message => {
+  const obj = message.user;
+  const user = User.new(obj).save();
+  return user;
+});
+router.on("/users/get", message => {
+  const userId = message.id;
+  const user = User.find(userId);
+  if (!user) {
+    return {status:404,error:"not found"};
+  }
+  // You can also return async Promise
+  return Promise.resolve(user);
+});
 
 // it dispatches messages to registered controllers.
 chrome.runtime.onMessage.addListener(router.listener());
@@ -96,9 +118,16 @@ import {Client} from 'chomex';
 const client = new Client(chrome.runtime);
 
 // it sends message to "/users/get" route.
-client.message('/users/get', {id: 1234})
-// and can receive response as a Promise!
-.then(res => console.log("User:", res.user));
+client.message('/users/create', {user:{name:'otiai10',age:30}})
+.then(res => {
+  console.log("Created:", res.data);
+});
+
+client.message('/users/get', {id: 12345}).then(res => {
+  console.log("Found:", res.data);
+}).catch(err => {
+  console.log("Error:", err.status);
+});
 ```
 
 You can also customize resolver for routing.
@@ -118,27 +147,11 @@ router.on('quest', NotificaionOnClickController.Quest);
 chrome.notifications.onClicked.addListener(router.listener());
 ```
 
-# Models Example
+# For more information
 
-I hope you ain't gonna need it
-
-[👉 For more information](https://github.com/otiai10/chomex/tree/master/src/Model/README.md)
-
-```javascript
-// You can create models like ActiveRecord.
-class User extends chomex.Model {}
-
-export function GetUserController(message) {
-  let user = User.find(message.id);
-  if (!user) {
-    return {
-      status: 404,
-      message: `No user with ID: ${message.id}`
-    };
-  }
-  return {status: 200, user};
-};
-```
+- [Router](https://github.com/otiai10/chomex/tree/master/src/Router/README.md)
+- [Client](https://github.com/otiai10/chomex/tree/master/src/Client/README.md)
+- [Model](https://github.com/otiai10/chomex/tree/master/src/Model/README.md)
 
 # Projects
 

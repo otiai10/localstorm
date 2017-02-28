@@ -9,6 +9,8 @@ Chrome Extension Messaging Routing Kit.
 
 # Why?
 
+## `.onMessage.addListener` like a server
+
 _NEVER_
 
 ```javascript
@@ -30,6 +32,33 @@ _DO_
 let router = new chomex.Router();
 router.on("/users/get", GetUser);
 chrome.runtime.onMessage.addListener(router.listener());
+```
+
+_Happy :)_
+
+## `.sendMessage` like a client
+
+_NEVER_
+
+```js
+chrome.runtime.sendMessage({action:"/users/get",id:123}, (response) => {
+  if (response.status == 200) {
+    alert("User: " + response.user.name);
+  } else {
+    console.log("Error:", response);
+  }
+});
+```
+
+_DO_
+
+```js
+const client = new chomex.Client(chrome.runtime);
+client.message("/users/get", {id:123}).then(response => {
+  alert("User: " + response.data.user.name);
+}).catch(err => {
+  console.log("Error:", err));
+});
 ```
 
 _Happy :)_

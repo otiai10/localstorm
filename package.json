@@ -12,10 +12,7 @@
     "release": "./node_modules/.bin/coffee ./scripts/release.coffee",
     "test": "jest"
   },
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/otiai10/chomex.git"
-  },
+  "repository": "https://github.com/otiai10/chomex.git",
   "keywords": [
     "chrome"
   ],

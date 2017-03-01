@@ -186,6 +186,34 @@ describe('Model', () => {
             });
         });
     });
+    describe('template', () => {
+        it('should provide a way to preset props', () => {
+            class Foo extends chomex.Model {
+                static template = {
+                    name: 'templated',
+                    age:  10,
+                }
+            }
+            let foo = Foo.new();
+            foo.name.should.equal('templated');
+            foo.age.should.equal(10);
+            expect(foo._id).to.be.undefined;
+        });
+        describe('when one of template is function', () => {
+            it('should provide templated value with executing that function', () => {
+                class Foo extends chomex.Model {
+                    static template = {
+                        name: `generated-${Date.now()}`,
+                        age:  Math.floor(Math.random() * 29) + 1
+                    }
+                }
+                let foo = Foo.new();
+                foo.name.should.match(/generated-[0-9]+/);
+                foo.age.should.within(1, 30);
+                expect(foo._id).to.be.undefined;
+            });
+        });
+    });
     describe('schema', () => {
         // TODO: write more cases
         it('should validate props', () => {

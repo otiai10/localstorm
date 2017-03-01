@@ -36,7 +36,11 @@ export class Model {
         this.decode(props);
     }
     static new(template = Object.assign({}, this.template || {})) {
-        return new this(template);
+        let props = {};
+        Object.keys(template).map(key => {
+            props[key] = (typeof template[key] == 'function') ? template[key]() : template[key];
+        });
+        return new this(props);
     }
 
   /**

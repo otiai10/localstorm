@@ -169,7 +169,7 @@ export class Model {
     static sequentialID(all) {
         return (Object.keys(all)
           .map(id => parseInt(id))
-          .sort((prev, next) => prev < next)
+          .sort((prev, next) => (prev < next) ? -1 : 1)
           .pop() || 0) + 1;
     }
 }

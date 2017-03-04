@@ -17,10 +17,9 @@ fs.writeFileSync "./package.json", JSON.stringify(pkg, null, 2)
 
 # Commit next version
 throw 'git commit failed' if exec("git add . && git commit -m '[release] #{pkg.version}'").code != 0
-throw 'git push failed' if exec("git tag #{pkg.version} && git push origin master --follow-tags").code != 0
 
 # Build
-throw 'build failed' if exec('npm run build').code is not 0
+throw 'build failed' if exec('yarn run build').code != 0
 
 # Publish
-throw 'publish failed' if exec('npm publish').code is not 0
+throw 'publish failed' if exec('npm publish').code != 0

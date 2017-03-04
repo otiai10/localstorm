@@ -1,5 +1,6 @@
-import {DummyLogger} from '../Logger';
-
+/**
+ * TODO: write something ;)
+ */
 export class SerialRouter {
     constructor(length = 4, resolver = {}) {
         this.routes = [];

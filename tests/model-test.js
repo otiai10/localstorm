@@ -14,7 +14,6 @@ class Foo extends chomex.Model {
 
 class Bar  extends chomex.Model {}
 Bar.template = {name:'', age: 20};
-class Spam extends chomex.Model {}
 class Ham  extends chomex.Model {}
 
 class Toto extends chomex.Model {
@@ -168,7 +167,9 @@ describe('Model', () => {
             bar._id.should.equal(2);
         });
         it('should be replaced by prepared functions: e.g. `sequentialID`', () => {
-            Spam.nextID = chomex.Model.sequentialID;
+            class Spam extends chomex.Model {
+                static nextID = chomex.Model.sequentialID
+            }
             let foo = Spam.create({});
             foo._id.should.equal(1);
             let bar = Spam.create({});
@@ -176,6 +177,10 @@ describe('Model', () => {
             foo.delete();
             let baz = Spam.create({});
             baz._id.should.equal(3);
+            let hoge = Spam.create({});
+            hoge._id.should.equal(4);
+            let fuga = Spam.create({});
+            fuga._id.should.equal(5);
         });
         describe('when invalid `nextID` is set', () => {
             it('should be failed over with `timestampID`', () => {

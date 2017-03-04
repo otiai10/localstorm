@@ -1,6 +1,6 @@
 {
   "name": "chomex",
-  "version": "0.0.68",
+  "version": "0.0.70",
   "description": "Chrome Extension Routing Kit",
   "main": "lib/chomex.js",
   "files": [
@@ -23,7 +23,7 @@
   },
   "homepage": "https://github.com/otiai10/chomex#readme",
   "devDependencies": {
-    "babel": "^6.5.2",
+    "babel-cli": "^6.23.0",
     "babel-core": "^6.9.1",
     "babel-eslint": "^7.1.1",
     "babel-jest": "^19.0.0",

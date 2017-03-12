@@ -9,9 +9,9 @@ describe('Story: Use Router via Client', () => {
         r.on('foo', (params) => {
             return Promise.resolve({status: 200, request: params});
         });
-        window.chrome.runtime.onMessage.addListener(r.listener());
+        global.chrome.runtime.onMessage.addListener(r.listener());
 
-        const client = new Client(window.chrome.runtime);
+        const client = new Client(global.chrome.runtime);
         return client.message('foo', {abc: true}).then(res => {
             res.request.abc.should.be.true;
             true.should.be.true;
@@ -22,9 +22,9 @@ describe('Story: Use Router via Client', () => {
         r.on('foo', (params) => {
             return {status: 200, request: params};
         });
-        window.chrome.runtime.onMessage.addListener(r.listener());
+        global.chrome.runtime.onMessage.addListener(r.listener());
 
-        const client = new Client(window.chrome.runtime);
+        const client = new Client(global.chrome.runtime);
         return client.message('foo', {abc: true}).then(res => {
             res.request.abc.should.be.true;
             true.should.be.true;
@@ -35,9 +35,9 @@ describe('Story: Use Router via Client', () => {
         r.on('foo', (params) => {
             return Promise.resolve({status: 200, request: params});
         });
-        window.chrome.runtime.onMessage.addListener(r.listener());
+        global.chrome.runtime.onMessage.addListener(r.listener());
 
-        const client = new Client(window.chrome.runtime);
+        const client = new Client(global.chrome.runtime);
         return client.message('bar', {abc: true}).catch(err => {
             err.status.should.equal(404);
             err.message.should.equal('routing not found for "bar"');

@@ -4,7 +4,7 @@ jest.unmock('../src/Model/OnMemoryStorage');
 import chomex from '../src/chomex';
 import OnMemoryStorage from '../src/Model/OnMemoryStorage';
 
-Object.defineProperty(window, 'localStorage', { value: new OnMemoryStorage()});
+Object.defineProperty(global, 'localStorage', { value: new OnMemoryStorage()});
 
 class Foo extends chomex.Model {
     foo() {
@@ -318,7 +318,7 @@ describe('Model', () => {
             chomex.Model.useStorage(storage);
             class Hoge extends chomex.Model {}
             Hoge.find(1).name.should.equal('otiai10');
-            chomex.Model.useStorage(window.localStorage);
+            chomex.Model.useStorage(global.localStorage);
             expect(Hoge.find(1)).to.be.undefined;
         });
         it('should raise error if given storage doesn\'t satisfy Storage interface', () => {

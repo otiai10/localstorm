@@ -6,7 +6,7 @@ export class Model {
 
     static Types = Types
 
-    static __storage = (window.localStorage || new OnMemoryStorage);
+    static __storage = (global.localStorage ? global.localStorage : new OnMemoryStorage())
     static useStorage(storage = {}) {
         if (typeof storage.getItem !== 'function') {
             throw '`getItem` of Storage interface is missing';

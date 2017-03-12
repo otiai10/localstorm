@@ -28,7 +28,7 @@ let tabs = {
     }
 };
 
-Object.defineProperty(window, 'chrome', {value: {
+Object.defineProperty(global, 'chrome', {value: {
     runtime,
     tabs,
 }});

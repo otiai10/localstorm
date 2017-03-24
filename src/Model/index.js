@@ -75,7 +75,7 @@ export class Model {
     static drop() {
         this.__storage.removeItem(this.name);
     }
-    static create(dict) {
+    static create(dict = (this.template || {})) {
         if (typeof dict != 'object') return;
         let all = this._all();
         const _id = dict._id || this.__nextID(all);

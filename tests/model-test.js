@@ -108,6 +108,22 @@ describe('Model', () => {
             baz.name.should.not.be.undefined;
             baz.name.should.equal(foo.name);
         });
+        describe('when given no any arguments', () => {
+            it('should create model with template or empty object', () => {
+                class Spamy extends chomex.Model {}
+                const spamy = Spamy.create();
+                expect(spamy).not.to.be.undefined;
+                expect(spamy._id).not.to.be.undefined;
+                class Hammy extends chomex.Model {
+                    static template = { name: 'Mr. Anonymous' };
+                    static nextID = chomex.Model.sequentialID;
+                }
+                const hammy = Hammy.create();
+                expect(hammy).not.to.be.undefined;
+                expect(hammy._id).not.to.be.undefined;
+                hammy.name.should.equal('Mr. Anonymous');
+            });
+        });
     });
     describe('filter', () => {
         it('should return filtered models', () => {

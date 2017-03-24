@@ -55,4 +55,21 @@ describe('Router', () => {
             ]);
         });
     });
+    describe('when unhandled error thrown in a controller', () => {
+        it('should stringify error message and handle it as status:500', () => {
+            let router = new Router();
+            router.on('/rough', () => {
+                return {}.null.pointer;
+            });
+            return Promise.all([
+                new Promise(resolve => {
+                    router.listen({act: '/rough'}, {}, res => {
+                        res.status.should.equal(500);
+                        res.message.should.equal('Unhandled Background Error: TypeError: Cannot read property \'pointer\' of undefined');
+                        resolve();
+                    });
+                })
+            ]);
+        });
+    });
 });

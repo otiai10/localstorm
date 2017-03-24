@@ -63,7 +63,11 @@ export class Router {
             const response = controllerFunc.call({message, sender}, message, sender);
 
             if (typeof response == 'undefined') {
-                throw `\`${controllerFunc.name || '(anonymous controller)'}\`: Response should be defined. ex) return true;`;
+                sendResponse(this._formatResponse({
+                    status: 500, // TODO: should it be 500?
+                    message: `\`${controllerFunc.name || '(anonymous controller)'}\`: Response should be defined. ex) return true;`,
+                }));
+                return true;
             }
 
             // `response` can be Promise, but if it's not, just send it as a respone.
@@ -84,7 +88,7 @@ export class Router {
 
             // If there is any error while executing, return 500.
             sendResponse(this._formatResponse({
-                status: 500, message: err
+                status: 500, message: 'Unhandled Background Error: ' + String(err)
             }));
 
             return true;

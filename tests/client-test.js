@@ -59,7 +59,7 @@ describe('Client', () => {
         });
     });
     describe('tab', () => {
-        it('should provide TabClient', () => {
+        it('should provide TargetedClient', () => {
             let client = new Client(global.chrome.tabs);
             return client.tab(100).message('/echo').then(res => {
                 console.log(res.data.echo.tab.id);
@@ -69,7 +69,7 @@ describe('Client', () => {
             });
         });
         describe('static method `for`', () => {
-            it('should be just a shorthand of constructing TabClient directly', () => {
+            it('should be just a shorthand of constructing TargetedClient directly', () => {
                 return Client.for(global.chrome.tabs, 123).message('/echo').then(res => {
                     expect(res.data.echo.tab.id).not.be.undefined;
                     res.data.echo.tab.id.should.equal(123);

@@ -127,26 +127,26 @@ export class Client {
      * tab
      */
     tab(tabId, strict = true, method = 'sendMessage') {
-        return new TabClient(tabId, this.module, strict, method);
+        return new TargetedClient(tabId, this.module, strict, method);
     }
     /**
      * @static for
-     * This is just a shorthand of `(new Client(chrome.tabs)).tab(123) // == TabClient`
+     * This is just a shorthand of `(new Client(chrome.tabs)).tab(123) // == TargetedClient`
      * This is kind of insignificant and useless method.
      * Just want to chain constructor and `tab`,
      * like this `Client.for(chrome.tabs, 123).message()`
      */
     static for(module, id, strict = true, method = 'sendMessage') {
-        return new TabClient(id, module, strict, method);
+        return new TargetedClient(id, module, strict, method);
     }
 
 }
 
 /**
- * TabClient converts given arguments to arguments for chrome.tabs.sendMessage
+ * TargetedClient converts given arguments to arguments for chrome.tabs.sendMessage
  * because it requires `tabId` for the first argument.
  */
-class TabClient extends Client {
+class TargetedClient extends Client {
     constructor(tabId, module, strict = true, method = 'sendMessage') {
         super(module, strict, method);
         this.tabId = tabId;

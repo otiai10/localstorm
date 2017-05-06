@@ -35,12 +35,14 @@ export class Model {
         this._ns = ns || this.constructor.name;
         this.decode(props);
     }
-    static new(template = Object.assign({}, this.template || {})) {
-        let props = {};
+    static new(props = {}) {
+        return new this(this.fixture(props));
+    }
+    static fixture(props, template = Object.assign({}, this.template || {})) {
         Object.keys(template).map(key => {
             props[key] = (typeof template[key] == 'function') ? template[key]() : template[key];
         });
-        return new this(props);
+        return props;
     }
 
   /**
@@ -77,6 +79,7 @@ export class Model {
     }
     static create(dict = (this.template || {})) {
         if (typeof dict != 'object') return;
+        dict = this.fixture(dict);
         let all = this._all();
         const _id = dict._id || this.__nextID(all);
         let model = new this(dict, _id);
@@ -119,7 +122,8 @@ export class Model {
     update(dict) {
         if (typeof dict != 'object')
             return this.error('Argument for `update` must be key-value dictionary');
-    // TODO: filter preserved keywords
+        dict = this.constructor.fixture(dict);
+        // TODO: filter preserved keywords
         Object.keys(dict).map(key => this[key] = dict[key]);
         return !!this.save();
     }

@@ -30,24 +30,23 @@ export class Model {
     }
 
     constructor(props = {}, id, ns) {
-        this._props = props || {};
+        const template = Object.assign({}, this.constructor.template);
+        Object.keys(template).map(key => {
+            if (typeof props[key] != 'undefined') return;
+            props[key] = (typeof template[key] == 'function') ? template[key]() : template[key];
+        });
+        this._props = props;
         this._id = id;
         this._ns = ns || this.constructor.name;
         this.decode(props);
     }
     static new(props = {}) {
-        return new this(this.fixture(props));
-    }
-    static fixture(props, template = Object.assign({}, this.template || {})) {
-        Object.keys(template).map(key => {
-            props[key] = (typeof template[key] == 'function') ? template[key]() : template[key];
-        });
-        return props;
+        return new this(props);
     }
 
-  /**
-   * it returns all saved entities **as Objects**
-   */
+    /**
+     * it returns all saved entities **as Objects**
+     */
     static _all() {
         const _ns = this.name;
         const raw = this.__storage.getItem(_ns);
@@ -79,7 +78,6 @@ export class Model {
     }
     static create(dict = (this.template || {})) {
         if (typeof dict != 'object') return;
-        dict = this.fixture(dict);
         let all = this._all();
         const _id = dict._id || this.__nextID(all);
         let model = new this(dict, _id);
@@ -120,9 +118,8 @@ export class Model {
         return true;
     }
     update(dict) {
-        if (typeof dict != 'object')
-            return this.error('Argument for `update` must be key-value dictionary');
-        dict = this.constructor.fixture(dict);
+        if (typeof dict != 'object') return this.error('Argument for `update` must be key-value dictionary');
+        dict = this._fixture(dict);
         // TODO: filter preserved keywords
         Object.keys(dict).map(key => this[key] = dict[key]);
         return !!this.save();
@@ -151,6 +148,19 @@ export class Model {
         Object.keys(this.constructor.schema).map(propName => {
             this.constructor.schema[propName](this[propName], propName);
         });
+    }
+
+    /**
+     * fixes next properties with template
+     * prefer properties this already has and next properties given.
+     */
+    _fixture(props, template = Object.assign({}, this.constructor.template || {})) {
+        Object.keys(template).map(key => {
+            if (typeof this[key]  != 'undefined') return;
+            if (typeof props[key] != 'undefined') return;
+            props[key] = (typeof template[key] == 'function') ? template[key]() : template[key];
+        });
+        return props;
     }
 
     static __nextID(all) {

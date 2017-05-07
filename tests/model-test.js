@@ -89,6 +89,27 @@ describe('Model', () => {
                 bar.errors.length.should.equal(1);
             });
         });
+        describe('even when template is defined', () => {
+            it('should update only given fields', () => {
+                class FooBar extends chomex.Model {
+                    static template = {
+                        xxx: {yyy: 1000},
+                        zzz: true,
+                    }
+                }
+                let foobar = FooBar.create();
+                foobar.xxx.yyy.should.equal(1000);
+                foobar.zzz.should.equal(true);
+                foobar.update({zzz:false});
+                let x = FooBar.find(foobar._id);
+                x.zzz.should.equal(false);
+                x.xxx.yyy.should.equal(1000);
+                x.update({xxx:{yyy:2000}});
+                let z = FooBar.find(foobar._id);
+                z.zzz.should.equal(false);
+                x.xxx.yyy.should.equal(2000);
+            });
+        });
     });
     describe('delete', () => {
         it('should delete data from storage', () => {

@@ -6,7 +6,23 @@ export class Model {
 
     static Types = Types
 
-    static __storage = (global.localStorage ? global.localStorage : new OnMemoryStorage())
+    /**
+     * @interface storage
+     * @method getItem(key: string): Object?
+     * @method setItem(key: string, value: Object?)
+     * @method removeItem(key: string)
+     */
+
+    /**
+     * @default __storage = a wrapper of global.localStorage, with handling Object
+     */
+    static __storage = global.localStorage ? new (function() {
+        this.store = global.localStorage;
+        this.setItem    = function(key, val) { this.store.setItem(key, JSON.stringify(val)); };
+        this.getItem    = function(key) { return JSON.parse(this.store.getItem(key) || 'null'); };
+        this.removeItem = function(key) { this.store.removeItem(key); };
+    }) : new OnMemoryStorage();
+
     static useStorage(storage = {}) {
         if (typeof storage.getItem !== 'function') {
             throw '`getItem` of Storage interface is missing';
@@ -49,8 +65,7 @@ export class Model {
      */
     static _all() {
         const _ns = this.name;
-        const raw = this.__storage.getItem(_ns);
-        const all = JSON.parse(raw || 'null');
+        const all = this.__storage.getItem(_ns);
         return all || this.default || {};
     }
   /**
@@ -107,14 +122,14 @@ export class Model {
         if (!this._id) this._id = this.constructor.__nextID(all);
         this._validate(); // TODO: should be response object??
         all[this._id] = this.encode();
-        this.constructor.__storage.setItem(this.constructor.name, JSON.stringify(all));
+        this.constructor.__storage.setItem(this.constructor.name, all);
         return this;
     }
     delete() {
         let all = this.constructor._all();
         if (!this._id) return false;
         if (delete all[this._id] === false) return false;
-        this.constructor.__storage.setItem(this.constructor.name, JSON.stringify(all));
+        this.constructor.__storage.setItem(this.constructor.name, all);
         return true;
     }
     update(dict) {

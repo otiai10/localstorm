@@ -17,11 +17,10 @@ export default class OnMemoryStorage {
     }
     getItem(key) {
         const value = this.dictionary[key];
-        if (!value) return null;
-        return JSON.stringify(value);
+        return value ? value : null;
     }
     setItem(key, value) {
-        this.dictionary[key] = JSON.parse(value);
+        this.dictionary[key] = value;
     }
     removeItem(key) {
         delete this.dictionary[key];

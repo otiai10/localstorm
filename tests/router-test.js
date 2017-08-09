@@ -32,25 +32,19 @@ describe('Router', () => {
         });
     });
     describe('when matched controller doesn\'t return anything', () => {
-        it('should return status 500 with message', () => {
+        it('should NOT fire `sendResponse` callback function', () => {
             let router = new Router();
             router.on('xx', () => { });
             const NiceController = () => { };
             router.on('yy', NiceController);
             return Promise.all([
-                new Promise(resolve => {
-                    router.listen({act: 'xx'}, {}, (res) => {
-                        res.status.should.equal(500);
-                        res.message.should.equal('`(anonymous controller)`: Response should be defined. ex) return true;');
-                        resolve();
-                    });
+                new Promise((resolve, reject) => {
+                    router.listen({act: 'xx'}, {}, () => reject('SHOULD NOT GET CALLED'));
+                    process.nextTick(() => resolve());
                 }),
-                new Promise(resolve => {
-                    router.listen({act: 'yy'}, {}, (res) => {
-                        res.status.should.equal(500);
-                        res.message.should.equal('`NiceController`: Response should be defined. ex) return true;');
-                        resolve();
-                    });
+                new Promise((resolve, reject) => {
+                    router.listen({act: 'yy'}, {}, () => reject('SHOULD NOT GET CALLED'));
+                    process.nextTick(() => resolve());
                 })
             ]);
         });

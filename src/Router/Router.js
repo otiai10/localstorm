@@ -63,10 +63,9 @@ export class Router {
             const response = controllerFunc.call({message, sender}, message, sender);
 
             if (typeof response == 'undefined') {
-                sendResponse(this._formatResponse({
-                    status: 500, // TODO: should it be 500?
-                    message: `\`${controllerFunc.name || '(anonymous controller)'}\`: Response should be defined. ex) return true;`,
-                }));
+                // If the Controller doesn't return anything, it should NOT call `sendResponse`.
+                // Mostly, Controllers for messages, which can't receive response from background, should return undefined.
+                // For example, messages sent by clients on "window.onbeforeunload".
                 return true;
             }
 

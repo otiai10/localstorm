@@ -16,14 +16,29 @@ export class Model {
     /**
      * @default __storage = a wrapper of global.localStorage, with handling Object
      */
-    static __storage = global.localStorage ? new (function() {
-        this.store = global.localStorage;
-        this.setItem    = function(key, val) { this.store.setItem(key, JSON.stringify(val)); };
-        this.getItem    = function(key) { return JSON.parse(this.store.getItem(key) || 'null'); };
-        this.removeItem = function(key) { this.store.removeItem(key); };
-    }) : new OnMemoryStorage();
+    static __storage = global.localStorage ? Model.implementNativeStorage(global.localStorage) : new OnMemoryStorage();
+
+    /**
+     * implementNativeStorage
+     * Implements chomex.Storage interface from localStorage/sessionStorage.
+     * @param nativeStorage: Object which has window.Storage interface.
+     * @return storage: class Object which has chomex.Storage interface.
+     */
+    static implementNativeStorage(nativeStorage) {
+        return new (function() {
+            this.store = nativeStorage;
+            this.setItem    = function(key, val) { this.store.setItem(key, JSON.stringify(val)); };
+            this.getItem    = function(key) { return JSON.parse(this.store.getItem(key) || 'null'); };
+            this.removeItem = function(key) { this.store.removeItem(key); };
+        });
+    }
 
     static useStorage(storage = {}) {
+
+        if (global.Storage && storage instanceof global.Storage) {
+            storage = this.implementNativeStorage(storage);
+        }
+
         if (typeof storage.getItem !== 'function') {
             throw '`getItem` of Storage interface is missing';
         }

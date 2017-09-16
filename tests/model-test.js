@@ -77,7 +77,7 @@ describe('Model', () => {
             let foo = Foo.create({name: 'otiai10'});
             let bar = Foo.find(foo._id);
             bar.name.should.equal('otiai10');
-            bar.update({name: 'otiai20'}).should.equal(true);
+            bar.update({name: 'otiai20'}).should.instanceof(chomex.Model);
             let baz = Foo.find(foo._id);
             baz.name.should.equal('otiai20');
         });

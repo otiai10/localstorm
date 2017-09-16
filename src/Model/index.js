@@ -152,7 +152,7 @@ export class Model {
         dict = this._fixture(dict);
         // TODO: filter preserved keywords
         Object.keys(dict).map(key => this[key] = dict[key]);
-        return !!this.save();
+        return this.save();
     }
     error(err) {
         this.errors = this.errors || [];

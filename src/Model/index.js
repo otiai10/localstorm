@@ -208,7 +208,7 @@ export class Model {
         return this.timestampID(); // for default
     }
     static timestampID() {
-        return String(Date.now());
+        return Date.now();
     }
     static sequentialID(all) {
         return (Object.keys(all)

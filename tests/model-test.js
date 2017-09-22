@@ -54,8 +54,8 @@ describe('Model', () => {
             foo.save();
             let all = Foo.all();
             Object.keys(all).length.should.equal(1);
-            Object.keys(all)[0].should.equal(foo._id);
-            all[foo._id]._id.should.equal(foo._id);
+            Object.keys(all)[0].should.equal(String(foo._id));
+            all[foo._id]._id.should.equal(String(foo._id));
         });
     });
     describe('list', () => {

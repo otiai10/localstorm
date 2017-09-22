@@ -10,7 +10,7 @@
   "scripts": {
     "build": "babel src --out-dir lib",
     "release": "./node_modules/.bin/coffee ./scripts/release.coffee",
-    "test": "jest"
+    "test": "eslint src && eslint tests && jest"
   },
   "repository": "https://github.com/otiai10/chomex.git",
   "keywords": [
@@ -34,6 +34,7 @@
     "coffee-script": "^1.12.7",
     "eslint": "^4.7.2",
     "jest-cli": "^21.1.0",
+    "shelljs": "^0.7.8",
     "should": "^13.1.0",
     "webpack": "^3.6.0"
   },

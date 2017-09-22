@@ -19,11 +19,11 @@ describe('Client', () => {
             it('should be accepted with `action` field of the first argument', () => {
                 let client = new Client(global.chrome.runtime);
                 return client.message({action:'/echo', greet: 'Hello!'})
-                .then(res => {
-                    res.data.echo.action.should.equal('/echo');
-                    res.data.echo.greet.should.equal('Hello!');
-                    return Promise.resolve();
-                });
+                    .then(res => {
+                        res.data.echo.action.should.equal('/echo');
+                        res.data.echo.greet.should.equal('Hello!');
+                        return Promise.resolve();
+                    });
             });
         });
         describe('only with action string', () => {

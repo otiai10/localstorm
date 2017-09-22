@@ -83,7 +83,7 @@ export class Model {
         const all = this.__storage.getItem(_ns);
         return all || this.default || {};
     }
-  /**
+    /**
    * it returs all saved entities **as Models**
    */
     static all() {
@@ -212,8 +212,8 @@ export class Model {
     }
     static sequentialID(all) {
         return (Object.keys(all)
-          .map(id => parseInt(id))
-          .sort((prev, next) => (prev < next) ? -1 : 1)
-          .pop() || 0) + 1;
+            .map(id => parseInt(id))
+            .sort((prev, next) => (prev < next) ? -1 : 1)
+            .pop() || 0) + 1;
     }
 }

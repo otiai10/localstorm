@@ -60,8 +60,8 @@ export class Client {
         }
         return new Promise((resolve, reject) => {
             this.module[this.method].call(
-              this.module,
-              ...this._expandArgumentsForChromeMethod(args, resolve, reject)
+                this.module,
+                ...this._expandArgumentsForChromeMethod(args, resolve, reject)
             );
         });
     }

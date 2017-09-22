@@ -15,7 +15,7 @@ const createTypeChecker = (typename, validate) => {
 };
 
 const _createRecursiveTypeChecker = (structName, iterateNames) => {
-     // e.g. shape
+    // e.g. shape
     const generate = (validations = {}) => {
         let checkRoot = (required, rootValue, rootName) => {
             if (required && typeof rootValue == 'undefined') throw `${rootName} is marked as required`;

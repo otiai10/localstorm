@@ -14,8 +14,7 @@ Chrome Extension Messaging Routing Kit.
 # Installation
 
 ```sh
-yarn add chomex
-# npm install chomex
+npm install chomex
 ```
 
 # Why?

@@ -23,19 +23,19 @@
   },
   "homepage": "https://github.com/otiai10/chomex#readme",
   "devDependencies": {
-    "babel-cli": "^6.24.1",
-    "babel-core": "^6.24.1",
+    "babel-cli": "^6.26.0",
+    "babel-core": "^6.26.0",
     "babel-eslint": "^7.2.3",
     "babel-jest": "^19.0.0",
-    "babel-loader": "^7.0.0",
+    "babel-loader": "^7.1.2",
     "babel-preset-es2015": "^6.24.1",
     "babel-preset-stage-0": "^6.24.1",
     "chai": "^3.5.0",
-    "coffee-script": "^1.12.5",
+    "coffee-script": "^1.12.7",
     "eslint": "^3.19.0",
-    "jest-cli": "^19.0.0",
+    "jest-cli": "^19.0.2",
     "should": "^11.2.1",
-    "webpack": "^2.4.1"
+    "webpack": "^3.6.0"
   },
   "jest": {
     "verbose": true,

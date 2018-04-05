@@ -156,4 +156,4 @@ chrome.notifications.onClicked.addListener(router.listener());
 
 projects who use `chomex`
 
-- [otiai10/kanColleWidget: MessageRoutes.js](https://github.com/otiai10/kanColleWidget/blob/develop/src/js/Components/Routes/MessageRoutes.js)
+- [otiai10/kanColleWidget: MessageRoutes.js](https://github.com/otiai10/kanColleWidget/blob/master/src/js/Application/Routes/MessageRoutes.js)

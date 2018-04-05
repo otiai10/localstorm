@@ -8,7 +8,7 @@
     "src"
   ],
   "scripts": {
-    "build": "babel src --out-dir lib",
+    "build": "babel src --out-dir lib && cp ./typescript/chomex.d.ts ./lib/",
     "release": "./node_modules/.bin/coffee ./scripts/release.coffee",
     "test": "eslint src && eslint tests && jest"
   },

@@ -3,12 +3,13 @@
   "version": "1.0.11",
   "description": "Chrome Extension Routing Kit",
   "main": "lib/chomex.js",
+  "types": "lib/chomex.d.ts",
   "files": [
     "lib",
     "src"
   ],
   "scripts": {
-    "build": "babel src --out-dir lib && cp ./typescript/chomex.d.ts ./lib/",
+    "build": "babel src --out-dir lib && cp ./src/chomex.d.ts ./lib/",
     "release": "./node_modules/.bin/coffee ./scripts/release.coffee",
     "test": "eslint src && eslint tests && jest"
   },

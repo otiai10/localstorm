@@ -1,4 +1,12 @@
-let runtime = {
+interface Channel {
+    onMessage: {
+        addListener: ((any) => any);
+        listenerFunc?: (...any) => any;
+    }
+    sendMessage: (...any) => any;
+}
+
+let runtime: Channel = {
     onMessage: {
         addListener: (listenerFunc) => {
             runtime.onMessage.listenerFunc = listenerFunc;
@@ -11,7 +19,7 @@ let runtime = {
     }
 };
 
-let tabs = {
+let tabs: Channel = {
     onMessage: {
         addListener: (listenerFunc) => {
             tabs.onMessage.listenerFunc = listenerFunc;
@@ -28,6 +36,7 @@ let tabs = {
     }
 };
 
+declare var global: any;
 Object.defineProperty(global, 'chrome', {value: {
     runtime,
     tabs,

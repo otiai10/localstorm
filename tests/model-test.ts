@@ -1,44 +1,53 @@
 jest.unmock('../src/Model');
 jest.unmock('../src/Model/OnMemoryStorage');
 
-import chomex from '../src/chomex';
+import Model from '../src/Model';
 import OnMemoryStorage from '../src/Model/OnMemoryStorage';
+
+// TODO
+declare function expect(any): any;
+
+declare var global: any;
 
 Object.defineProperty(global, 'localStorage', { value: new OnMemoryStorage()});
 
-class Foo extends chomex.Model {
+class Foo extends Model {
+    name: string;
     foo() {
         return 'this is foo!';
     }
 }
 
-class Bar  extends chomex.Model {}
+class Bar  extends Model {
+    name: string
+    age:  number
+}
 Bar.template = {name:'', age: 20};
-class Ham  extends chomex.Model {}
+class Ham  extends Model {}
 
-class Toto extends chomex.Model {
+class Toto extends Model {
     static schema = {
-        title:       chomex.Model.Types.string.isRequired,
-        description: chomex.Model.Types.string,
+        title:       Model.Types.string.isRequired,
+        description: Model.Types.string,
     }
 }
-class User extends chomex.Model {
+class User extends Model {
     static schema = {
-        name:  chomex.Model.Types.string.isRequired,
-        age:   chomex.Model.Types.number.isRequired,
-        langs: chomex.Model.Types.array.isRequired,
+        name:  Model.Types.string.isRequired,
+        age:   Model.Types.number.isRequired,
+        langs: Model.Types.array.isRequired,
     }
 }
 
-class Game extends chomex.Model {
+class Game extends Model {
     static schema = {
-        size: chomex.Model.Types.shape({
-            width:  chomex.Model.Types.number.isRequired,
-            height: chomex.Model.Types.number,
+        size: Model.Types.shape({
+            width:  Model.Types.number.isRequired,
+            height: Model.Types.number,
         }).isRequired,
-        offset: chomex.Model.Types.shape({
-            left: chomex.Model.Types.number,
-            top:  chomex.Model.Types.number,
+        offset: Model.Types.shape({
+            left: Model.Types.number,
+            top:  Model.Types.number,
         })
     }
 }
@@ -75,39 +84,42 @@ describe('Model', () => {
     describe('update', () => {
         it('should update properties of this (as a short hand for `save`)', () => {
             let foo = Foo.create({name: 'otiai10'});
-            let bar = Foo.find(foo._id);
+            let bar: Foo = Foo.find(foo._id);
             bar.name.should.equal('otiai10');
-            bar.update({name: 'otiai20'}).should.instanceof(chomex.Model);
-            let baz = Foo.find(foo._id);
+            bar.update({name: 'otiai20'}).should.instanceof(Model);
+            let baz: Foo = Foo.find(foo._id);
             baz.name.should.equal('otiai20');
         });
-        describe('when given parameter is not a dictionary', () => {
-            it('should return false', () => {
-                let foo = Foo.create({name: 'otiai10'});
-                let bar = Foo.find(foo._id);
-                bar.update('name', 'otiai30').should.equal(false);
-                bar.errors.length.should.equal(1);
-            });
-        });
+        /* Now we're using TypeScript!! */
+        // describe('when given parameter is not a dictionary', () => {
+        //     it('should return false', () => {
+        //         let foo = Foo.create({name: 'otiai10'});
+        //         let bar = Foo.find(foo._id);
+        //         bar.update('name', 'otiai30').should.equal(false);
+        //         bar.errors.length.should.equal(1);
+        //     });
+        // });
         describe('even when template is defined', () => {
             it('should update only given fields', () => {
-                class FooBar extends chomex.Model {
+                class FooBar extends Model {
+                    xxx: Object
+                    zzz: Boolean
                     static template = {
                         xxx: {yyy: 1000},
                         zzz: true,
                     }
                 }
-                let foobar = FooBar.create();
-                foobar.xxx.yyy.should.equal(1000);
+                let foobar: FooBar = FooBar.create();
+                foobar.xxx["yyy"].should.equal(1000);
                 foobar.zzz.should.equal(true);
                 foobar.update({zzz:false});
-                let x = FooBar.find(foobar._id);
+                let x: FooBar = FooBar.find(foobar._id);
                 x.zzz.should.equal(false);
-                x.xxx.yyy.should.equal(1000);
+                x.xxx["yyy"].should.equal(1000);
                 x.update({xxx:{yyy:2000}});
-                let z = FooBar.find(foobar._id);
+                let z: FooBar = FooBar.find(foobar._id);
                 z.zzz.should.equal(false);
-                x.xxx.yyy.should.equal(2000);
+                x.xxx["yyy"].should.equal(2000);
             });
         });
     });
@@ -123,23 +135,24 @@ describe('Model', () => {
     });
     describe('create', () => {
         it('should construct and `save` instance with properties', () => {
-            let foo = Foo.create({name:'otiai40'});
+            let foo: Foo = Foo.create({name:'otiai40'});
             foo._id.should.not.be.undefined;
-            let baz = Foo.find(foo._id);
+            let baz: Foo = Foo.find(foo._id);
             baz.name.should.not.be.undefined;
             baz.name.should.equal(foo.name);
         });
         describe('when given no any arguments', () => {
             it('should create model with template or empty object', () => {
-                class Spamy extends chomex.Model {}
+                class Spamy extends Model {}
                 const spamy = Spamy.create();
                 expect(spamy).not.to.be.undefined;
                 expect(spamy._id).not.to.be.undefined;
-                class Hammy extends chomex.Model {
+                class Hammy extends Model {
+                    name: string;
                     static template = { name: 'Mr. Anonymous' };
-                    static nextID = chomex.Model.sequentialID;
+                    static nextID = Model.sequentialID;
                 }
-                const hammy = Hammy.create();
+                const hammy: Hammy = Hammy.create();
                 expect(hammy).not.to.be.undefined;
                 expect(hammy._id).not.to.be.undefined;
                 hammy.name.should.equal('Mr. Anonymous');
@@ -172,7 +185,7 @@ describe('Model', () => {
     });
     describe('new', () => {
         it('should be an alias for constructor expression', () => {
-            let bar = Bar.new();
+            let bar: Bar = Bar.new();
             expect(bar).to.be.an.instanceof(Bar);
             expect(bar._id).to.be.undefined;
             expect(bar.name).to.not.be.undefined;
@@ -185,7 +198,7 @@ describe('Model', () => {
     describe('static nextID', () => {
         it('should generate next ID by current timestamp in default', () => {
             const now = Date.now();
-            expect(chomex.Model.nextID()).to.be.within(now - 10, now + 10);
+            expect(Model.nextID()).to.be.within(now - 10, now + 10);
         });
         it('should be called when new model is saved', () => {
             const now = Date.now();
@@ -204,8 +217,8 @@ describe('Model', () => {
             bar._id.should.equal(2);
         });
         it('should be replaced by prepared functions: e.g. `sequentialID`', () => {
-            class Spam extends chomex.Model {
-                static nextID = chomex.Model.sequentialID
+            class Spam extends Model {
+                static nextID = Model.sequentialID
             }
             let foo = Spam.create({});
             foo._id.should.equal(1);
@@ -219,37 +232,42 @@ describe('Model', () => {
             let fuga = Spam.create({});
             fuga._id.should.equal(5);
         });
-        describe('when invalid `nextID` is set', () => {
-            it('should be failed over with `timestampID`', () => {
-                const now = Date.now();
-                Ham.nextID = 'not-function';
-                let foo = Ham.create({});
-                expect(foo._id).to.be.within(now - 100, now + 100);
-            });
-        });
+        /* Now we are using TypeScript! Yay! */
+        // describe('when invalid `nextID` is set', () => {
+        //     it('should be failed over with `timestampID`', () => {
+        //         const now = Date.now();
+        //         Ham.nextID = 'not-function';
+        //         let foo = Ham.create({});
+        //         expect(foo._id).to.be.within(now - 100, now + 100);
+        //     });
+        // });
     });
     describe('template', () => {
         it('should provide a way to preset props', () => {
-            class Foo extends chomex.Model {
+            class Foo extends Model {
+                name: string
+                age:  number
                 static template = {
                     name: 'templated',
                     age:  10,
                 }
             }
-            let foo = Foo.new();
+            let foo: Foo = Foo.new();
             foo.name.should.equal('templated');
             foo.age.should.equal(10);
             expect(foo._id).to.be.undefined;
         });
         describe('when one of template is function', () => {
             it('should provide templated value with executing that function', () => {
-                class Foo extends chomex.Model {
+                class Foo extends Model {
+                    name: string
+                    age:  number
                     static template = {
                         name: `generated-${Date.now()}`,
                         age:  Math.floor(Math.random() * 29) + 1
                     }
                 }
-                let foo = Foo.new();
+                let foo: Foo = Foo.new();
                 foo.name.should.match(/generated-[0-9]+/);
                 foo.age.should.within(1, 30);
                 expect(foo._id).to.be.undefined;
@@ -352,10 +370,12 @@ describe('Model', () => {
     describe('useStorage', () => {
         it('should replace localStorage', () => {
             let storage = new OnMemoryStorage({Hoge: {1: {name:'otiai10'}}});
-            chomex.Model.useStorage(storage);
-            class Hoge extends chomex.Model {}
-            Hoge.find(1).name.should.equal('otiai10');
-            chomex.Model.useStorage(global.localStorage);
+            Model.useStorage(storage);
+            class Hoge extends Model {
+                name: string
+            }
+            Hoge.find<Hoge>(1).name.should.equal('otiai10');
+            Model.useStorage(global.localStorage);
             expect(Hoge.find(1)).to.be.undefined;
         });
         it('should raise error if given storage doesn\'t satisfy Storage interface', () => {
@@ -363,7 +383,7 @@ describe('Model', () => {
                 new Promise((ok, ng) => {
                     let storage = {};
                     try {
-                        chomex.Model.useStorage(storage);
+                        Model.useStorage(storage);
                         ng('invalid assignment to storage SHOULD RAISE ERROR');
                     } catch(err) {
                         err.should.equal('`getItem` of Storage interface is missing');
@@ -373,7 +393,7 @@ describe('Model', () => {
                 new Promise((ok, ng) => {
                     let storage = {getItem: () => {}, setItem: () => {}, removeItem: () => {}};
                     try {
-                        chomex.Model.useStorage(storage);
+                        Model.useStorage(storage);
                         ng('invalid assignment to storage SHOULD RAISE ERROR');
                     } catch(err) {
                         err.should.equal('`getItem` of Storage must accept at least 1 argument');

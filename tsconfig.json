@@ -1,0 +1,15 @@
+{
+    "compilerOptions": {
+        "target": "es5",
+        "outFile": "lib/chomex.js",
+        "module": "system",
+        "sourceMap": true,
+        "declaration": true
+    },
+    "files": [
+        "src/chomex.ts"
+    ],
+    "exclude": [
+        "node_modules"
+    ]
+}

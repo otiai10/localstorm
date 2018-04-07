@@ -3,12 +3,15 @@ jest.unmock('../src/Router');
 import {Client} from '../src/Client';
 import {Router} from '../src/Router';
 
+declare function expect(...any): any;
+declare var global: any;
+
 beforeAll(() => {
-    let r = new Router();
+    const r = new Router();
     r.on('/echo', (message) => Promise.resolve({echo: message}));
     global.chrome.runtime.onMessage.addListener(r.listener());
 
-    let tabr = new Router();
+    const tabr = new Router();
     tabr.on('/echo', (message) => Promise.resolve({echo: message}));
     global.chrome.tabs.onMessage.addListener(tabr.listener());
 });
@@ -18,7 +21,7 @@ describe('Client', () => {
         describe('when the first parameter is object', () => {
             it('should be accepted with `action` field of the first argument', () => {
                 let client = new Client(global.chrome.runtime);
-                return client.message({action:'/echo', greet: 'Hello!'})
+                return client.message<any>({action:'/echo', greet: 'Hello!'})
                     .then(res => {
                         res.data.echo.action.should.equal('/echo');
                         res.data.echo.greet.should.equal('Hello!');
@@ -62,7 +65,6 @@ describe('Client', () => {
         it('should provide TargetedClient', () => {
             let client = new Client(global.chrome.tabs);
             return client.tab(100).message('/echo').then(res => {
-                console.log(res.data.echo.tab.id);
                 expect(res.data.echo.tab.id).not.be.undefined;
                 res.data.echo.tab.id.should.equal(100);
                 return Promise.resolve();

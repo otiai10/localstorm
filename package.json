@@ -9,7 +9,12 @@
     "src"
   ],
   "scripts": {
+<<<<<<< HEAD
     "build": "babel src --out-dir lib && cp ./src/chomex.d.ts ./lib/",
+=======
+    "build": "tsc -p ./tsconfig.json",
+    "__build": "babel src --out-dir lib && cp ./typescript/chomex.d.ts ./lib/",
+>>>>>>> chomex on TypeScript works!!
     "release": "./node_modules/.bin/coffee ./scripts/release.coffee",
     "test": "eslint src && eslint tests && jest"
   },
@@ -24,6 +29,9 @@
   },
   "homepage": "https://github.com/otiai10/chomex#readme",
   "devDependencies": {
+    "@types/chai": "^4.1.2",
+    "@types/jest": "^22.2.2",
+    "@types/should": "^13.0.0",
     "babel-cli": "^6.26.0",
     "babel-core": "^6.26.0",
     "babel-eslint": "^8.0.0",
@@ -37,17 +45,33 @@
     "jest-cli": "^21.1.0",
     "shelljs": "^0.7.8",
     "should": "^13.1.0",
+    "ts-jest": "^22.4.2",
+    "typescript": "^2.8.1",
     "webpack": "^3.6.0"
   },
   "jest": {
     "verbose": true,
-    "testRegex": "tests/.*-test\\.js$",
+    "transform": {
+      "^.+\\.tsx?$": "ts-jest"
+    },
+    "testRegex": "tests/.*-test\\.ts$",
+    "moduleFileExtensions": [
+      "ts",
+      "tsx",
+      "js",
+      "jsx",
+      "json",
+      "node"
+    ],
     "unmockedModulePathPatterns": [
       "<rootDir>/src/chomex"
     ],
-    "setupTestFrameworkScriptFile": "./tests/mock/setup-script.js",
+    "setupTestFrameworkScriptFile": "./tests/mock/setup-script.ts",
     "setupFiles": [
-      "./tests/mock/chrome.js"
+      "./tests/mock/chrome.ts"
     ]
+  },
+  "dependencies": {
+    "@types/chai-as-promised": "^7.1.0"
   }
 }

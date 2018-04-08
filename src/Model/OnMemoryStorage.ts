@@ -12,18 +12,18 @@ interface ChomexStorage {
 */
 
 export default class OnMemoryStorage {
-    dictionary: Object;
+    public dictionary: object;
     constructor(dictionary = {}) {
         this.dictionary = dictionary;
     }
-    getItem(key) {
+    public getItem(key) {
         const value = this.dictionary[key];
         return value ? value : null;
     }
-    setItem(key, value) {
+    public setItem(key, value) {
         this.dictionary[key] = value;
     }
-    removeItem(key) {
+    public removeItem(key) {
         delete this.dictionary[key];
     }
 }

@@ -1,35 +1,43 @@
+/* tslint:disable
+    no-console
+    interface-name
+    variable-name
+    max-classes-per-file
+*/
+
 declare interface Writer {
     write: (...any) => any;
 }
 
 export class Logger {
 
-    level: number;
-    writer: Writer;
+    public level: number;
+    public writer: Writer;
 
     constructor(level = DEBUG, writer = {write() {
-        console.log(...arguments);
+        const args = Array.prototype.slice.call(arguments);
+        console.log(...args);
     }}) {
         this.level = level;
         this.writer = writer;
     }
-    debug(tag, body) {
-        if (this.level > DEBUG) return;
-        let [_tag, _body] = (arguments.length >= 2) ? [tag, body] : [this.fromStack(), tag];
-        this.writer.write(`%c[${_tag}]`, 'color: #ddd; font-weight: bold;', _body);
+    public debug(tag, body) {
+        if (this.level > DEBUG) { return; }
+        const [_tag, _body] = (arguments.length >= 2) ? [tag, body] : [this.fromStack(), tag];
+        this.writer.write(`%c[${_tag}]`, "color: #ddd; font-weight: bold;", _body);
     }
-    info(tag, body) {
-        if (this.level > INFO) return;
-        let [_tag, _body] = (arguments.length >= 2) ? [tag, body] : [this.fromStack(), tag];
-        this.writer.write(`%c[${_tag}]%c`, 'color: blue; font-weight: bold;', '', _body);
+    public info(tag, body) {
+        if (this.level > INFO) { return; }
+        const [_tag, _body] = (arguments.length >= 2) ? [tag, body] : [this.fromStack(), tag];
+        this.writer.write(`%c[${_tag}]%c`, "color: blue; font-weight: bold;", "", _body);
     }
-    warn(tag, body) {
-        if (this.level > WARN) return;
-        let [_tag, _body] = (arguments.length >= 2) ? [tag, body] : [this.fromStack(), tag];
-        this.writer.write(`%c[${_tag }]%c`, 'color: orange; font-weight: bold;', '', _body);
+    public warn(tag, body) {
+        if (this.level > WARN) { return; }
+        const [_tag, _body] = (arguments.length >= 2) ? [tag, body] : [this.fromStack(), tag];
+        this.writer.write(`%c[${_tag }]%c`, "color: orange; font-weight: bold;", "", _body);
     }
-    fromStack(depth = 3) {
-        return (new Error()).stack.split('\n')[depth].trim();//.split(' ').slice(0,2).join(' ')
+    public fromStack(depth = 3) {
+        return (new Error()).stack.split("\n")[depth].trim(); // .split(' ').slice(0,2).join(' ')
     }
 }
 
@@ -38,7 +46,7 @@ export const INFO  = 1;
 export const WARN  = 2;
 
 export class DummyLogger {
-    debug() {}
-    info() {}
-    warn() {}
+    public debug() {/* do nothing */}
+    public info() {/* do nothing */}
+    public warn() {/* do nothing */}
 }

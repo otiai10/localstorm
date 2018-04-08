@@ -1,12 +1,13 @@
-import {Model} from './Model';
-import {Client} from './Client';
-import {Router, SerialRouter} from './Router';
-import {Logger} from './Logger';
+import {Client} from "./Client";
+import {Logger} from "./Logger";
+import {Model} from "./Model";
+import {Router, SerialRouter} from "./Router";
 
-export module chomex {
-    Model: Model
-    Client: Client
-    Router: Router
-    SerialRouter: SerialRouter
-    Logger: Logger
-}
+const chomex = {
+    Client,
+    Logger,
+    Model,
+    Router,
+    SerialRouter,
+};
+export default chomex;

@@ -1,34 +1,25 @@
+/* tslint:disable max-classes-per-file */
+// FIXME: This configuration is for cyclic reference of class definitions.
+
 /**
  * `Client` makes it easy to send message to background
  * and enable to handle response with Promise.
  * @constructor
  * @param {object} module is expected to be like [chrome.runtime], which has `sendMessage` method.
- * @param {bool} strict specifies the response promise to be with `status: 200`, otherwise rejection of Promise would be thrown.
+ * @param {bool} strict specifies the response to be with `status: 200`, otherwise rejection of Promise would be thrown.
  * @param {string} method is a method name which should be invoked, belonging to `module`.
  */
 export class Client {
 
-    module: any;
-    method: string;
-    strict: boolean = false;
-
-    constructor(module, strict = true, method = 'sendMessage') {
-        this.module = module;
-        switch (typeof(method)) {
-        case 'string':
-            this.method = method;
-            this.strict = strict;
-            break;
-        case 'boolean':
-            this.method = 'sendMessage';
-            this.strict = Boolean(method);
-            break;
-        default:
-        }
-
-        if (typeof(this.module[this.method]) != 'function') {
-            throw `this module doesn't have valid method with name "${this.method}"`;
-        }
+    /**
+     * @static for
+     * This is just a shorthand of `(new Client(chrome.tabs)).tab(123) // == TargetedClient`
+     * This is kind of insignificant and useless method.
+     * Just want to chain constructor and `tab`,
+     * like this `Client.for(chrome.tabs, 123).message()`
+     */
+    public static for(module, id, strict = true, method = "sendMessage") {
+        return new TargettedClient(id, module, strict, method);
     }
 
     /**
@@ -39,9 +30,32 @@ export class Client {
      * @param {string} id     might be either `extensionId` or `tabId`
      * @param {object} info   might be `connectInfo`
      */
-    static connect(module, id = null, info = {}) {
-        let port = module.connect(id, info);
-        return new this(port, true, 'postMessage');
+    public static connect(module, id = null, info = {}) {
+        const port = module.connect(id, info);
+        return new this(port, true, "postMessage");
+    }
+
+    private module: any;
+    private method: string;
+    private strict: boolean = false;
+
+    constructor(module, strict = true, method = "sendMessage") {
+        this.module = module;
+        switch (typeof(method)) {
+        case "string":
+            this.method = method;
+            this.strict = strict;
+            break;
+        case "boolean":
+            this.method = "sendMessage";
+            this.strict = Boolean(method);
+            break;
+        default:
+        }
+
+        if (typeof(this.module[this.method]) !== "function") {
+            throw new Error(`this module doesn't have valid method with name "${this.method}"`);
+        }
     }
 
     /**
@@ -50,24 +64,31 @@ export class Client {
      * @param {object} params might be parameters to pass to controller.
      * @return {Promise} Result Promise
      */
-    message<T>(action: string | Object, param?: Object, callback?: (any) => any): Promise<T | any> {
+    public message<T>(action: string | object, param?: object, callback?: (response: any) => any): Promise<T | any> {
         let args = Array.prototype.slice.call(arguments);
         // If the first argument is string, it might represent "action".
         // Ensure the first argument to be an Object.
-        if (typeof args[0] == 'string') {
-            if (typeof args[1] == 'object') {
+        if (typeof args[0] === "string") {
+            if (typeof args[1] === "object") {
                 args[1].action = args[0];
                 args = args.slice(1);
             } else {
-                args[0] = {action:args[0]};
+                args[0] = {action: args[0]};
             }
         }
         return new Promise<T>((resolve, reject) => {
             this.module[this.method].call(
                 this.module,
-                ...this._expandArgumentsForChromeMethod(args, resolve, reject)
+                ...this._expandArgumentsForChromeMethod(args, resolve, reject),
             );
         });
+    }
+
+    /**
+     * tab
+     */
+    public tab(tabId, strict = true, method = "sendMessage") {
+        return new TargettedClient(tabId, this.module, strict, method);
     }
 
     /**
@@ -78,12 +99,12 @@ export class Client {
      * @param {function} resolve to resolve Response Promise.
      * @param {function} reject to reject Response Promise.
      */
-    _expandArgumentsForChromeMethod(args, resolve, reject) {
+    protected _expandArgumentsForChromeMethod(args, resolve, reject) {
 
         const strict = this._isStrictMode(args);
 
         // If the last argument of `message` is function, respect it and invoke.
-        if (typeof args[args.length - 1] == 'function') {
+        if (typeof args[args.length - 1] === "function") {
             // Replace the last argument as Callback for chrome interface.
             const cb = args[args.length - 1];
             args[args.length - 1] = (responseFromBackend) => {
@@ -93,11 +114,11 @@ export class Client {
             };
         } else {
             // Append callback to satisfy chrome interface.
-            const _cb = (responseFromBackend) => {
+            const defaultCallback = (responseFromBackend) => {
                 this._finally(strict, responseFromBackend, resolve, reject);
                 return true;
             };
-            args.push(_cb);
+            args.push(defaultCallback);
         }
         return args;
     }
@@ -108,8 +129,8 @@ export class Client {
      * @param {array} givenArgs
      * @return {bool}
      */
-    _isStrictMode(givenArgs) {
-        if (typeof(givenArgs[givenArgs.length - 1]) == 'boolean') {
+    private _isStrictMode(givenArgs) {
+        if (typeof(givenArgs[givenArgs.length - 1]) === "boolean") {
             return givenArgs[givenArgs.length - 1];
         }
         return this.strict;
@@ -118,50 +139,33 @@ export class Client {
     /**
      * `_finally` just dispatch resolve / reject conditions.
      */
-    _finally(strict, response, resolve, reject) {
-        const status = parseInt(response.status);
+    private _finally(strict, response, resolve, reject) {
+        const status = parseInt(response.status, 10);
         if (strict && (status < 200 || 400 <= status)) {
             reject(response);
         } else {
             resolve(response);
         }
     }
-
-    /**
-     * tab
-     */
-    tab(tabId, strict = true, method = 'sendMessage') {
-        return new TargetedClient(tabId, this.module, strict, method);
-    }
-    /**
-     * @static for
-     * This is just a shorthand of `(new Client(chrome.tabs)).tab(123) // == TargetedClient`
-     * This is kind of insignificant and useless method.
-     * Just want to chain constructor and `tab`,
-     * like this `Client.for(chrome.tabs, 123).message()`
-     */
-    static for(module, id, strict = true, method = 'sendMessage') {
-        return new TargetedClient(id, module, strict, method);
-    }
-
 }
 
+// FIXME: This class is defined by cyclic definition. Fix it to remove TSLint custom rule.
 /**
  * TargetedClient converts given arguments to arguments for chrome.tabs.sendMessage
  * because it requires `tabId` for the first argument.
  */
-class TargetedClient extends Client {
+export class TargettedClient extends Client {
 
-    tabId: any;
+    public tabId: any;
 
-    constructor(tabId, module, strict = true, method = 'sendMessage') {
+    constructor(tabId, module, strict = true, method = "sendMessage") {
         super(module, strict, method);
         this.tabId = tabId;
     }
     /**
      * @override
      */
-    _expandArgumentsForChromeMethod(args, resolve, reject) {
+    protected _expandArgumentsForChromeMethod(args, resolve, reject) {
         args.unshift(this.tabId);
         return super._expandArgumentsForChromeMethod(args, resolve, reject);
     }

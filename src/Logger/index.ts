@@ -11,8 +11,8 @@ declare interface Writer {
 
 export class Logger {
 
-    public level: number;
-    public writer: Writer;
+    private level: number;
+    private writer: Writer;
 
     constructor(level = DEBUG, writer = {write() {
         const args = Array.prototype.slice.call(arguments);

@@ -9,8 +9,8 @@
     "src"
   ],
   "scripts": {
+    "start": "tsc --watch",
     "build": "tsc -p ./tsconfig.json",
-    "__build": "babel src --out-dir lib && cp ./typescript/chomex.d.ts ./lib/",
     "release": "./node_modules/.bin/coffee ./scripts/release.coffee",
     "test": "tslint ./src/**/*.ts && tslint ./tests/**/*.ts && jest"
   },

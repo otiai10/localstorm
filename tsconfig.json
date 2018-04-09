@@ -1,0 +1,18 @@
+{
+    "compilerOptions": {
+        "lib": [
+            "es5", "es2015", "dom"
+        ],
+        "target": "es5",
+        "module": "commonjs",
+        "outDir": "lib",
+        "sourceMap": false,
+        "declaration": true
+    },
+    "files": [
+        "src/chomex.ts"
+    ],
+    "exclude": [
+        "node_modules"
+    ]
+}

@@ -1,21 +1,34 @@
-let runtime = {
+/* tslint:disable
+    interface-name
+    variable-name
+*/
+
+interface Channel {
+    onMessage: {
+        addListener: ((any) => any);
+        listenerFunc?: (...any) => any;
+    };
+    sendMessage: (...any) => any;
+}
+
+let runtime: Channel = {
     onMessage: {
         addListener: (listenerFunc) => {
             runtime.onMessage.listenerFunc = listenerFunc;
-        }
+        },
     },
     sendMessage: (message, sendResponse) => {
         runtime.onMessage.listenerFunc(message, this, (response) => {
             sendResponse(response);
         });
-    }
+    },
 };
 
-let tabs = {
+let tabs: Channel = {
     onMessage: {
         addListener: (listenerFunc) => {
             tabs.onMessage.listenerFunc = listenerFunc;
-        }
+        },
     },
     sendMessage: (tabId, message, sendResponse) => {
         // In real chrome module, it's gonna be dispatched by tabId.
@@ -25,10 +38,11 @@ let tabs = {
         tabs.onMessage.listenerFunc(message, this, (response) => {
             sendResponse(response);
         });
-    }
+    },
 };
 
-Object.defineProperty(global, 'chrome', {value: {
+declare var global: any;
+Object.defineProperty(global, "chrome", {value: {
     runtime,
     tabs,
 }});

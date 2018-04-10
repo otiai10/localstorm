@@ -2,7 +2,7 @@ exec = require('shelljs').exec
 fs   = require('fs')
 
 # Lint
-throw 'lint command failed' if exec('./node_modules/.bin/eslint src tests').code != 0
+throw 'lint command failed' if exec('./node_modules/.bin/tslint ./src/**/*.ts ./tests/**/*.ts').code != 0
 
 # Test
 throw 'jest command faild' if exec('./node_modules/.bin/jest --no-cache').code != 0

@@ -12,7 +12,8 @@
     "start": "tsc --watch",
     "build": "tsc -p ./tsconfig.json",
     "release": "./node_modules/.bin/coffee ./scripts/release.coffee",
-    "test": "tslint ./src/**/*.ts && tslint ./tests/**/*.ts && jest"
+    "test": "tslint ./src/**/*.ts && tslint ./tests/**/*.ts && jest",
+    "ci": "npm run test -- --coverage && cat ./coverage/lcov.info | coveralls"
   },
   "repository": "https://github.com/otiai10/chomex.git",
   "keywords": [
@@ -30,6 +31,7 @@
     "@types/should": "^13.0.0",
     "chai": "^4.1.2",
     "coffee-script": "^1.12.7",
+    "coveralls": "^3.0.0",
     "jest-cli": "^22.4.3",
     "shelljs": "^0.8.1",
     "should": "^13.2.1",
@@ -45,11 +47,7 @@
     "testRegex": "tests/.*-test\\.ts$",
     "moduleFileExtensions": [
       "ts",
-      "tsx",
-      "js",
-      "jsx",
-      "json",
-      "node"
+      "js"
     ],
     "unmockedModulePathPatterns": [
       "<rootDir>/src/chomex"
@@ -57,6 +55,10 @@
     "setupTestFrameworkScriptFile": "./tests/mock/setup-script.ts",
     "setupFiles": [
       "./tests/mock/chrome.ts"
+    ],
+    "collectCoverageFrom": [
+      "src/**/*.ts",
+      "!test"
     ]
   }
 }

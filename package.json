@@ -58,6 +58,7 @@
     ],
     "collectCoverageFrom": [
       "src/**/*.ts",
+      "!src/chomex.ts",
       "!test"
     ]
   }

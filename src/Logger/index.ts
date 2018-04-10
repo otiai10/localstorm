@@ -26,7 +26,7 @@ export class Logger {
         const [_tag, _body] = (arguments.length >= 2) ? [tag, body] : [this.fromStack(), tag];
         this.writer.write(`%c[${_tag}]`, "color: #ddd; font-weight: bold;", _body);
     }
-    public info(tag, body) {
+    public info(tag, body?: any) {
         if (this.level > INFO) { return; }
         const [_tag, _body] = (arguments.length >= 2) ? [tag, body] : [this.fromStack(), tag];
         this.writer.write(`%c[${_tag}]%c`, "color: blue; font-weight: bold;", "", _body);

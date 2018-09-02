@@ -4,7 +4,6 @@ chomex
 [![Latest Stable Version](https://img.shields.io/npm/v/chomex.svg)](https://www.npmjs.com/package/chomex)
 [![Build Status](https://travis-ci.org/otiai10/chomex.svg?branch=master)](https://travis-ci.org/otiai10/chomex)
 [![Coverage Status](https://coveralls.io/repos/github/otiai10/chomex/badge.svg?branch=master)](https://coveralls.io/github/otiai10/chomex?branch=master)
-[![Dependency Status](https://gemnasium.com/badges/github.com/otiai10/chomex.svg)](https://gemnasium.com/github.com/otiai10/chomex)
 [![NPM Downloads](https://img.shields.io/npm/dt/chomex.svg)](https://www.npmjs.com/package/chomex)
 
 Chrome Extension Messaging Routing Kit.

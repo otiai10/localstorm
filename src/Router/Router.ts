@@ -2,8 +2,9 @@
  * Router should match given message to defined controller.
  * @constructor
  * @param {function} [resolveFunc] used as parser for message to match with controllers.
+ * @param <T> Controller Function Interface, supposed to be, for example, (msg: chrome.runtime.ExtensionMessage) => any
  */
-export class Router {
+export class Router<T extends () => any> {
 
     /**
      * `_NotFoundController` is a default controller for unmatched routing.
@@ -18,7 +19,7 @@ export class Router {
     }
 
     public resolveFunc: (message: any, sender?: any) => any;
-    public routes: any;
+    public routes: {[name: string]: T; };
 
     constructor(resolveFunc = null) {
         this.resolveFunc = resolveFunc;
@@ -40,7 +41,7 @@ export class Router {
      * @return {function} EventListenerFunction
      * @see https://developer.chrome.com/extensions/runtime#event-onMessage
      */
-    public listener() {
+    public listener(): (msg: T) => any {
         return this.listen.bind(this);
     }
 

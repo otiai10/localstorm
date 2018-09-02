@@ -20,9 +20,9 @@ npm install chomex
 
 # Why?
 
-### `.onMessage` like a server
+## `.onMessage` like a server routing
 
-_NEVER_
+:-1: Dispatching message inside `addListener` function makes my code messy and unreeadable.
 
 ```javascript
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
@@ -37,19 +37,19 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
 });
 ```
 
-_DO_
+:+1: `chomex.Router` makes it more claen and readable.
 
 ```javascript
-let router = new chomex.Router();
+const router = new chomex.Router();
 router.on("/users/get", GetUser);
 chrome.runtime.onMessage.addListener(router.listener());
 ```
 
-_Happy :)_
+_Happy_ :hugs:
 
-### `.sendMessage` like a client
+## `.sendMessage` like a fetch client
 
-_NEVER_
+:-1: Handling the response of `sendMessage` by callback makes my code messy and unreadable.
 
 ```js
 chrome.runtime.sendMessage({action:"/users/get",id:123}, (response) => {
@@ -61,7 +61,7 @@ chrome.runtime.sendMessage({action:"/users/get",id:123}, (response) => {
 });
 ```
 
-_DO_
+:+1: `chomex.Client` makes it clean and readable by handling response with `Promise`.
 
 ```js
 const client = new chomex.Client(chrome.runtime);
@@ -72,11 +72,11 @@ client.message("/users/get", {id:123}).then(response => {
 });
 ```
 
-_Happy :)_
+_Happy_ :hugs:
 
 # Examples
 
-`background.js` as a server
+## `background.js` as a server
 
 ```javascript
 import {Router, Model} from 'chomex';
@@ -89,13 +89,15 @@ class User extends Model {
   }
 }
 
+const router = new Router();
+
 // Define your routes
-let router = new Router();
 router.on("/users/create", message => {
   const obj = message.user;
   const user = User.new(obj).save();
   return user;
 });
+
 router.on("/users/get", message => {
   const userId = message.id;
   const user = User.find(userId);
@@ -106,11 +108,16 @@ router.on("/users/get", message => {
   return Promise.resolve(user);
 });
 
-// it dispatches messages to registered controllers.
+// Of course, you can separate files
+// in which controller functions are defined.
+import {UserDelete} from "./Controllers/Users";
+router.on("/users/delete", UserDelete);
+
+// Don't forget to add listener to chrome modules.
 chrome.runtime.onMessage.addListener(router.listener());
 ```
 
-`content_script.js` as a client
+## `content_script.js` as a client
 
 ```javascript
 import {Client} from 'chomex';
@@ -118,9 +125,9 @@ import {Client} from 'chomex';
 const client = new Client(chrome.runtime);
 
 // it sends message to "/users/get" route.
-client.message('/users/create', {user:{name:'otiai10',age:30}})
-.then(res => {
-  console.log("Created:", res.data);
+const user = {name: 'otiai10', age: 30};
+client.message('/users/create', {user}).then(res => {
+  console.log("Created!", res.data);
 });
 
 client.message('/users/get', {id: 12345}).then(res => {
@@ -130,7 +137,10 @@ client.message('/users/get', {id: 12345}).then(res => {
 });
 ```
 
+# Customize `Router` for other listeners
+
 You can also customize resolver for routing.
+It's helpful when you want to make routings for EventListener modules on `chrome`, such as `chrome.notifications.onClicked`, `chrome.webRequest.onBeforeRequest` or so.
 
 ```javascript
 // Resolver rule, which resolve given "id" to routing name.
@@ -139,7 +149,7 @@ const resolve = (id) => {
   return {name: prefix};
 };
 
-let router = new Router(resolve);
+const router = new Router(resolve);
 // You see, this controller is invoked when
 // a notification with ID "quest.xxxx" is clicked.
 router.on('quest', NotificaionOnClickController.Quest);
@@ -153,9 +163,10 @@ chrome.notifications.onClicked.addListener(router.listener());
 - [Client](https://github.com/otiai10/chomex/tree/master/src/Client/README.md)
 - [Model](https://github.com/otiai10/chomex/tree/master/src/Model/README.md)
 
-# Projects
+# Reference Projects
 
-projects who use `chomex`
+Projects using `chomex`
 
 - [otiai10/kanColleWidget: `Route` / `Controller`](https://github.com/otiai10/kanColleWidget/blob/master/src/js/Application/Routes/MessageRoutes.js)
 - [otiai10/chant: `Model`](https://github.com/otiai10/chant/blob/master/client/src/js/models/index.js)
+- [henry40408/awesome-stars: `Router` with `async/await`](https://github.com/henry40408/awesome-stars/blob/6417543a998d9bfb5504c60dc35fe38d04a9b694/app/scripts/background/messageRouter.js#L25-L33)

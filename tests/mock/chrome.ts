@@ -18,6 +18,9 @@ let runtime: Channel = {
         },
     },
     sendMessage: (message, sendResponse) => {
+        if (message.action === "/empty") {
+            sendResponse();
+        }
         runtime.onMessage.listenerFunc(message, this, (response) => {
             sendResponse(response);
         });

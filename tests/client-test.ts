@@ -68,6 +68,15 @@ describe("Client", () => {
                 ]);
             });
         });
+        describe("when controller found but response is empty", () => {
+            it("should NOT throw exception, and returns 202 Accepted", (ok) => {
+                const client = new Client(global.chrome.runtime, false);
+                return client.message("/empty").then((res) => {
+                    res.status.should.equal(202);
+                    ok();
+                });
+            });
+        });
     });
     describe("tab", () => {
         it("should provide TargetedClient", () => {

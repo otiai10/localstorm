@@ -114,7 +114,7 @@ export class Client {
             };
         } else {
             // Append callback to satisfy chrome interface.
-            const defaultCallback = (responseFromBackend) => {
+            const defaultCallback = (responseFromBackend = {status: 202}) => {
                 this._finally(strict, responseFromBackend, resolve, reject);
                 return true;
             };

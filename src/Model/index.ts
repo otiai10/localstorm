@@ -90,7 +90,7 @@ export class Model {
     /**
      * it returs all saved entities **as Models**
      */
-    public static all() {
+    public static all<T extends Model>(): { [id: string]: T } {
         const all = this._all();
         const self = this;
         Object.keys(all).map((_id) => {
@@ -104,7 +104,7 @@ export class Model {
      * list is an alias of `Model.filter(() => true);`
      * @return {array} of model instances
      */
-    public static list() {
+    public static list<T extends Model>(): T[] {
         return this.filter();
     }
 
@@ -120,7 +120,7 @@ export class Model {
         }
     }
 
-    public static filter(fn = (any) => true) {
+    public static filter<T extends Model>(fn = (any) => true): T[] {
         const all = this.all();
         const _res = [];
         Object.keys(all).map((_id) => {
@@ -136,15 +136,15 @@ export class Model {
         this.__storage.removeItem(this.name);
     }
 
-    public static nextID(all?) {
+    public static nextID(all?): number | string {
         return this.timestampID(); // for default
     }
 
-    public static timestampID() {
+    public static timestampID(): number {
         return Date.now();
     }
 
-    public static sequentialID(all) {
+    public static sequentialID(all): number {
         return (Object.keys(all)
             .map((id) => parseInt(id, 10))
             .sort((prev, next) => (prev < next) ? -1 : 1)
@@ -160,13 +160,13 @@ export class Model {
         return all || this.default || {};
     }
 
-    private static __nextID(all) {
+    private static __nextID(all: {[id: string]: Model}): number | string {
         if (typeof this.nextID === "function") {
             const id = this.nextID(all);
             if (id === undefined || id === null) {
                 /* tslint:disable no-console */
                 console.error("customized `nextID` function provides invalid ID");
-                return this.timestampID;
+                return this.timestampID();
             }
             return id;
         }
@@ -210,7 +210,7 @@ export class Model {
         return copy as T;
     }
 
-    public delete() {
+    public delete(): boolean {
         // FIXME
         const constructor: any = this.constructor;
         const all = constructor._all();
@@ -220,8 +220,10 @@ export class Model {
         return true;
     }
 
-    public update(dict) {
-        if (typeof dict !== "object") { return this.error("Argument for `update` must be key-value dictionary"); }
+    public update<T extends Model>(dict): T {
+        if (typeof dict !== "object") {
+            return this.error("Argument for `update` must be key-value dictionary");
+        }
         dict = this._fixture(dict);
         // TODO: filter preserved keywords
         Object.keys(dict).map((key) => this[key] = dict[key]);
@@ -231,7 +233,7 @@ export class Model {
     public error(err) {
         this.errors = this.errors || [];
         this.errors.push(err);
-        return false;
+        return null;
     }
 
     public decode<T extends Model>(obj): T {
@@ -242,7 +244,7 @@ export class Model {
         return copy as T;
     }
 
-    public encode() {
+    public encode(): any {
         const encoded: any = {};
         for (const prop in this) {
             // Ignore reserved prop names.

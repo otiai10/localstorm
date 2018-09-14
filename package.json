@@ -1,6 +1,6 @@
 {
   "name": "chomex",
-  "version": "1.0.19",
+  "version": "1.0.20",
   "description": "Chrome Extension Routing Kit",
   "main": "lib/chomex.js",
   "types": "lib/chomex.d.ts",

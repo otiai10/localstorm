@@ -4,7 +4,7 @@
  * @param {function} [resolveFunc] used as parser for message to match with controllers.
  * @param <T> Controller Function Interface, supposed to be, for example, (msg: chrome.runtime.ExtensionMessage) => any
  */
-export class Router<T extends () => any> {
+export class Router<T extends (msg: any) => any> {
 
     /**
      * `_NotFoundController` is a default controller for unmatched routing.
@@ -19,7 +19,7 @@ export class Router<T extends () => any> {
     }
 
     public resolveFunc: (message: any, sender?: any) => any;
-    public routes: {[name: string]: T; };
+    public routes: {[name: string]: T};
 
     constructor(resolveFunc = null) {
         this.resolveFunc = resolveFunc;
@@ -31,7 +31,7 @@ export class Router<T extends () => any> {
      * @param {string} name routing name for given ControllerFunc
      * @param {function} controllerFunc exacutable function when specified route is matched
      */
-    public on(name, controllerFunc) {
+    public on(name: string, controllerFunc: T) {
         this.routes = this.routes || {};
         this.routes[name] = controllerFunc;
     }
@@ -41,7 +41,7 @@ export class Router<T extends () => any> {
      * @return {function} EventListenerFunction
      * @see https://developer.chrome.com/extensions/runtime#event-onMessage
      */
-    public listener(): (msg: T) => any {
+    public listener(): T {
         return this.listen.bind(this);
     }
 
@@ -58,7 +58,7 @@ export class Router<T extends () => any> {
      * TODO: to handle this varieties of EventListener interfaces,
      * TODO: it should handle `arguments` and see if the last arg is Func.
      */
-    private listen(message, sender?: any, sendResponse = (response: any) => {/* do nothing */}) {
+    private listen(message: any, sender?: any, sendResponse = (response: any) => {/* do nothing */}) {
         try {
             // Find matched controller.
             const controllerFunc = this.match(message, sender);

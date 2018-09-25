@@ -175,9 +175,9 @@ export class Model {
 
     public errors: any[];
     public _id: string;
+    public _ns: string;
 
     private _props: any;
-    private _ns: string;
 
     /**
      * @interface storage

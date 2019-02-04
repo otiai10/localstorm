@@ -14,7 +14,7 @@ import {Router} from "../src";
 
 describe("Router", () => {
     it("should match with another keyname", () => {
-        const router = new Router();
+        const router: any = new Router();
         let flag = 0;
         router.on("/foo/bar", () => {
             flag += 1;
@@ -28,7 +28,7 @@ describe("Router", () => {
             const resolveFunc = (message) => {
                 return (message.match(/foo/)) ? {name: "xx"} : {name: "yy"};
             };
-            const router = new Router(resolveFunc);
+            const router: any = new Router(resolveFunc);
             router.on("xx", () => { count.x += 1; });
             router.on("yy", () => { count.y += 1; });
 
@@ -44,7 +44,7 @@ describe("Router", () => {
     });
     describe("when matched controller doesn't return anything", () => {
         it("should NOT fire `sendResponse` callback function", () => {
-            const router = new Router();
+            const router: any = new Router();
             router.on("xx", () => { });
             const NiceController = () => { };
             router.on("yy", NiceController);
@@ -62,9 +62,9 @@ describe("Router", () => {
     });
     describe("when unhandled error thrown in a controller", () => {
         it("should stringify error message and handle it as status:500", () => {
-            const router = new Router();
+            const router: any = new Router();
             router.on("/rough", () => {
-                return {}.null.pointer;
+                return {}["null"]["pointer"];
             });
             return Promise.all([
                 new Promise((resolve) => {

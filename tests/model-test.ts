@@ -9,7 +9,7 @@
 jest.unmock("../src/Model");
 jest.unmock("../src/Model/OnMemoryStorage");
 
-import {Model} from "../src/Model";
+import {Model} from "../src";
 import OnMemoryStorage from "../src/Model/OnMemoryStorage";
 
 // TODO

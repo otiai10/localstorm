@@ -10,7 +10,7 @@
   ],
   "scripts": {
     "start": "tsc --watch",
-    "build": "tsc -p ./tsconfig.json",
+    "build": "rm -rf ./lib && tsc -p ./tsconfig.json",
     "release": "./node_modules/.bin/coffee ./scripts/release.coffee",
     "test": "tslint ./src/**/*.ts && tslint ./tests/**/*.ts && jest",
     "ci": "npm run test -- --coverage && cat ./coverage/lcov.info | coveralls"

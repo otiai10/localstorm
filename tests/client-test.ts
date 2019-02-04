@@ -8,8 +8,7 @@
 */
 jest.unmock("../src/Client");
 jest.unmock("../src/Router");
-import {Client} from "../src/Client";
-import {Router} from "../src/Router";
+import {Client, Router} from "../src";
 
 declare function expect(...any): any;
 declare var global: any;
@@ -28,7 +27,7 @@ describe("Client", () => {
     describe("message", () => {
         describe("when the first parameter is object", () => {
             it("should be accepted with `action` field of the first argument", () => {
-                const client = new Client(global.chrome.runtime);
+                const client: Client = new Client(global.chrome.runtime);
                 return client.message<any>({action: "/echo", greet: "Hello!"})
                     .then((res) => {
                         res.data.echo.action.should.equal("/echo");

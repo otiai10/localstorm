@@ -10,7 +10,7 @@
 declare var process: any;
 
 jest.unmock("../src/Router/Router");
-import {Router} from "../src/Router/Router";
+import {Router} from "../src";
 
 describe("Router", () => {
     it("should match with another keyname", () => {

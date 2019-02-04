@@ -2,8 +2,8 @@
   "name": "chomex",
   "version": "1.0.22",
   "description": "Chrome Extension Routing Kit",
-  "main": "lib/chomex.js",
-  "types": "lib/chomex.d.ts",
+  "main": "lib/index.js",
+  "types": "lib/index.d.ts",
   "files": [
     "lib",
     "src"
@@ -58,7 +58,7 @@
     ],
     "collectCoverageFrom": [
       "src/**/*.ts",
-      "!src/chomex.ts",
+      "!src/index.ts",
       "!test"
     ]
   }

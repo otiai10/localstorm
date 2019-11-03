@@ -166,8 +166,7 @@ export class Model {
      * it returns all saved entities **as Objects**
      */
     private static _all() {
-        const _ns = this._ns();
-        const all = this.__storage.getItem(_ns);
+        const all = this.__storage.getItem(this._ns());
         return all || this.default || {};
     }
 
@@ -186,9 +185,6 @@ export class Model {
 
     public errors: any[];
     public _id: string;
-    public _ns: string;
-
-    private _props: any;
 
     /**
      * @interface storage
@@ -204,9 +200,7 @@ export class Model {
             if (typeof props[key] !== "undefined") { return; }
             props[key] = (typeof template[key] === "function") ? template[key]() : template[key];
         });
-        this._props = props;
         this._id = id;
-        this._ns = ns || constructor._ns();
         this.decode(props);
     }
 

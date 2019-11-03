@@ -4,9 +4,10 @@
 import { Model } from ".";
 
 /* tslint:disable interface-name */
-declare interface TypeCheckFunc {
+export declare interface TypeCheckFunc {
     (value: any, name: string): null;
     decode?: (value: any) => any;
+    isRequired?: TypeCheckFunc;
 }
 
 /**

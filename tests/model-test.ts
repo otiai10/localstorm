@@ -60,6 +60,10 @@ class Game extends Model {
     };
 }
 
+class Team extends Model {
+    protected static __ns = "organization";
+}
+
 describe("Model", () => {
     it("should have customized method", () => {
         const foo = new Foo();
@@ -87,6 +91,16 @@ describe("Model", () => {
             expect(foo._id).be.undefined;
             foo.save();
             foo._id.should.not.be.undefined;
+        });
+        describe("if the model has __ns property", () => {
+            it("should save the model under the given __ns inside Storage", () => {
+                const team = new Team();
+                expect(team._id).to.be.undefined;
+                team.save();
+                team._id.should.not.be.undefined;
+                expect(Team.__storage.getItem("Team")).to.be.null;
+                expect(Team.__storage.getItem("organization")).not.to.be.null;
+            });
         });
     });
     describe("update", () => {

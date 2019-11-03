@@ -63,10 +63,14 @@ class Game extends Model {
 class Team extends Model {
     public static schema = {
         awards: Model.Types.arrayOf(Model.Types.string),
+        leader: Model.Types.reference(User),
+        members: Model.Types.arrayOf(Model.Types.reference(User)),
         name: Model.Types.string,
     };
     protected static __ns = "organization";
     public awards: string[];
+    public leader: User;
+    public members: User[];
     public name: string;
 }
 
@@ -86,8 +90,13 @@ describe("Model", () => {
         });
         describe("if the schema has `reference` to other models", () => {
             it("should decode the property as the specified model instance", () => {
+                const leader = User.create({ name: "otiai1000", age: 33, langs: ["ja"] });
+                const user_1 = User.create({ name: "otiai1001", age: 32, langs: ["go"] });
+                const user_2 = User.create({ name: "otiai1002", age: 64, langs: ["python"] });
                 const team = new Team({
                     awards: ["Academy", "Global Gold"],
+                    leader,
+                    members: [user_1, user_2],
                     name: "A great team",
                 });
                 team.save();

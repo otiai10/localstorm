@@ -347,74 +347,55 @@ describe("Model", () => {
                 langs: ["go", "javascript", "swift"],
                 name: "otiai10",
             });
-            return new Promise((ok, ng) => {
-                try {
-                    foo.save();
-                    ng("saving without title SHOULD throw error, but it was successful");
-                } catch (err) {
-                    err.should.equal("age is not number");
-                    ok();
-                }
-            });
+            try {
+                foo.save();
+                throw new Error("saving without title SHOULD throw error, but it was successful");
+            } catch (err) {
+                err.message.should.equal("age is not number");
+            }
         });
         describe("shape", () => {
             describe("when required shape is missing", () => {
                 const foo = Game.new({
                     offset: {},
                 });
-                return new Promise((ok, ng) => {
-                    try {
-                        foo.save();
-                        ng("saving without title SHOULD throw error, but it was successful");
-                    } catch (err) {
-                        err.should.equal("size is marked as required");
-                        ok();
-                    }
-                });
+                try {
+                    foo.save();
+                    throw new Error("saving without title SHOULD throw error, but it was successful");
+                } catch (err) {
+                    err.message.should.equal("size is marked as required");
+                }
             });
             describe("when required shape is given but not satisfied", () => {
                 const foo = Game.new({
                     offset: {},
                     size:   {},
                 });
-                return new Promise((ok, ng) => {
-                    try {
-                        foo.save();
-                        ng("saving without title SHOULD throw error, but it was successful");
-                    } catch (err) {
-                        err.should.equal("width is marked as required");
-                        ok();
-                    }
-                });
+                try {
+                    foo.save();
+                    throw new Error("saving without title SHOULD throw error, but it was successful");
+                } catch (err) {
+                    err.message.should.equal("width is marked as required");
+                }
             });
             describe("when required shape is given but not satisfied", () => {
                 const foo = Game.new({
                     offset: {},
                     size:   {width: 200, height: 100},
                 });
-                return new Promise((ok, ng) => {
-                    try {
-                        foo.save();
-                        ok();
-                    } catch (err) {
-                        ng("satisfied model should be saved");
-                    }
-                });
+                foo.save();
             });
             describe("when required shapes are given but invalid fields passed", () => {
                 const foo = Game.new({
                     offset: {left: "string string"},
                     size:   {width: 200, height: 100},
                 });
-                return new Promise((ok, ng) => {
-                    try {
-                        foo.save();
-                        ng("saving without title SHOULD throw error, but it was successful");
-                    } catch (err) {
-                        err.should.equal("left is not number");
-                        ok();
-                    }
-                });
+                try {
+                    foo.save();
+                    throw new Error("saving without title SHOULD throw error, but it was successful");
+                } catch (err) {
+                    err.message.should.equal("left is not number");
+                }
             });
         });
     });

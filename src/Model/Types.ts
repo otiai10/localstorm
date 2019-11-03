@@ -27,9 +27,11 @@ const createReferenceTypeChecker = () => {
             value._validate();
             return null;
         };
-        const checker      = checkRoot.bind(null, false);
-        checker.isRequired = checkRoot.bind(null, true);
-        return checker;
+        const check      = checkRoot.bind(null, false);
+        check.isRequired = checkRoot.bind(null, true);
+        // To decode this property as a Model, store the constructor here.
+        check.decode = (rawObject) => refConstructor.new(rawObject);
+        return check;
     };
     return generate;
 };
@@ -45,7 +47,7 @@ const createRecursiveTypeChecker = (structName, iterateNames) => {
                 validation(value, fieldName);
             });
         };
-        const check        = checkRoot.bind(null, false);
+        const check      = checkRoot.bind(null, false);
         check.isRequired = checkRoot.bind(null, true);
         return check;
     };
@@ -71,6 +73,12 @@ const createArrayValueTypeChecker = () => {
         };
         const check      = checkRoot.bind(null, false);
         check.isRequired = checkRoot.bind(null, true);
+        // To decode this property as a Model, store the constructor here.
+        if (typeof arrayValueValidateFunc.decode === "function") {
+            check.decode = (rawArrayOfObject = []) => {
+                return rawArrayOfObject.map((rawObject) => arrayValueValidateFunc.decode(rawObject));
+            };
+        }
         return check;
     };
     return generate;

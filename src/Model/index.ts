@@ -245,8 +245,15 @@ export class Model {
     }
 
     public decode<T extends Model>(obj): T {
+        // FIXME: wanna get the type of constructor func!!
+        const constructor: any = this.constructor;
+        const schema = constructor.schema || {};
         Object.keys(obj).map((key) => {
-            this[key] = obj[key];
+            if (typeof schema[key] === "function" && typeof schema[key].decode === "function") {
+                this[key] = schema[key].decode(obj[key]);
+            } else {
+                this[key] = obj[key];
+            }
         });
         const copy: any = this;
         return copy as T;

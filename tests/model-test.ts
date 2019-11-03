@@ -61,7 +61,13 @@ class Game extends Model {
 }
 
 class Team extends Model {
+    public static schema = {
+        awards: Model.Types.arrayOf(Model.Types.string),
+        name: Model.Types.string,
+    };
     protected static __ns = "organization";
+    public awards: string[];
+    public name: string;
 }
 
 describe("Model", () => {
@@ -77,6 +83,18 @@ describe("Model", () => {
             Object.keys(all).length.should.equal(1);
             Object.keys(all)[0].should.equal(String(foo._id));
             all[foo._id]._id.should.equal(String(foo._id));
+        });
+        describe("if the schema has `reference` to other models", () => {
+            it("should decode the property as the specified model instance", () => {
+                const team = new Team({
+                    awards: ["Academy", "Global Gold"],
+                    name: "A great team",
+                });
+                team.save();
+                const found: Team = Team.find<Team>(team._id);
+                expect(found).not.to.be.undefined;
+                found.awards[0].should.be.an.instanceof(String);
+            });
         });
     });
     describe("list", () => {

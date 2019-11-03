@@ -151,6 +151,9 @@ export class Model {
             .pop() || 0) + 1;
     }
 
+    // FIXME: use "checker" func type?
+    protected static schema: any;
+
     /**
      * Programmers can change the namespace of this model inside the storage.
      * This namespace is "prototype.name" by default.
@@ -259,7 +262,7 @@ export class Model {
         return encoded;
     }
 
-    private _validate() {
+    public _validate() {
         const constructor: any = this.constructor;
         if (!constructor.schema) { return null; }
         Object.keys(constructor.schema).map((propName) => {

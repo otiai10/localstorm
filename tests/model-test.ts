@@ -60,6 +60,20 @@ class Game extends Model {
     };
 }
 
+class Team extends Model {
+    public static schema = {
+        awards: Model.Types.arrayOf(Model.Types.string),
+        leader: Model.Types.reference(User),
+        members: Model.Types.arrayOf(Model.Types.reference(User)),
+        name: Model.Types.string,
+    };
+    protected static __ns = "organization";
+    public awards: string[];
+    public leader: User;
+    public members: User[];
+    public name: string;
+}
+
 describe("Model", () => {
     it("should have customized method", () => {
         const foo = new Foo();
@@ -74,6 +88,25 @@ describe("Model", () => {
             Object.keys(all)[0].should.equal(String(foo._id));
             all[foo._id]._id.should.equal(String(foo._id));
         });
+        describe("if the schema has `reference` to other models", () => {
+            it("should decode the property as the specified model instance", () => {
+                const leader = User.create({ name: "otiai1000", age: 33, langs: ["ja"] });
+                const user_1 = User.create({ name: "otiai1001", age: 32, langs: ["go"] });
+                const user_2 = User.create({ name: "otiai1002", age: 64, langs: ["python"] });
+                const team = new Team({
+                    awards: ["Academy", "Global Gold"],
+                    leader,
+                    members: [user_1, user_2],
+                    name: "A great team",
+                });
+                team.save();
+                const found: Team = Team.find<Team>(team._id);
+                expect(found).not.to.be.undefined;
+                found.awards[0].should.be.an.instanceof(String);
+                found.leader.should.be.an.instanceOf(User);
+                found.members[0].should.be.an.instanceOf(User);
+            });
+        });
     });
     describe("list", () => {
         it("should return all saved models but as a array", () => {
@@ -87,6 +120,16 @@ describe("Model", () => {
             expect(foo._id).be.undefined;
             foo.save();
             foo._id.should.not.be.undefined;
+        });
+        describe("if the model has __ns property", () => {
+            it("should save the model under the given __ns inside Storage", () => {
+                const team = new Team();
+                expect(team._id).to.be.undefined;
+                team.save();
+                team._id.should.not.be.undefined;
+                expect(Team.__storage.getItem("Team")).to.be.null;
+                expect(Team.__storage.getItem("organization")).not.to.be.null;
+            });
         });
     });
     describe("update", () => {
@@ -304,74 +347,55 @@ describe("Model", () => {
                 langs: ["go", "javascript", "swift"],
                 name: "otiai10",
             });
-            return new Promise((ok, ng) => {
-                try {
-                    foo.save();
-                    ng("saving without title SHOULD throw error, but it was successful");
-                } catch (err) {
-                    err.should.equal("age is not number");
-                    ok();
-                }
-            });
+            try {
+                foo.save();
+                throw new Error("saving without title SHOULD throw error, but it was successful");
+            } catch (err) {
+                err.message.should.equal("age is not number");
+            }
         });
         describe("shape", () => {
             describe("when required shape is missing", () => {
                 const foo = Game.new({
                     offset: {},
                 });
-                return new Promise((ok, ng) => {
-                    try {
-                        foo.save();
-                        ng("saving without title SHOULD throw error, but it was successful");
-                    } catch (err) {
-                        err.should.equal("size is marked as required");
-                        ok();
-                    }
-                });
+                try {
+                    foo.save();
+                    throw new Error("saving without title SHOULD throw error, but it was successful");
+                } catch (err) {
+                    err.message.should.equal("size is marked as required");
+                }
             });
             describe("when required shape is given but not satisfied", () => {
                 const foo = Game.new({
                     offset: {},
                     size:   {},
                 });
-                return new Promise((ok, ng) => {
-                    try {
-                        foo.save();
-                        ng("saving without title SHOULD throw error, but it was successful");
-                    } catch (err) {
-                        err.should.equal("width is marked as required");
-                        ok();
-                    }
-                });
+                try {
+                    foo.save();
+                    throw new Error("saving without title SHOULD throw error, but it was successful");
+                } catch (err) {
+                    err.message.should.equal("width is marked as required");
+                }
             });
             describe("when required shape is given but not satisfied", () => {
                 const foo = Game.new({
                     offset: {},
                     size:   {width: 200, height: 100},
                 });
-                return new Promise((ok, ng) => {
-                    try {
-                        foo.save();
-                        ok();
-                    } catch (err) {
-                        ng("satisfied model should be saved");
-                    }
-                });
+                foo.save();
             });
             describe("when required shapes are given but invalid fields passed", () => {
                 const foo = Game.new({
                     offset: {left: "string string"},
                     size:   {width: 200, height: 100},
                 });
-                return new Promise((ok, ng) => {
-                    try {
-                        foo.save();
-                        ng("saving without title SHOULD throw error, but it was successful");
-                    } catch (err) {
-                        err.should.equal("left is not number");
-                        ok();
-                    }
-                });
+                try {
+                    foo.save();
+                    throw new Error("saving without title SHOULD throw error, but it was successful");
+                } catch (err) {
+                    err.message.should.equal("left is not number");
+                }
             });
         });
     });

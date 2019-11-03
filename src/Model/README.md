@@ -1,6 +1,8 @@
 # chomex.Model
 
-`chomex.Model` is just an accessor of `localStorage`, behaves like ActiveRecord.
+`chomex.Model` is an ORM (Object-Relation Mapper) for `localStorage`, providing simple interfaces like `ActiveRecord`.
+
+> NOTE: `chomex.Model` is NOT the best efficient accessor for `localStorage`, BUT provides the best small and easy way to manage `localStorage` and automatically map the object to your `Model` class.
 
 - Methods
   - [new](#new)
@@ -28,6 +30,8 @@ player._id // undefined, because not saved yet
 player.save();
 player._id // 1, because it's saved to localStorage
 ```
+
+More complicated models with relations? See [`schema`](#schema)!
 
 # Methods
 
@@ -152,6 +156,18 @@ class Player extends Model {
       address: Model.Types.string,
       visible: Model.Types.bool.isRequired,
     }),
+  }
+}
+```
+
+with relations
+
+```js
+class Team extends Model {
+  static schema = {
+    name: Model.Types.string.isRequired,
+    leader: Model.Types.reference(Player),
+    members: Model.Types.arrayOf(Model.Types.reference(Player)),
   }
 }
 ```

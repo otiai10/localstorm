@@ -94,7 +94,7 @@ export class Model {
         const all = this._all();
         const self = this;
         Object.keys(all).map((_id) => {
-            const _this = new self(all[_id], _id, self.name);
+            const _this = new self(all[_id], _id, self._ns());
             all[_id] = _this.decode(all[_id]);
         });
         return all;
@@ -112,10 +112,10 @@ export class Model {
         const all = this._all();
         const _id = String(id);
         if (all[_id]) {
-            const _this = new this(all[_id], _id, this.name);
+            const _this = new this(all[_id], _id, this._ns());
             return _this.decode<T>(all[_id]);
         } else if (this.default && this.default[_id]) {
-            const _this = new this(this.default[_id], _id, this.name);
+            const _this = new this(this.default[_id], _id, this._ns());
             return _this.decode<T>(this.default[_id]);
         }
     }
@@ -133,7 +133,7 @@ export class Model {
      *  Drops the database.
      */
     public static drop() {
-        this.__storage.removeItem(this.name);
+        this.__storage.removeItem(this._ns());
     }
 
     public static nextID(all?): number | string {
@@ -151,12 +151,25 @@ export class Model {
             .pop() || 0) + 1;
     }
 
+    // FIXME: use "checker" func type?
+    protected static schema: any;
+
+    /**
+     * Programmers can change the namespace of this model inside the storage.
+     * This namespace is "prototype.name" by default.
+     * You might need it to avoid problems caused by uglifying/mangling.
+     * e.g) `"User"` namespace for `class User extends Model`.
+     */
+    protected static __ns?: string ;
+    private static _ns(): string {
+        return this.__ns || this.name;
+    }
+
     /**
      * it returns all saved entities **as Objects**
      */
     private static _all() {
-        const _ns = this.name;
-        const all = this.__storage.getItem(_ns);
+        const all = this.__storage.getItem(this._ns());
         return all || this.default || {};
     }
 
@@ -175,9 +188,6 @@ export class Model {
 
     public errors: any[];
     public _id: string;
-    public _ns: string;
-
-    private _props: any;
 
     /**
      * @interface storage
@@ -193,9 +203,7 @@ export class Model {
             if (typeof props[key] !== "undefined") { return; }
             props[key] = (typeof template[key] === "function") ? template[key]() : template[key];
         });
-        this._props = props;
         this._id = id;
-        this._ns = ns || this.constructor.name;
         this.decode(props);
     }
 
@@ -205,7 +213,7 @@ export class Model {
         if (!this._id) { this._id = constructor.__nextID(all); }
         this._validate(); // TODO: should be response object??
         all[this._id] = this.encode();
-        constructor.__storage.setItem(constructor.name, all);
+        constructor.__storage.setItem(constructor._ns(), all);
         const copy: any = this;
         return copy as T;
     }
@@ -216,7 +224,7 @@ export class Model {
         const all = constructor._all();
         if (!this._id) { return false; }
         if (delete all[this._id] === false) { return false; }
-        constructor.__storage.setItem(this.constructor.name, all);
+        constructor.__storage.setItem(constructor._ns(), all);
         return true;
     }
 
@@ -237,8 +245,15 @@ export class Model {
     }
 
     public decode<T extends Model>(obj): T {
+        // FIXME: wanna get the type of constructor func!!
+        const constructor: any = this.constructor;
+        const schema = constructor.schema || {};
         Object.keys(obj).map((key) => {
-            this[key] = obj[key];
+            if (typeof schema[key] === "function" && typeof schema[key].decode === "function") {
+                this[key] = schema[key].decode(obj[key]);
+            } else {
+                this[key] = obj[key];
+            }
         });
         const copy: any = this;
         return copy as T;
@@ -254,7 +269,7 @@ export class Model {
         return encoded;
     }
 
-    private _validate() {
+    public _validate() {
         const constructor: any = this.constructor;
         if (!constructor.schema) { return null; }
         Object.keys(constructor.schema).map((propName) => {

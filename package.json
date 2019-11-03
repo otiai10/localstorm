@@ -52,7 +52,9 @@
     "unmockedModulePathPatterns": [
       "<rootDir>/src/chomex"
     ],
-    "setupTestFrameworkScriptFile": "./tests/mock/setup-script.ts",
+    "setupFilesAfterEnv": [
+      "./tests/mock/setup-script.ts"
+    ],
     "setupFiles": [
       "./tests/mock/chrome.ts"
     ],

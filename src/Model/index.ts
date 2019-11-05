@@ -137,18 +137,7 @@ export class Model {
     }
 
     public static nextID(all?): number | string {
-        return this.timestampID(); // for default
-    }
-
-    public static timestampID(): number {
-        return Date.now();
-    }
-
-    public static sequentialID(all): number {
-        return (Object.keys(all)
-            .map((id) => parseInt(id, 10))
-            .sort((prev, next) => (prev < next) ? -1 : 1)
-            .pop() || 0) + 1;
+        return this.timestampAndSequentialID(all);
     }
 
     // FIXME: use "checker" func type?
@@ -161,8 +150,24 @@ export class Model {
      * e.g) `"User"` namespace for `class User extends Model`.
      */
     protected static __ns?: string ;
-    private static _ns(): string {
+
+    protected static _ns(): string {
         return this.__ns || this.name;
+    }
+
+    protected static timestampID(): number {
+        return Date.now();
+    }
+
+    protected static sequentialID(all): number {
+        return (Object.keys(all)
+            .map((id) => parseInt(id, 10))
+            .sort((prev, next) => (prev < next) ? -1 : 1)
+            .pop() || 0) + 1;
+    }
+
+    protected static timestampAndSequentialID(all = {}): string {
+        return `${Date.now()}.${Object.keys(all).length}`;
     }
 
     /**
@@ -179,11 +184,11 @@ export class Model {
             if (id === undefined || id === null) {
                 /* tslint:disable no-console */
                 console.error("customized `nextID` function provides invalid ID");
-                return this.timestampID();
+                return this.timestampAndSequentialID(all);
             }
             return id;
         }
-        return this.timestampID();
+        return this.timestampAndSequentialID(all);
     }
 
     public errors: any[];
@@ -249,8 +254,8 @@ export class Model {
         const constructor: any = this.constructor;
         const schema = constructor.schema || {};
         Object.keys(obj).map((key) => {
-            if (typeof schema[key] === "function" && typeof schema[key].decode === "function") {
-                this[key] = schema[key].decode(obj[key]);
+            if (typeof schema[key] === "function" && typeof schema[key].load === "function") {
+                this[key] = schema[key].load(obj[key]);
             } else {
                 this[key] = obj[key];
             }
@@ -262,9 +267,15 @@ export class Model {
     public encode(): any {
         const encoded: any = {};
         for (const prop in this) {
+            if (!this.hasOwnProperty(prop)) { continue; }
             // Ignore reserved prop names.
-            if (["_id", "_ns", "_props"].some((x) => x === prop)) { continue; }
-            if (this.hasOwnProperty(prop)) { encoded[prop] = this[prop]; }
+            const reservedProps = ["_props"];
+            if (reservedProps.some((x) => x === prop)) { continue; }
+            if (Array.isArray(this[prop])) {
+                encoded[prop] = (this[prop] as any).map((v) => typeof v.encode === "function" ? v.encode() : v);
+            } else {
+                encoded[prop] = this[prop];
+            }
         }
         return encoded;
     }

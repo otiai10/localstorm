@@ -45,6 +45,8 @@ class User extends Model {
         langs: Model.Types.array.isRequired,
         name:  Model.Types.string.isRequired,
     };
+    public age: number;
+    public name: string;
 }
 
 class Game extends Model {
@@ -64,13 +66,15 @@ class Team extends Model {
     public static schema = {
         awards: Model.Types.arrayOf(Model.Types.string),
         leader: Model.Types.reference(User),
-        members: Model.Types.arrayOf(Model.Types.reference(User)),
+        members: Model.Types.arrayOf(Model.Types.reference(User, { eager: true })),
         name: Model.Types.string,
+        watchers: Model.Types.arrayOf(Model.Types.reference(User)),
     };
     protected static __ns = "organization";
     public awards: string[];
     public leader: User;
     public members: User[];
+    public watchers: User[];
     public name: string;
 }
 
@@ -86,11 +90,11 @@ describe("Model", () => {
             const all = Foo.all();
             Object.keys(all).length.should.equal(1);
             Object.keys(all)[0].should.equal(String(foo._id));
-            all[foo._id]._id.should.equal(String(foo._id));
+            all[foo._id]._id.should.equal(foo._id);
         });
         describe("if the schema has `reference` to other models", () => {
             it("should decode the property as the specified model instance", () => {
-                const leader = User.create({ name: "otiai1000", age: 33, langs: ["ja"] });
+                const leader = User.create({ name: "otiai1000", age: 31, langs: ["ja"] });
                 const user_1 = User.create({ name: "otiai1001", age: 32, langs: ["go"] });
                 const user_2 = User.create({ name: "otiai1002", age: 64, langs: ["python"] });
                 const team = new Team({
@@ -105,6 +109,31 @@ describe("Model", () => {
                 found.awards[0].should.be.an.instanceof(String);
                 found.leader.should.be.an.instanceOf(User);
                 found.members[0].should.be.an.instanceOf(User);
+            });
+            it("should load the latest properties if `eager: true` is specified", () => {
+                const leader = User.create({ name: "otiai1000", age: 21, langs: ["ja"] });
+                const user_1 = User.create({ name: "otiai1003", age: 17, langs: ["go"] });
+                const user_2 = User.create({ name: "otiai1004", age: 19, langs: ["python"] });
+                const team = Team.new<Team>({
+                    awards: ["foo", "baa"],
+                    leader,
+                    members: [user_1, user_2],
+                    name: "Another great team",
+                    watchers: [user_1],
+                });
+                team.save();
+                let found: Team = Team.find<Team>(team._id);
+                found.members[0].age.should.equal(17);
+                found.members[1].age.should.equal(19);
+                found.watchers[0].age.should.equal(17);
+                // Update only user_1, who is in `members` and `watchers`
+                user_1.update({ age: 88 });
+                found = Team.find<Team>(team._id);
+                // Because `members` prop is referenced with `eager: true`,
+                // it should be the latest state of that member.
+                found.members[0].age.should.equal(88);
+                found.watchers[0].age.should.equal(17);
+                found.members[0]._id.should.equal(found.watchers[0]._id);
             });
         });
     });
@@ -247,15 +276,16 @@ describe("Model", () => {
         });
     });
     describe("static nextID", () => {
-        it("should generate next ID by current timestamp in default", () => {
+        it("should generate next ID by combining current timestamp and appendix by default", () => {
             const now = Date.now();
-            expect(Model.nextID()).to.be.within(now - 10, now + 10);
+            const id = Model.nextID() as string;
+            expect(parseInt(id.split(".")[0], 10)).to.be.within(now - 10, now + 10);
         });
         it("should be called when new model is saved", () => {
             const now = Date.now();
             const foo = new Foo();
             foo.save();
-            expect(foo._id).to.be.within(now - 100, now + 100);
+            expect(parseInt(foo._id.split(".")[0], 10)).to.be.within(now - 100, now + 100);
         });
         it("should be customized by setting function, like serial id", () => {
             const nextID = (all) => {

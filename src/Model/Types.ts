@@ -6,8 +6,11 @@ import { Model } from ".";
 /* tslint:disable interface-name */
 export declare interface TypeCheckFunc {
     (value: any, name: string): null;
-    decode?: (value: any) => any;
     isRequired?: TypeCheckFunc;
+
+    // For recursive reference
+    load?: (value: any) => any;
+    ref?: typeof Model;
 }
 
 /**
@@ -69,13 +72,24 @@ const arrayValueTypeChecker = (checkValue: TypeCheckFunc): TypeCheckFunc => {
     const check = checkRoot.bind(null, false);
     check.isRequired = checkRoot.bind(null, true);
     // To decode this property as a Model, store the constructor here.
-    if (typeof checkValue.decode === "function") {
-        check.decode = (rawArrayOfObject = []) => {
-            return rawArrayOfObject.map((rawObject) => checkValue.decode(rawObject));
-        };
+    if (typeof checkValue.ref === "function") {
+        check.ref = checkValue.ref;
+        check.load = (rawArrayOfObject = []) => rawArrayOfObject.map(checkValue.load);
     }
     return check;
 };
+
+/**
+ * ReferenceTypeOption can specify the options of reference type.
+ */
+interface ReferenceTypeOption {
+    /**
+     * eager:
+     *  If it's true, methods like `find` will try to load the newest data for the referenced models.
+     *  Otherwise the referenced models will be just decoded class instances stored under this parent's namespace.
+     */
+    eager?: boolean;
+}
 
 /**
  * referenceTypeChecker is a generator function of type checker
@@ -83,7 +97,7 @@ const arrayValueTypeChecker = (checkValue: TypeCheckFunc): TypeCheckFunc => {
  * The generated type checker function also includes "decode" function
  * so that the referenced peoperties can be decoded at the same time on decoding the root model.
  */
-const referenceTypeChecker = (refConstructor: any, opt: any = {}): TypeCheckFunc => {
+const referenceTypeChecker = (refConstructor: typeof Model, opt: ReferenceTypeOption = {}): TypeCheckFunc => {
     const checkRoot = (required: boolean, value: Model, refName: string): null => {
         if (typeof value === "undefined") {
             if (required) {
@@ -96,7 +110,13 @@ const referenceTypeChecker = (refConstructor: any, opt: any = {}): TypeCheckFunc
     const check = checkRoot.bind(null, false);
     check.isRequired = checkRoot.bind(null, true);
     // To decode this property as a Model, store the constructor here.
-    check.decode = (rawObject) => refConstructor.new(rawObject);
+    check.ref = refConstructor;
+    check.load = (rawObject) => {
+        if (!opt.eager) { return new check.ref(rawObject); }
+        if (!rawObject) { return; }
+        if (typeof rawObject._id === "undefined") { return; }
+        return check.ref.find(rawObject._id);
+    };
     return check;
 };
 

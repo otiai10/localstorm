@@ -82,7 +82,7 @@ const arrayValueTypeChecker = (checkValue: TypeCheckFunc): TypeCheckFunc => {
 /**
  * ReferenceTypeOption can specify the options of reference type.
  */
-interface ReferenceTypeOption {
+export interface ReferenceTypeOption {
     /**
      * eager:
      *  If it's true, methods like `find` will try to load the newest data for the referenced models.

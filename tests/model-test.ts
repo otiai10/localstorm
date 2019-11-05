@@ -9,7 +9,7 @@
 jest.unmock("../src/Model");
 jest.unmock("../src/Model/OnMemoryStorage");
 
-import {Model} from "../src";
+import { Model, Types } from "../src";
 import OnMemoryStorage from "../src/Model/OnMemoryStorage";
 
 // TODO
@@ -35,15 +35,15 @@ class Ham  extends Model {}
 
 class Toto extends Model {
     public static schema = {
-        description: Model.Types.string,
-        title:       Model.Types.string.isRequired,
+        description: Types.string,
+        title:       Types.string.isRequired,
     };
 }
 class User extends Model {
     public static schema = {
-        age:   Model.Types.number.isRequired,
-        langs: Model.Types.array.isRequired,
-        name:  Model.Types.string.isRequired,
+        age:   Types.number.isRequired,
+        langs: Types.array.isRequired,
+        name:  Types.string.isRequired,
     };
     public age: number;
     public name: string;
@@ -51,24 +51,24 @@ class User extends Model {
 
 class Game extends Model {
     public static schema = {
-        offset: Model.Types.shape({
-            left: Model.Types.number,
-            top: Model.Types.number,
+        offset: Types.shape({
+            left: Types.number,
+            top: Types.number,
         }),
-        size: Model.Types.shape({
-            height: Model.Types.number,
-            width: Model.Types.number.isRequired,
+        size: Types.shape({
+            height: Types.number,
+            width: Types.number.isRequired,
         }).isRequired,
     };
 }
 
 class Team extends Model {
     public static schema = {
-        awards: Model.Types.arrayOf(Model.Types.string),
-        leader: Model.Types.reference(User),
-        members: Model.Types.arrayOf(Model.Types.reference(User, { eager: true })),
-        name: Model.Types.string,
-        watchers: Model.Types.arrayOf(Model.Types.reference(User)),
+        awards: Types.arrayOf(Types.string),
+        leader: Types.reference(User),
+        members: Types.arrayOf(Types.reference(User, { eager: true })),
+        name: Types.string,
+        watchers: Types.arrayOf(Types.reference(User)),
     };
     protected static __ns = "organization";
     public awards: string[];

@@ -11,6 +11,7 @@ Chrome Extension Messaging Routing Kit.
 - [Router](https://github.com/otiai10/chomex/tree/master/src/Router/README.md) to handle `onMessage` with routes expression
 - [Client](https://github.com/otiai10/chomex/tree/master/src/Client/README.md) to Promisify `sendMessage`
 - [Model](https://github.com/otiai10/chomex/tree/master/src/Model/README.md) to access to `localStorage` like `ActiveRecord`
+- [Types](https://github.com/otiai10/chomex/tree/master/src/Model/Types/README.md) to define data schema of `Model`
 
 # Installation
 
@@ -65,27 +66,26 @@ chrome.runtime.sendMessage({action:"/users/get",id:123}, (response) => {
 
 ```js
 const client = new chomex.Client(chrome.runtime);
-client.message("/users/get", {id:123}).then(response => {
-  alert("User: " + response.data.user.name);
-}).catch(err => {
-  console.log("Error:", err));
-});
+const response = await client.message("/users/get", {id:123});
+alert("User: " + response.data.user.name);
 ```
 
 _Happy_ :hugs:
 
 # Examples
 
+> NOTE: These examples are using async/await on top-level. I believe you are familiar with asyc/await.
+
 ## `background.js` as a server
 
 ```javascript
-import {Router, Model} from 'chomex';
+import {Router, Model, Types} from 'chomex';
 
 // Define your model
 class User extends Model {
   static schema = {
-    name: Model.Types.string.isRequired,
-    age:  Model.Types.number,
+    name: Types.string.isRequired,
+    age:  Types.number,
   }
 }
 
@@ -126,15 +126,11 @@ const client = new Client(chrome.runtime);
 
 // it sends message to "/users/get" route.
 const user = {name: 'otiai10', age: 30};
-client.message('/users/create', {user}).then(res => {
-  console.log("Created!", res.data);
-});
+const response = await client.message('/users/create', {user});
+console.log("Created!", response.data);
 
-client.message('/users/get', {id: 12345}).then(res => {
-  console.log("Found:", res.data);
-}).catch(err => {
-  console.log("Error:", err.status);
-});
+const {data: user} = await client.message('/users/get', {id: 12345});
+console.log("Found:", res.data);
 ```
 
 # Customize `Router` for other listeners
@@ -162,6 +158,7 @@ chrome.notifications.onClicked.addListener(router.listener());
 - [Router](https://github.com/otiai10/chomex/tree/master/src/Router/README.md)
 - [Client](https://github.com/otiai10/chomex/tree/master/src/Client/README.md)
 - [Model](https://github.com/otiai10/chomex/tree/master/src/Model/README.md)
+- [Types](https://github.com/otiai10/chomex/tree/master/src/Model/Types/README.md)
 
 # Reference Projects
 

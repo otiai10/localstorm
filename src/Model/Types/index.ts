@@ -1,7 +1,7 @@
 /**
  * Type checker functions inspired by React.PropTypes.
  */
-import { Model } from ".";
+import { Model } from "..";
 
 /* tslint:disable interface-name */
 export declare interface TypeCheckFunc {
@@ -82,7 +82,7 @@ const arrayValueTypeChecker = (checkValue: TypeCheckFunc): TypeCheckFunc => {
 /**
  * ReferenceTypeOption can specify the options of reference type.
  */
-interface ReferenceTypeOption {
+export interface ReferenceTypeOption {
     /**
      * eager:
      *  If it's true, methods like `find` will try to load the newest data for the referenced models.
@@ -143,7 +143,7 @@ const shapeTypeChecker = (validations: { [key: string]: TypeCheckFunc } = {}): T
     return check;
 };
 
-const Types = {
+export const Types = {
     // Simple type checkers
     array:  createTypeChecker("array",    (value) => Array.isArray(value)),
     bool:   createTypeChecker("bool",     (value) => typeof value === "boolean"),
@@ -156,5 +156,3 @@ const Types = {
     reference: referenceTypeChecker,
     shape: shapeTypeChecker,
 };
-
-export default Types;

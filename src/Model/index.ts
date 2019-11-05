@@ -6,8 +6,6 @@
     new-parens
 */
 
-import Types from "./Types";
-
 declare namespace global {
     let localStorage: {
         getItem: () => any;
@@ -23,7 +21,6 @@ import OnMemoryStorage from "./OnMemoryStorage";
 
 export class Model {
 
-    public static Types = Types;
     public static default?: any;
     public static template?: any;
 

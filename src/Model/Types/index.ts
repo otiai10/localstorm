@@ -143,7 +143,7 @@ const shapeTypeChecker = (validations: { [key: string]: TypeCheckFunc } = {}): T
     return check;
 };
 
-const createDateTypeChecker = () => {
+const createDateTypeChecker = (): TypeCheckFunc => {
     const checkType = (required: boolean, value: any, name: string): null => {
         if (typeof value === "undefined") {
             if (required) {

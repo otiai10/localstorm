@@ -65,6 +65,7 @@ class Game extends Model {
 class Team extends Model {
     public static schema = {
         awards: Types.arrayOf(Types.string),
+        created: Types.date,
         leader: Types.reference(User),
         members: Types.arrayOf(Types.reference(User, { eager: true })),
         name: Types.string,
@@ -76,6 +77,7 @@ class Team extends Model {
     public members: User[];
     public watchers: User[];
     public name: string;
+    public created: Date = new Date();
 }
 
 describe("Model", () => {
@@ -109,6 +111,7 @@ describe("Model", () => {
                 found.awards[0].should.be.an.instanceof(String);
                 found.leader.should.be.an.instanceOf(User);
                 found.members[0].should.be.an.instanceOf(User);
+                found.created.should.be.an.instanceOf(Date);
             });
             it("should load the latest properties if `eager: true` is specified", () => {
                 const leader = User.create({ name: "otiai1000", age: 21, langs: ["ja"] });

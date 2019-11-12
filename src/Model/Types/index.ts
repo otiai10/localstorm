@@ -143,6 +143,25 @@ const shapeTypeChecker = (validations: { [key: string]: TypeCheckFunc } = {}): T
     return check;
 };
 
+const createDateTypeChecker = () => {
+    const checkType = (required: boolean, value: any, name: string): null => {
+        if (typeof value === "undefined") {
+            if (required) {
+                throw new Error(`${name} is marked as required, but got undefined`);
+            }
+            return null;
+        }
+        if (value instanceof Date) {
+            return null;
+        }
+        throw new Error(`${name} is supposed to be Date, but got ${value.constructor.name}`);
+    };
+    const check      = checkType.bind(null, false);
+    check.isRequired = checkType.bind(null, true);
+    check.load = (raw) => new Date(raw);
+    return check;
+};
+
 export const Types = {
     // Simple type checkers
     array:  createTypeChecker("array",    (value) => Array.isArray(value)),
@@ -150,6 +169,9 @@ export const Types = {
     number: createTypeChecker("number",   (value) => typeof value === "number"),
     object: createTypeChecker("object",   (value) => typeof value === "object"),
     string: createTypeChecker("string",   (value) => typeof value === "string"),
+
+    // Decodable type cheker
+    date: createDateTypeChecker(),
 
     // Recursive type checker generators
     arrayOf: arrayValueTypeChecker,

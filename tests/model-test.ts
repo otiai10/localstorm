@@ -108,7 +108,7 @@ describe("Model", () => {
                 team.save();
                 const found: Team = Team.find<Team>(team._id);
                 expect(found).not.to.be.undefined;
-                found.awards[0].should.be.an.instanceof(String);
+                found.awards[0].should.equal("Academy");
                 found.leader.should.be.an.instanceOf(User);
                 found.members[0].should.be.an.instanceOf(User);
                 found.created.should.be.an.instanceOf(Date);

@@ -35,7 +35,6 @@
     "jest": "^25.2.7",
     "jest-cli": "^25.2.7",
     "shelljs": "^0.8.1",
-    "should": "^13.2.1",
     "ts-jest": "^24.1.0",
     "tslint": "^5.9.1",
     "typescript": "^3.2.0"

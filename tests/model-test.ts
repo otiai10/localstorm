@@ -69,6 +69,7 @@ class Team extends Model {
         leader: Types.reference(User),
         members: Types.arrayOf(Types.reference(User, { eager: true })),
         name: Types.string,
+        roles: Types.dictOf(Types.reference(User)),
         watchers: Types.arrayOf(Types.reference(User)),
     };
     protected static __ns = "organization";
@@ -78,6 +79,7 @@ class Team extends Model {
     public watchers: User[];
     public name: string;
     public created: Date = new Date();
+    public roles: { [role: string]: User };
 }
 
 describe("Model", () => {
@@ -104,6 +106,10 @@ describe("Model", () => {
                     leader,
                     members: [user_1, user_2],
                     name: "A great team",
+                    roles: {
+                        captain: user_1,
+                        vice: user_2,
+                    },
                 });
                 team.save();
                 const found: Team = Team.find<Team>(team._id);
@@ -112,6 +118,7 @@ describe("Model", () => {
                 found.leader.should.be.an.instanceOf(User);
                 found.members[0].should.be.an.instanceOf(User);
                 found.created.should.be.an.instanceOf(Date);
+                found.roles["captain"].should.be.an.instanceOf(User);
             });
             it("should load the latest properties if `eager: true` is specified", () => {
                 const leader = User.create({ name: "otiai1000", age: 21, langs: ["ja"] });

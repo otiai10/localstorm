@@ -29,6 +29,7 @@ class Team extends Model {
     }),
     leader: Types.reference(User, {eager: true}),
     members: Types.arrayOf(Types.reference(User)),
+    roles: Types.dictOf(Types.reference(User)),
   }
 }
 ```

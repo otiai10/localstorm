@@ -174,6 +174,17 @@ export class Router<T extends (msg: any) => any> {
      * @param {any} response
      */
     private _formatResponse(response) {
+        if (response instanceof Error) {
+            return {
+                data: { message: response.message },
+                error: {
+                    message: response.message,
+                    name: response.name,
+                    stack: response.stack,
+                },
+                status: 500,
+            };
+        }
         if (response && Number.isInteger(response.status)) {
             return response;
         }

@@ -185,7 +185,7 @@ const createDateTypeChecker = (): TypeCheckFunc => {
             }
             return null;
         }
-        if (value instanceof Date) {
+        if (typeof value.constructor === "function" && value.constructor.name === "Date") {
             return null;
         }
         throw new Error(`${name} is supposed to be Date, but got ${value.constructor.name}`);

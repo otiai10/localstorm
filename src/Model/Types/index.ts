@@ -128,8 +128,10 @@ const referenceTypeChecker = (refConstructor: typeof Model, opt: ReferenceTypeOp
  */
 const shapeTypeChecker = (validations: { [key: string]: TypeCheckFunc } = {}): TypeCheckFunc => {
     const checkRoot = (required, rootValue, rootName): null => {
-        if (required && typeof rootValue === "undefined") {
-            throw new Error(`${rootName} is marked as required`);
+        if (typeof rootValue === "undefined") {
+            if (required) {
+                throw new Error(`${rootName} is marked as required`);
+            } else { return null; }
         }
         Object.keys(validations).map((fieldName) => {
             const validation = validations[fieldName];

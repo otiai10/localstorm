@@ -152,6 +152,20 @@ describe("Model", () => {
             Foo.new({}).save();
             expect(Foo.list()).to.be.an.instanceof(Array);
         });
+        describe("when it's not stored yet", () => {
+            class Example extends Model {
+                public static default = {
+                    a: { name: "otiai10" },
+                    b: { name: "otiai20" },
+                    c: { name: "otiai30" },
+                };
+                public name: string;
+            }
+            it("should return default dictionary as a list", () => {
+                const list = Example.list();
+                expect(list.length).to.equal(3);
+            });
+        });
     });
     describe("save", () => {
         it("should generate _id", () => {

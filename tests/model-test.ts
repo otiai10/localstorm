@@ -20,6 +20,7 @@ declare var global: any;
 Object.defineProperty(global, "localStorage", { value: new OnMemoryStorage()});
 
 class Foo extends Model {
+    public seq: any;
     public name: string;
     public foo() {
         return "this is foo!";
@@ -290,10 +291,10 @@ describe("Model", () => {
                 const foo: Foo = new Foo({seq: i}, `foo-${i}`);
                 foo.save();
             });
-            Foo.filter((foo) => foo.seq % 2 === 0).length.should.equal(5);
-            Foo.filter((foo) => foo.seq % 3 === 0).length.should.equal(4);
-            Foo.filter((foo) => foo.seq % 5 === 0).length.should.equal(2);
-            const foo = Foo.filter((foo) => foo.seq % 2 === 0).pop();
+            Foo.filter<Foo>((foo) => foo.seq % 2 === 0).length.should.equal(5);
+            Foo.filter<Foo>((foo) => foo.seq % 3 === 0).length.should.equal(4);
+            Foo.filter<Foo>((foo) => foo.seq % 5 === 0).length.should.equal(2);
+            const foo = Foo.filter<Foo>((foo) => foo.seq % 2 === 0).pop();
             foo.constructor.name.should.equal("Foo");
         });
     });

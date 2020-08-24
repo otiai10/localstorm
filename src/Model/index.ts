@@ -102,7 +102,7 @@ export class Model {
      * @return {array} of model instances
      */
     public static list<T extends Model>(): T[] {
-        return this.filter();
+        return this.filter(() => true);
     }
 
     public static find<T extends Model>(id): T {
@@ -117,8 +117,8 @@ export class Model {
         }
     }
 
-    public static filter<T extends Model>(fn = (any) => true): T[] {
-        const all = this.all();
+    public static filter<T extends Model>(fn: (entry: T) => boolean): T[] {
+        const all = this.all<T>();
         const _res = [];
         Object.keys(all).map((_id) => {
             if (fn(all[_id])) { _res.push(all[_id]); }

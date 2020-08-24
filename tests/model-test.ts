@@ -263,6 +263,27 @@ describe("Model", () => {
             });
         });
     });
+    describe("find", () => {
+        describe("even when the Model is already stored once", () => {
+            class Example extends Model {
+                public static default = {
+                    a: { name: "otiai10" },
+                    b: { name: "otiai20" },
+                    // c: { name: 'otiai30' },
+                };
+            }
+            it("should return default value for given ID", () => {
+                const another = Example.find("a");
+                expect(another).not.to.be.undefined;
+                another.update({ name: "otiai10-updated" });
+                expect(Example.find("b")).not.to.be.undefined;
+                // When "default" has been changed later.
+                Example.default["c"] = { name: "otiai30" };
+                const newcomer = Example.find("c");
+                expect(newcomer).not.to.be.null;
+            });
+        });
+    });
     describe("filter", () => {
         it("should return filtered models", () => {
             [0, 1, 2, 3, 4, 5, 6, 7, 8, 9].map((i) => {

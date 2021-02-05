@@ -12,7 +12,8 @@
     "start": "tsc --watch",
     "build": "rm -rf ./lib && tsc -p ./tsconfig.json",
     "release": "./node_modules/.bin/coffee ./scripts/release.coffee",
-    "test": "tslint ./src/**/*.ts && tslint ./tests/**/*.ts && jest",
+    "test": "jest",
+    "lint": "eslint ./src/**/*.ts ./tests/**/*.ts",
     "ci": "npm run test -- --coverage && cat ./coverage/lcov.info | coveralls"
   },
   "repository": "https://github.com/otiai10/chomex.git",
@@ -29,14 +30,17 @@
     "@types/chai": "^4.1.2",
     "@types/jest": "^25.1.5",
     "@types/should": "^13.0.0",
+    "@typescript-eslint/eslint-plugin": "^4.14.2",
+    "@typescript-eslint/parser": "^4.14.2",
     "chai": "^4.1.2",
     "coffee-script": "^1.12.7",
     "coveralls": "^3.0.0",
+    "eslint": "^7.19.0",
+    "eslint-config-google": "^0.14.0",
     "jest": "^25.2.7",
     "jest-cli": "^25.2.7",
     "shelljs": "^0.8.1",
     "ts-jest": "^25.3.0",
-    "tslint": "^5.9.1",
     "typescript": "^3.8.3"
   },
   "jest": {

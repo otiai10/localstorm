@@ -1,7 +1,7 @@
 /**
  * Type checker functions inspired by React.PropTypes.
  */
-import { Model } from "..";
+import {Model} from '..';
 
 /* tslint:disable interface-name */
 export declare interface TypeCheckFunc {
@@ -22,29 +22,33 @@ export declare interface TypeCheckFunc {
  * @param validate the validator function for this typename.
  */
 const createTypeChecker = (typename: string, validate: (value) => boolean): TypeCheckFunc => {
-    /**
+  /**
      * checkType is the base framework function of validation.
      * @param required specifies if this property is required OR NOT.
      * @param value the actual value of this property.
      * @param name the name of this property inside the Model.
      */
-    const checkType = (required, value, name): null => {
-        if (typeof value === "undefined") {
-            if (required) {
-                throw new Error(`${name} is marked as required`);
-            } else { return null; }
-        }
-        if (!validate(value)) { throw new Error(`${name} is not ${typename}`); }
+  const checkType = (required, value, name): null => {
+    if (typeof value === 'undefined') {
+      if (required) {
+        throw new Error(`${name} is marked as required`);
+      } else {
         return null;
-    };
+      }
+    }
+    if (!validate(value)) {
+      throw new Error(`${name} is not ${typename}`);
+    }
+    return null;
+  };
     /**
      * This `checker` is the actual function users can use.
      * Users can switch `required` OR NOT just by accessing `.isRequired` property
      * of this generated function.
      */
-    const checker      = checkType.bind(null, false);
-    checker.isRequired = checkType.bind(null, true);
-    return checker;
+  const checker = checkType.bind(null, false);
+  checker.isRequired = checkType.bind(null, true);
+  return checker;
 };
 
 /**
@@ -56,27 +60,29 @@ const createTypeChecker = (typename: string, validate: (value) => boolean): Type
  * @param checkValue TypeCheckFunc for each element of this array
  */
 const arrayValueTypeChecker = (checkValue: TypeCheckFunc): TypeCheckFunc => {
-    const checkRoot = (required, rootValue, rootName) => {
-        if (typeof rootValue === "undefined") {
-            if (required) {
-                throw new Error(`${rootName} is marked as required`);
-            } else {
-                return null;
-            }
-        }
-        if (!Array.isArray(rootValue)) { throw new Error(`${rootName} is not an array`); }
-        for (let i = 0; i < rootValue.length; i++) {
-            checkValue(rootValue[i], `element[${i}] of ${rootValue}`);
-        }
-    };
-    const check = checkRoot.bind(null, false);
-    check.isRequired = checkRoot.bind(null, true);
-    // To decode this property as a Model, store the constructor here.
-    if (typeof checkValue.ref === "function") {
-        check.ref = checkValue.ref;
-        check.load = (rawArrayOfObject = []) => rawArrayOfObject.map(checkValue.load);
+  const checkRoot = (required, rootValue, rootName) => {
+    if (typeof rootValue === 'undefined') {
+      if (required) {
+        throw new Error(`${rootName} is marked as required`);
+      } else {
+        return null;
+      }
     }
-    return check;
+    if (!Array.isArray(rootValue)) {
+      throw new Error(`${rootName} is not an array`);
+    }
+    for (let i = 0; i < rootValue.length; i++) {
+      checkValue(rootValue[i], `element[${i}] of ${rootValue}`);
+    }
+  };
+  const check = checkRoot.bind(null, false);
+  check.isRequired = checkRoot.bind(null, true);
+  // To decode this property as a Model, store the constructor here.
+  if (typeof checkValue.ref === 'function') {
+    check.ref = checkValue.ref;
+    check.load = (rawArrayOfObject = []) => rawArrayOfObject.map(checkValue.load);
+  }
+  return check;
 };
 
 /**
@@ -98,26 +104,34 @@ export interface ReferenceTypeOption {
  * so that the referenced peoperties can be decoded at the same time on decoding the root model.
  */
 const referenceTypeChecker = (refConstructor: typeof Model, opt: ReferenceTypeOption = {}): TypeCheckFunc => {
-    const checkRoot = (required: boolean, value: Model, refName: string): null => {
-        if (typeof value === "undefined") {
-            if (required) {
-                throw new Error(`${refName} is marked as required`);
-            } else { return null; }
-        }
-        value._validate();
+  const checkRoot = (required: boolean, value: Model, refName: string): null => {
+    if (typeof value === 'undefined') {
+      if (required) {
+        throw new Error(`${refName} is marked as required`);
+      } else {
         return null;
-    };
-    const check = checkRoot.bind(null, false);
-    check.isRequired = checkRoot.bind(null, true);
-    // To decode this property as a Model, store the constructor here.
-    check.ref = refConstructor;
-    check.load = (rawObject) => {
-        if (!opt.eager) { return new check.ref(rawObject); }
-        if (!rawObject) { return; }
-        if (typeof rawObject._id === "undefined") { return; }
-        return check.ref.find(rawObject._id);
-    };
-    return check;
+      }
+    }
+    value._validate();
+    return null;
+  };
+  const check = checkRoot.bind(null, false);
+  check.isRequired = checkRoot.bind(null, true);
+  // To decode this property as a Model, store the constructor here.
+  check.ref = refConstructor;
+  check.load = (rawObject) => {
+    if (!opt.eager) {
+      return new check.ref(rawObject);
+    }
+    if (!rawObject) {
+      return;
+    }
+    if (typeof rawObject._id === 'undefined') {
+      return;
+    }
+    return check.ref.find(rawObject._id);
+  };
+  return check;
 };
 
 /**
@@ -127,22 +141,24 @@ const referenceTypeChecker = (refConstructor: typeof Model, opt: ReferenceTypeOp
  * @param validations is a dictionary to map which TypeCheckFunc is used to which property.
  */
 const shapeTypeChecker = (validations: { [key: string]: TypeCheckFunc } = {}): TypeCheckFunc => {
-    const checkRoot = (required, rootValue, rootName): null => {
-        if (typeof rootValue === "undefined") {
-            if (required) {
-                throw new Error(`${rootName} is marked as required`);
-            } else { return null; }
-        }
-        Object.keys(validations).map((fieldName) => {
-            const validation = validations[fieldName];
-            const value = rootValue[fieldName];
-            validation(value, fieldName);
-        });
+  const checkRoot = (required, rootValue, rootName): null => {
+    if (typeof rootValue === 'undefined') {
+      if (required) {
+        throw new Error(`${rootName} is marked as required`);
+      } else {
         return null;
-    };
-    const check      = checkRoot.bind(null, false);
-    check.isRequired = checkRoot.bind(null, true);
-    return check;
+      }
+    }
+    Object.keys(validations).map((fieldName) => {
+      const validation = validations[fieldName];
+      const value = rootValue[fieldName];
+      validation(value, fieldName);
+    });
+    return null;
+  };
+  const check = checkRoot.bind(null, false);
+  check.isRequired = checkRoot.bind(null, true);
+  return check;
 };
 
 /**
@@ -152,66 +168,66 @@ const shapeTypeChecker = (validations: { [key: string]: TypeCheckFunc } = {}): T
  * @param {TypeCheckFunc} checkValue
  */
 const dictTypeChecker = (checkValue: TypeCheckFunc): TypeCheckFunc => {
-    const checkRoot = (required, rootValue, rootName): null => {
-        if (typeof rootValue === "undefined") {
-            if (required) {
-                throw new Error(`${rootName} is marked as required but undefined`);
-            }
-            return null;
-        }
-        if (rootValue.constructor !== Object) {
-            throw new Error(`${rootName} is supposed to be a dictionary but ${rootValue.constructor.name}`);
-        }
-        Object.keys(rootValue).map((key) => {
-            checkValue(rootValue[key], `${rootName}[${key}]`);
-        });
-        return null;
-    };
-    const check      = checkRoot.bind(null, false);
-    check.isRequired = checkRoot.bind(null, true);
-    if (typeof checkValue.ref === "function") {
-        check.ref = checkValue.ref;
-        check.load = (raw = {}) => Object.keys(raw).reduce((prev, key) => {
-            prev[key] = checkValue.load(raw[key]);
-            return prev;
-        }, {});
+  const checkRoot = (required, rootValue, rootName): null => {
+    if (typeof rootValue === 'undefined') {
+      if (required) {
+        throw new Error(`${rootName} is marked as required but undefined`);
+      }
+      return null;
     }
-    return check;
+    if (rootValue.constructor !== Object) {
+      throw new Error(`${rootName} is supposed to be a dictionary but ${rootValue.constructor.name}`);
+    }
+    Object.keys(rootValue).map((key) => {
+      checkValue(rootValue[key], `${rootName}[${key}]`);
+    });
+    return null;
+  };
+  const check = checkRoot.bind(null, false);
+  check.isRequired = checkRoot.bind(null, true);
+  if (typeof checkValue.ref === 'function') {
+    check.ref = checkValue.ref;
+    check.load = (raw = {}) => Object.keys(raw).reduce((prev, key) => {
+      prev[key] = checkValue.load(raw[key]);
+      return prev;
+    }, {});
+  }
+  return check;
 };
 
 const createDateTypeChecker = (): TypeCheckFunc => {
-    const checkType = (required: boolean, value: any, name: string): null => {
-        if (typeof value === "undefined") {
-            if (required) {
-                throw new Error(`${name} is marked as required, but got undefined`);
-            }
-            return null;
-        }
-        if (typeof value.constructor === "function" && value.constructor.name === "Date") {
-            return null;
-        }
-        throw new Error(`${name} is supposed to be Date, but got ${value.constructor.name}`);
-    };
-    const check      = checkType.bind(null, false);
-    check.isRequired = checkType.bind(null, true);
-    check.load = (raw) => new Date(raw);
-    return check;
+  const checkType = (required: boolean, value: any, name: string): null => {
+    if (typeof value === 'undefined') {
+      if (required) {
+        throw new Error(`${name} is marked as required, but got undefined`);
+      }
+      return null;
+    }
+    if (typeof value.constructor === 'function' && value.constructor.name === 'Date') {
+      return null;
+    }
+    throw new Error(`${name} is supposed to be Date, but got ${value.constructor.name}`);
+  };
+  const check = checkType.bind(null, false);
+  check.isRequired = checkType.bind(null, true);
+  check.load = (raw) => new Date(raw);
+  return check;
 };
 
 export const Types = {
-    // Simple type checkers
-    array:  createTypeChecker("array",    (value) => Array.isArray(value)),
-    bool:   createTypeChecker("bool",     (value) => typeof value === "boolean"),
-    number: createTypeChecker("number",   (value) => typeof value === "number"),
-    object: createTypeChecker("object",   (value) => typeof value === "object"),
-    string: createTypeChecker("string",   (value) => typeof value === "string"),
+  // Simple type checkers
+  array: createTypeChecker('array', (value) => Array.isArray(value)),
+  bool: createTypeChecker('bool', (value) => typeof value === 'boolean'),
+  number: createTypeChecker('number', (value) => typeof value === 'number'),
+  object: createTypeChecker('object', (value) => typeof value === 'object'),
+  string: createTypeChecker('string', (value) => typeof value === 'string'),
 
-    // Decodable type cheker
-    date: createDateTypeChecker(),
+  // Decodable type cheker
+  date: createDateTypeChecker(),
 
-    // Recursive type checker generators
-    arrayOf: arrayValueTypeChecker,
-    dictOf: dictTypeChecker,
-    reference: referenceTypeChecker,
-    shape: shapeTypeChecker,
+  // Recursive type checker generators
+  arrayOf: arrayValueTypeChecker,
+  dictOf: dictTypeChecker,
+  reference: referenceTypeChecker,
+  shape: shapeTypeChecker,
 };

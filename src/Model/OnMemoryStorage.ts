@@ -1,8 +1,3 @@
-/**
- * `OnMemoryStorage` is used instead of `window.localStorage`.
- * I hope you don't need it.
- */
-
 /*
 interface ChomexStorage {
   getItem(key: string): string?;
@@ -11,19 +6,40 @@ interface ChomexStorage {
 }
 */
 
+/**
+ * `OnMemoryStorage` is used instead of `window.localStorage`.
+ * I hope you don't need it.
+ */
 export default class OnMemoryStorage {
     public dictionary: object;
+    /**
+     * @param {Object} dictionary
+     */
     constructor(dictionary = {}) {
-        this.dictionary = dictionary;
+      this.dictionary = dictionary;
     }
+
+    /**
+     * @param {string} key
+     * @return {string}
+     */
     public getItem(key) {
-        const value = this.dictionary[key];
-        return value ? value : null;
+      const value = this.dictionary[key];
+      return value ? value : null;
     }
+
+    /**
+     * @param {string} key
+     * @param {any} value
+     */
     public setItem(key, value) {
-        this.dictionary[key] = value;
+      this.dictionary[key] = value;
     }
+
+    /**
+     * @param {string} key
+     */
     public removeItem(key) {
-        delete this.dictionary[key];
+      delete this.dictionary[key];
     }
 }

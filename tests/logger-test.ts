@@ -1,8 +1,4 @@
-/* tslint:disable
-    no-unused-expression
-    variable-name
-*/
-
+/* eslint require-jsdoc: 0, max-len: 0, prefer-rest-params: 0 */
 // TODO
 declare function expect(any): any;
 

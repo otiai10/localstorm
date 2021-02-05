@@ -22,6 +22,8 @@ describe('Story: Use Router via Client', () => {
       true.should.be.true;
     });
   });
+
+  // eslint-disable-next-line max-len
   it('Client Result Promise should be resolved even when registered controller returns plain object', () => {
     const r = new Router();
     r.on('foo', (params) => {

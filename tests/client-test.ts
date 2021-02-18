@@ -1,11 +1,4 @@
-/* tslint:disable
-    max-classes-per-file
-    variable-name
-    no-unused-expression
-    no-string-literal
-    no-shadowed-variable
-    no-empty
-*/
+/* eslint max-len: 0 */
 jest.unmock('../src/Client');
 jest.unmock('../src/Router');
 import {Client, Router} from '../src';
@@ -58,11 +51,11 @@ describe('Client', () => {
         return Promise.all([
           new Promise((resolve) => client.message('/echo', (res) => {
             res.data.echo.action.should.equal('/echo');
-            resolve();
+            resolve({});
           })),
           new Promise((resolve) => client.message('/echo', {greet: 'Morgen!'}, (res) => {
             res.data.echo.greet.should.equal('Morgen!');
-            resolve();
+            resolve({});
           })),
         ]);
       });

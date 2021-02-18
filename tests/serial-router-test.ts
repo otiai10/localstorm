@@ -58,6 +58,8 @@ describe('SerialRouter', () => {
       flag.should.equal(100);
     });
   });
+
+  // eslint-disable-next-line max-len
   describe('when given resolver is simple function and given matchers are string', () => {
     it('should match controllers according to resolver', () => {
       const resolver = (detail) => {

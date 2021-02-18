@@ -54,12 +54,18 @@ describe('Router', () => {
       router.on('yy', NiceController);
       return Promise.all([
         new Promise((resolve, reject) => {
-          router.listen({act: 'xx'}, {}, () => reject('SHOULD NOT GET CALLED'));
-          process.nextTick(() => resolve());
+          router.listen(
+              {act: 'xx'}, {},
+              () => reject(new Error('SHOULD NOT GET CALLED')),
+          );
+          process.nextTick(() => resolve({}));
         }),
         new Promise((resolve, reject) => {
-          router.listen({act: 'yy'}, {}, () => reject('SHOULD NOT GET CALLED'));
-          process.nextTick(() => resolve());
+          router.listen(
+              {act: 'yy'}, {},
+              () => reject(new Error('SHOULD NOT GET CALLED')),
+          );
+          process.nextTick(() => resolve({}));
         }),
       ]);
     });
@@ -74,10 +80,9 @@ describe('Router', () => {
         new Promise((resolve) => {
           router.listen({act: '/rough'}, {}, (res) => {
             res.status.should.equal(500);
-            res.message.should.equal(
-                'Unhandled Background Error: TypeError: Cannot read property \'pointer\' of undefined',
-            );
-            resolve();
+            // eslint-disable-next-line max-len
+            res.message.should.equal('Unhandled Background Error: TypeError: Cannot read property \'pointer\' of undefined');
+            resolve({});
           });
         }),
       ]);

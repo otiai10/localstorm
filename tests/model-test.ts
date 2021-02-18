@@ -1,4 +1,4 @@
-/* eslint require-jsdoc: 0 */
+/* eslint require-jsdoc: 0, camelcase: 0, max-len: 0 */
 jest.unmock('../src/Model');
 jest.unmock('../src/Model/OnMemoryStorage');
 
@@ -25,7 +25,6 @@ class Bar extends Model {
     public age: number;
 }
 Bar.template = {name: '', age: 20};
-class Ham extends Model {}
 
 class Toto extends Model {
     public static schema = {
@@ -403,10 +402,10 @@ describe('Model', () => {
       return new Promise((ok, ng) => {
         try {
           foo.save();
-          ng('saving without title SHOULD throw error, but it was successful');
+          ng(new Error('saving without title SHOULD throw error, but it was successful'));
         } catch (err) {
           err.message.should.equal('title is marked as required');
-          ok();
+          ok({});
         }
       });
     });
@@ -485,20 +484,20 @@ describe('Model', () => {
           const storage = {};
           try {
             Model.useStorage(storage);
-            ng('invalid assignment to storage SHOULD RAISE ERROR');
+            ng(new Error('invalid assignment to storage SHOULD RAISE ERROR'));
           } catch (err) {
             err.message.should.equal('`getItem` of Storage interface is missing');
-            ok();
+            ok({});
           }
         }),
         new Promise((ok, ng) => {
           const storage = {getItem: () => {}, setItem: () => {}, removeItem: () => {}};
           try {
             Model.useStorage(storage);
-            ng('invalid assignment to storage SHOULD RAISE ERROR');
+            ng(new Error('invalid assignment to storage SHOULD RAISE ERROR'));
           } catch (err) {
             err.message.should.equal('`getItem` of Storage must accept at least 1 argument');
-            ok();
+            ok({});
           }
         }),
       ]);

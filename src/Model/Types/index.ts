@@ -18,16 +18,22 @@ export declare interface TypeCheckFunc {
  * This function is ONLY used internally,
  * and users can use the generated type checker functions.
  *
- * @param typename the name of expected type represented by "typeof" function.
- * @param validate the validator function for this typename.
+ * @param {string} typename the name of expected type
+ *                represented by "typeof" function.
+ * @param {function} validate the validator function for this typename.
+ * @return {TypeCheckFunc}
  */
-const createTypeChecker = (typename: string, validate: (value) => boolean): TypeCheckFunc => {
+const createTypeChecker = (
+    typename: string,
+    validate: (value) => boolean,
+): TypeCheckFunc => {
   /**
-     * checkType is the base framework function of validation.
-     * @param required specifies if this property is required OR NOT.
-     * @param value the actual value of this property.
-     * @param name the name of this property inside the Model.
-     */
+   * checkType is the base framework function of validation.
+   * @param {boolean} required specifies if this property is required OR NOT.
+   * @param {any} value the actual value of this property.
+   * @param {string} name the name of this property inside the Model.
+   * @return {null}
+   */
   const checkType = (required, value, name): null => {
     if (typeof value === 'undefined') {
       if (required) {
@@ -41,11 +47,12 @@ const createTypeChecker = (typename: string, validate: (value) => boolean): Type
     }
     return null;
   };
-    /**
-     * This `checker` is the actual function users can use.
-     * Users can switch `required` OR NOT just by accessing `.isRequired` property
-     * of this generated function.
-     */
+
+  /**
+   * This `checker` is the actual function users can use.
+   * Users can switch `required` OR NOT just by accessing `.isRequired` property
+   * of this generated function.
+   */
   const checker = checkType.bind(null, false);
   checker.isRequired = checkType.bind(null, true);
   return checker;
@@ -55,9 +62,12 @@ const createTypeChecker = (typename: string, validate: (value) => boolean): Type
  * arrayTypeChecker is a generator function of type checker
  * with checking each element of the array by provided checkFunc.
  * If the provided TypeCheckFunc for the elements is `reference` checker,
- * this generated TypeCheckFunc has `decode` function which can decode each element to Model class.
+ * this generated TypeCheckFunc has `decode` function
+ * which can decode each element to Model class.
  *
- * @param checkValue TypeCheckFunc for each element of this array
+ * @param {TypeCheckFunc} checkValue TypeCheckFunc
+ *                        for each element of this array
+ * @return {TypeCheckFunc}
  */
 const arrayValueTypeChecker = (checkValue: TypeCheckFunc): TypeCheckFunc => {
   const checkRoot = (required, rootValue, rootName) => {
@@ -80,7 +90,9 @@ const arrayValueTypeChecker = (checkValue: TypeCheckFunc): TypeCheckFunc => {
   // To decode this property as a Model, store the constructor here.
   if (typeof checkValue.ref === 'function') {
     check.ref = checkValue.ref;
-    check.load = (rawArrayOfObject = []) => rawArrayOfObject.map(checkValue.load);
+    check.load = (
+        rawArrayOfObject = [],
+    ) => rawArrayOfObject.map(checkValue.load);
   }
   return check;
 };
@@ -91,8 +103,10 @@ const arrayValueTypeChecker = (checkValue: TypeCheckFunc): TypeCheckFunc => {
 export interface ReferenceTypeOption {
     /**
      * eager:
-     *  If it's true, methods like `find` will try to load the newest data for the referenced models.
-     *  Otherwise the referenced models will be just decoded class instances stored under this parent's namespace.
+     *  If it's true, methods like `find` will try to load
+     *  the newest data for the referenced models.
+     *  Otherwise the referenced models will be just decoded class instances
+     *  stored under this parent's namespace.
      */
     eager?: boolean;
 }
@@ -101,10 +115,22 @@ export interface ReferenceTypeOption {
  * referenceTypeChecker is a generator function of type checker
  * with referencing another Model, known as "relations".
  * The generated type checker function also includes "decode" function
- * so that the referenced peoperties can be decoded at the same time on decoding the root model.
+ * so that the referenced peoperties can be decoded
+ * at the same time on decoding the root model.
+ *
+ * @param {function} refConstructor
+ * @param {ReferenceTypeOption} opt
+ * @return {TypeCheckFunc}
  */
-const referenceTypeChecker = (refConstructor: typeof Model, opt: ReferenceTypeOption = {}): TypeCheckFunc => {
-  const checkRoot = (required: boolean, value: Model, refName: string): null => {
+const referenceTypeChecker = (
+    refConstructor: typeof Model,
+    opt: ReferenceTypeOption = {},
+): TypeCheckFunc => {
+  const checkRoot = (
+      required: boolean,
+      value: Model,
+      refName: string,
+  ): null => {
     if (typeof value === 'undefined') {
       if (required) {
         throw new Error(`${refName} is marked as required`);
@@ -121,6 +147,7 @@ const referenceTypeChecker = (refConstructor: typeof Model, opt: ReferenceTypeOp
   check.ref = refConstructor;
   check.load = (rawObject) => {
     if (!opt.eager) {
+      // eslint-disable-next-line new-cap
       return new check.ref(rawObject);
     }
     if (!rawObject) {
@@ -138,9 +165,13 @@ const referenceTypeChecker = (refConstructor: typeof Model, opt: ReferenceTypeOp
  * shapeTypeChecker is a generator function of type checker
  * with checking each element of the object.
  *
- * @param validations is a dictionary to map which TypeCheckFunc is used to which property.
+ * @param {Record<string, TypeCheckFunc>} validations is a dictionary
+ *        to map which TypeCheckFunc is used to which property.
+ * @return {TypeCheckFunc}
  */
-const shapeTypeChecker = (validations: { [key: string]: TypeCheckFunc } = {}): TypeCheckFunc => {
+const shapeTypeChecker = (
+    validations: { [key: string]: TypeCheckFunc } = {},
+): TypeCheckFunc => {
   const checkRoot = (required, rootValue, rootName): null => {
     if (typeof rootValue === 'undefined') {
       if (required) {
@@ -166,6 +197,7 @@ const shapeTypeChecker = (validations: { [key: string]: TypeCheckFunc } = {}): T
  * with assuming the value is a dictionary object of given type.
  *
  * @param {TypeCheckFunc} checkValue
+ * @return {TypeCheckFunc}
  */
 const dictTypeChecker = (checkValue: TypeCheckFunc): TypeCheckFunc => {
   const checkRoot = (required, rootValue, rootName): null => {
@@ -176,7 +208,10 @@ const dictTypeChecker = (checkValue: TypeCheckFunc): TypeCheckFunc => {
       return null;
     }
     if (rootValue.constructor !== Object) {
-      throw new Error(`${rootName} is supposed to be a dictionary but ${rootValue.constructor.name}`);
+      throw new Error(
+          `${rootName} is supposed to be a dictionary` +
+          `but ${rootValue.constructor.name}`,
+      );
     }
     Object.keys(rootValue).map((key) => {
       checkValue(rootValue[key], `${rootName}[${key}]`);
@@ -203,10 +238,15 @@ const createDateTypeChecker = (): TypeCheckFunc => {
       }
       return null;
     }
-    if (typeof value.constructor === 'function' && value.constructor.name === 'Date') {
+    if (
+      typeof value.constructor === 'function' &&
+      value.constructor.name === 'Date'
+    ) {
       return null;
     }
-    throw new Error(`${name} is supposed to be Date, but got ${value.constructor.name}`);
+    throw new Error(
+        `${name} is supposed to be Date, but got ${value.constructor.name}`,
+    );
   };
   const check = checkType.bind(null, false);
   check.isRequired = checkType.bind(null, true);

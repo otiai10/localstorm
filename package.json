@@ -13,7 +13,7 @@
     "build": "rm -rf ./lib && tsc -p ./tsconfig.json",
     "release": "./node_modules/.bin/coffee ./scripts/release.coffee",
     "test": "jest",
-    "lint": "eslint './src/**/*.ts' './tests/**/*.ts'",
+    "lint": "eslint \"./src/**/*.ts\" \"./tests/**/*.ts\"",
     "ci": "npm run test -- --coverage && cat ./coverage/lcov.info | coveralls"
   },
   "repository": "https://github.com/otiai10/chomex.git",

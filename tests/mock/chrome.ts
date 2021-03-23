@@ -40,7 +40,6 @@ const tabs: Channel = {
   },
 };
 
-declare let global: any;
 Object.defineProperty(global, 'chrome', {value: {
   runtime,
   tabs,

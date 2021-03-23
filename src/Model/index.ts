@@ -233,7 +233,6 @@ export class Model {
       if (typeof this.nextID === 'function') {
         const id = this.nextID(all);
         if (id === undefined || id === null) {
-          /* tslint:disable no-console */
           console.error('customized `nextID` function provides invalid ID');
           return this.timestampAndSequentialID(all);
         }

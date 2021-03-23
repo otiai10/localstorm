@@ -5,11 +5,6 @@ jest.unmock('../src/Model/OnMemoryStorage');
 import {Model, Types} from '../src';
 import OnMemoryStorage from '../src/Model/OnMemoryStorage';
 
-// TODO
-declare function expect(any): any;
-
-declare let global: any;
-
 Object.defineProperty(global, 'localStorage', {value: new OnMemoryStorage()});
 
 class Foo extends Model {
@@ -78,16 +73,16 @@ class Team extends Model {
 describe('Model', () => {
   it('should have customized method', () => {
     const foo = new Foo();
-    foo.foo().should.equal('this is foo!');
+    expect(foo.foo()).toBe('this is foo!');
   });
   describe('all', () => {
     it('should return all saved models', () => {
       const foo = new Foo({});
       foo.save();
       const all = Foo.all();
-      Object.keys(all).length.should.equal(1);
-      Object.keys(all)[0].should.equal(String(foo._id));
-      all[foo._id]._id.should.equal(foo._id);
+      expect(Object.keys(all).length).toBe(1);
+      expect(Object.keys(all)[0]).toBe(String(foo._id));
+      expect(all[foo._id]._id).toBe(foo._id);
     });
     describe('if the schema has `reference` to other models', () => {
       it('should decode the property as the specified model instance', () => {
@@ -106,12 +101,12 @@ describe('Model', () => {
         });
         team.save();
         const found: Team = Team.find<Team>(team._id);
-        expect(found).not.to.be.undefined;
-        found.awards[0].should.equal('Academy');
-        found.leader.should.be.an.instanceOf(User);
-        found.members[0].should.be.an.instanceOf(User);
-        found.created.should.be.an.instanceOf(Date);
-        found.roles['captain'].should.be.an.instanceOf(User);
+        expect(found).not.toBeUndefined();
+        expect(found.awards[0]).toBe('Academy');
+        expect(found.leader).toBeInstanceOf(User);
+        expect(found.members[0]).toBeInstanceOf(User);
+        expect(found.created).toBeInstanceOf(Date);
+        expect(found.roles['captain']).toBeInstanceOf(User);
       });
       it('should load the latest properties if `eager: true` is specified', () => {
         const leader = User.create({name: 'otiai1000', age: 21, langs: ['ja']});
@@ -126,24 +121,24 @@ describe('Model', () => {
         });
         team.save();
         let found: Team = Team.find<Team>(team._id);
-        found.members[0].age.should.equal(17);
-        found.members[1].age.should.equal(19);
-        found.watchers[0].age.should.equal(17);
+        expect(found.members[0].age).toBe(17);
+        expect(found.members[1].age).toBe(19);
+        expect(found.watchers[0].age).toBe(17);
         // Update only user_1, who is in `members` and `watchers`
         user_1.update({age: 88});
         found = Team.find<Team>(team._id);
         // Because `members` prop is referenced with `eager: true`,
         // it should be the latest state of that member.
-        found.members[0].age.should.equal(88);
-        found.watchers[0].age.should.equal(17);
-        found.members[0]._id.should.equal(found.watchers[0]._id);
+        expect(found.members[0].age).toBe(88);
+        expect(found.watchers[0].age).toBe(17);
+        expect(found.members[0]._id).toBe(found.watchers[0]._id);
       });
     });
   });
   describe('list', () => {
     it('should return all saved models but as a array', () => {
       Foo.new({}).save();
-      expect(Foo.list()).to.be.an.instanceof(Array);
+      expect(Foo.list()).toBeInstanceOf(Array);
     });
     describe('when it\'s not stored yet', () => {
       class Example extends Model {
@@ -156,25 +151,25 @@ describe('Model', () => {
       }
       it('should return default dictionary as a list', () => {
         const list = Example.list();
-        expect(list.length).to.equal(3);
+        expect(list.length).toBe(3);
       });
     });
   });
   describe('save', () => {
     it('should generate _id', () => {
       const foo = new Foo();
-      expect(foo._id).be.undefined;
+      expect(foo._id).toBeUndefined();
       foo.save();
-      foo._id.should.not.be.undefined;
+      expect(foo._id).not.toBeUndefined();
     });
     describe('if the model has __ns property', () => {
       it('should save the model under the given __ns inside Storage', () => {
         const team = new Team();
-        expect(team._id).to.be.undefined;
+        expect(team._id).toBeUndefined();
         team.save();
-        team._id.should.not.be.undefined;
-        expect(Team.__storage.getItem('Team')).to.be.null;
-        expect(Team.__storage.getItem('organization')).not.to.be.null;
+        expect(team._id).not.toBeUndefined();
+        expect(Team.__storage.getItem('Team')).toBeNull();
+        expect(Team.__storage.getItem('organization')).not.toBeNull();
       });
     });
   });
@@ -182,10 +177,10 @@ describe('Model', () => {
     it('should update properties of this (as a short hand for `save`)', () => {
       const foo = Foo.create({name: 'otiai10'});
       const bar: Foo = Foo.find(foo._id);
-      bar.name.should.equal('otiai10');
-      bar.update({name: 'otiai20'}).should.instanceof(Model);
+      expect(bar.name).toBe('otiai10');
+      expect(bar.update({name: 'otiai20'})).toBeInstanceOf(Foo);
       const baz: Foo = Foo.find(foo._id);
-      baz.name.should.equal('otiai20');
+      expect(baz.name).toBe('otiai20');
     });
     /* Now we're using TypeScript!! */
     // describe('when given parameter is not a dictionary', () => {
@@ -207,16 +202,16 @@ describe('Model', () => {
                     public zzz: boolean;
         }
         const foobar: FooBar = FooBar.create();
-        foobar.xxx['yyy'].should.equal(1000);
-        foobar.zzz.should.equal(true);
+        expect(foobar.xxx['yyy']).toBe(1000);
+        expect(foobar.zzz).toBe(true);
         foobar.update({zzz: false});
         const x: FooBar = FooBar.find(foobar._id);
-        x.zzz.should.equal(false);
-        x.xxx['yyy'].should.equal(1000);
+        expect(x.zzz).toBe(false);
+        expect(x.xxx['yyy']).toBe(1000);
         x.update({xxx: {yyy: 2000}});
         const z: FooBar = FooBar.find(foobar._id);
-        z.zzz.should.equal(false);
-        x.xxx['yyy'].should.equal(2000);
+        expect(z.zzz).toBe(false);
+        expect(x.xxx['yyy']).toBe(2000);
       });
     });
   });
@@ -224,35 +219,35 @@ describe('Model', () => {
     it('should delete data from storage', () => {
       const foo = new Foo({}, 'foo');
       foo.save();
-      expect(foo._id).not.to.be.undefined;
-      foo.delete().should.equal(true);
+      expect(foo._id).not.toBeUndefined();
+      expect(foo.delete()).toBe(true);
       const bar = Foo.find('foo');
-      expect(bar).to.be.undefined;
+      expect(bar).toBeUndefined();
     });
   });
   describe('create', () => {
     it('should construct and `save` instance with properties', () => {
       const foo: Foo = Foo.create({name: 'otiai40'});
-      foo._id.should.not.be.undefined;
+      expect(foo._id).not.toBeUndefined();
       const baz: Foo = Foo.find(foo._id);
-      baz.name.should.not.be.undefined;
-      baz.name.should.equal(foo.name);
+      expect(baz.name).not.toBeUndefined();
+      expect(baz.name).toBe(foo.name);
     });
     describe('when given no any arguments', () => {
       it('should create model with template or empty object', () => {
         class Spamy extends Model {}
         const spamy = Spamy.create();
-        expect(spamy).not.to.be.undefined;
-        expect(spamy._id).not.to.be.undefined;
+        expect(spamy).not.toBeUndefined();
+        expect(spamy._id).not.toBeUndefined();
         class Hammy extends Model {
                     public static template = {name: 'Mr. Anonymous'};
                     public static nextID = Model.sequentialID;
                     public name: string;
         }
         const hammy: Hammy = Hammy.create();
-        expect(hammy).not.to.be.undefined;
-        expect(hammy._id).not.to.be.undefined;
-        hammy.name.should.equal('Mr. Anonymous');
+        expect(hammy).not.toBeUndefined();
+        expect(hammy._id).not.toBeUndefined();
+        expect(hammy.name).toBe('Mr. Anonymous');
       });
     });
   });
@@ -267,13 +262,13 @@ describe('Model', () => {
       }
       it('should return default value for given ID', () => {
         const another = Example.find('a');
-        expect(another).not.to.be.undefined;
+        expect(another).not.toBeUndefined();
         another.update({name: 'otiai10-updated'});
-        expect(Example.find('b')).not.to.be.undefined;
+        expect(Example.find('b')).not.toBeUndefined();
         // When "default" has been changed later.
         Example.default['c'] = {name: 'otiai30'};
         const newcomer = Example.find('c');
-        expect(newcomer).not.to.be.null;
+        expect(newcomer).not.toBeNull();
       });
     });
   });
@@ -283,11 +278,11 @@ describe('Model', () => {
         const foo: Foo = new Foo({seq: i}, `foo-${i}`);
         foo.save();
       });
-      Foo.filter<Foo>((foo) => foo.seq % 2 === 0).length.should.equal(5);
-      Foo.filter<Foo>((foo) => foo.seq % 3 === 0).length.should.equal(4);
-      Foo.filter<Foo>((foo) => foo.seq % 5 === 0).length.should.equal(2);
+      expect(Foo.filter<Foo>((foo) => foo.seq % 2 === 0).length).toBe(5);
+      expect(Foo.filter<Foo>((foo) => foo.seq % 3 === 0).length).toBe(4);
+      expect(Foo.filter<Foo>((foo) => foo.seq % 5 === 0).length).toBe(2);
       const foo = Foo.filter<Foo>((foo) => foo.seq % 2 === 0).pop();
-      foo.constructor.name.should.equal('Foo');
+      expect(foo.constructor.name).toBe('Foo');
     });
   });
   describe('drop', () => {
@@ -296,34 +291,35 @@ describe('Model', () => {
         const foo = new Foo({seq: i}, `foo-${i}`);
         foo.save();
       });
-      Foo.filter(() => true).length.should.not.equal(0);
+      expect(Foo.filter(() => true).length).not.toBe(0);
       Foo.drop();
-      Foo.filter(() => true).length.should.equal(0);
+      expect(Foo.filter(() => true).length).toBe(0);
     });
   });
   describe('new', () => {
     it('should be an alias for constructor expression', () => {
       const bar: Bar = Bar.new();
-      expect(bar).to.be.an.instanceof(Bar);
-      expect(bar._id).to.be.undefined;
-      expect(bar.name).to.not.be.undefined;
-      bar.name.should.equal('');
-      expect(bar.age).to.not.be.undefined;
-      bar.age.should.equal(20);
-      expect(bar.save()._id).to.not.be.undefined;
+      expect(bar).toBeInstanceOf(Bar);
+      expect(bar._id).toBeUndefined();
+      expect(bar.name).not.toBeUndefined();
+      expect(bar.name).toBe('');
+      expect(bar.age).not.toBeUndefined();
+      expect(bar.age).toBe(20);
+      expect(bar.save()._id).not.toBeUndefined();
     });
   });
   describe('static nextID', () => {
     it('should generate next ID by combining current timestamp and appendix by default', () => {
       const now = Date.now();
       const id = Model.nextID() as string;
-      expect(parseInt(id.split('.')[0], 10)).to.be.within(now - 10, now + 10);
+      expect(parseInt(id.split('.')[0], 10)).toBeCloseTo(now - 10, -4);
     });
     it('should be called when new model is saved', () => {
       const now = Date.now();
       const foo = new Foo();
       foo.save();
-      expect(parseInt(foo._id.split('.')[0], 10)).to.be.within(now - 100, now + 100);
+      expect(parseInt(foo._id.split('.')[0], 10)).toBeGreaterThan(now - 100);
+      expect(parseInt(foo._id.split('.')[0], 10)).toBeLessThan(now + 100);
     });
     it('should be customized by setting function, like serial id', () => {
       const nextID = (all) => {
@@ -331,25 +327,25 @@ describe('Model', () => {
       };
       Foo.nextID = nextID;
       const foo = Foo.create({});
-      foo._id.should.equal(1);
+      expect(foo._id).toBe(1);
       const bar = Foo.create({});
-      bar._id.should.equal(2);
+      expect(bar._id).toBe(2);
     });
     it('should be replaced by prepared functions: e.g. `sequentialID`', () => {
       class Spam extends Model {
                 public static nextID = Model.sequentialID;
       }
       const foo = Spam.create({});
-      foo._id.should.equal(1);
+      expect(foo._id).toBe(1);
       const bar = Spam.create({});
-      bar._id.should.equal(2);
+      expect(bar._id).toBe(2);
       foo.delete();
       const baz = Spam.create({});
-      baz._id.should.equal(3);
+      expect(baz._id).toBe(3);
       const hoge = Spam.create({});
-      hoge._id.should.equal(4);
+      expect(hoge._id).toBe(4);
       const fuga = Spam.create({});
-      fuga._id.should.equal(5);
+      expect(fuga._id).toBe(5);
     });
     /* Now we are using TypeScript! Yay! */
     // describe('when invalid `nextID` is set', () => {
@@ -372,9 +368,9 @@ describe('Model', () => {
                 public name: string;
       }
       const foo: Foo = Foo.new();
-      foo.name.should.equal('templated');
-      foo.age.should.equal(10);
-      expect(foo._id).to.be.undefined;
+      expect(foo.name).toBe('templated');
+      expect(foo.age).toBe(10);
+      expect(foo._id).toBeUndefined();
     });
     describe('when one of template is function', () => {
       it('should provide templated value with executing that function', () => {
@@ -387,9 +383,10 @@ describe('Model', () => {
                     public name: string;
         }
         const foo: Foo = Foo.new();
-        foo.name.should.match(/generated-[0-9]+/);
-        foo.age.should.within(1, 30);
-        expect(foo._id).to.be.undefined;
+        expect(foo.name).toMatch(/generated-[0-9]+/);
+        expect(foo.age).toBeGreaterThan(1);
+        expect(foo.age).toBeLessThan(30);
+        expect(foo._id).toBeUndefined();
       });
     });
   });
@@ -404,7 +401,7 @@ describe('Model', () => {
           foo.save();
           ng(new Error('saving without title SHOULD throw error, but it was successful'));
         } catch (err) {
-          err.message.should.equal('title is marked as required');
+          expect(err.message).toBe('title is marked as required');
           ok({});
         }
       });
@@ -419,7 +416,7 @@ describe('Model', () => {
         foo.save();
         throw new Error('saving without title SHOULD throw error, but it was successful');
       } catch (err) {
-        err.message.should.equal('age is not number');
+        expect(err.message).toBe('age is not number');
       }
     });
     describe('shape', () => {
@@ -431,7 +428,7 @@ describe('Model', () => {
           foo.save();
           throw new Error('saving without title SHOULD throw error, but it was successful');
         } catch (err) {
-          err.message.should.equal('size is marked as required');
+          expect(err.message).toBe('size is marked as required');
         }
       });
       describe('when required shape is given but not satisfied', () => {
@@ -443,7 +440,7 @@ describe('Model', () => {
           foo.save();
           throw new Error('saving without title SHOULD throw error, but it was successful');
         } catch (err) {
-          err.message.should.equal('width is marked as required');
+          expect(err.message).toBe('width is marked as required');
         }
       });
       describe('when required shape is given but not satisfied', () => {
@@ -462,7 +459,7 @@ describe('Model', () => {
           foo.save();
           throw new Error('saving without title SHOULD throw error, but it was successful');
         } catch (err) {
-          err.message.should.equal('left is not number');
+          expect(err.message).toBe('left is not number');
         }
       });
     });
@@ -474,9 +471,9 @@ describe('Model', () => {
       class Hoge extends Model {
                 public name: string;
       }
-      Hoge.find<Hoge>(1).name.should.equal('otiai10');
+      expect(Hoge.find<Hoge>(1).name).toBe('otiai10');
       Model.useStorage(global.localStorage);
-      expect(Hoge.find(1)).to.be.undefined;
+      expect(Hoge.find(1)).toBeUndefined();
     });
     it('should raise error if given storage doesn\'t satisfy Storage interface', () => {
       return Promise.all([
@@ -486,7 +483,7 @@ describe('Model', () => {
             Model.useStorage(storage);
             ng(new Error('invalid assignment to storage SHOULD RAISE ERROR'));
           } catch (err) {
-            err.message.should.equal('`getItem` of Storage interface is missing');
+            expect(err.message).toBe('`getItem` of Storage interface is missing');
             ok({});
           }
         }),
@@ -496,7 +493,7 @@ describe('Model', () => {
             Model.useStorage(storage);
             ng(new Error('invalid assignment to storage SHOULD RAISE ERROR'));
           } catch (err) {
-            err.message.should.equal('`getItem` of Storage must accept at least 1 argument');
+            expect(err.message).toBe('`getItem` of Storage must accept at least 1 argument');
             ok({});
           }
         }),

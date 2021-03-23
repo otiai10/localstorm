@@ -3,10 +3,11 @@ jest.unmock('../src/Client');
 jest.unmock('../src/Router');
 import {Client, Router} from '../src';
 
-declare function expect(...any): any;
 declare let global: any;
 
 beforeAll(() => {
+  // TODO: Use jestil instead
+  //       See https://github.com/otiai10/jestil
   const r = new Router();
   r.on('/echo', (message) => Promise.resolve({echo: message}));
   global.chrome.runtime.onMessage.addListener(r.listener());
@@ -23,8 +24,8 @@ describe('Client', () => {
         const client: Client = new Client(global.chrome.runtime);
         return client.message<any>({action: '/echo', greet: 'Hello!'})
             .then((res) => {
-              res.data.echo.action.should.equal('/echo');
-              res.data.echo.greet.should.equal('Hello!');
+              expect(res.data.echo.action).toBe('/echo');
+              expect(res.data.echo.greet).toBe('Hello!');
               return Promise.resolve();
             });
       });
@@ -34,12 +35,12 @@ describe('Client', () => {
         const client = new Client(global.chrome.runtime);
         return Promise.all([
           client.message('/echo').then((res) => {
-            res.data.echo.action.should.equal('/echo');
-            expect(true).to.be.true;
+            expect(res.data.echo.action).toBe('/echo');
+            expect(true).toBeTruthy();
             return Promise.resolve();
           }),
           client.message('/echo', {greet: 'Gute Nacht!'}).then((res) => {
-            res.data.echo.greet.should.equal('Gute Nacht!');
+            expect(res.data.echo.greet).toBe('Gute Nacht!');
             return Promise.resolve();
           }),
         ]);
@@ -50,11 +51,11 @@ describe('Client', () => {
         const client = new Client(global.chrome.runtime);
         return Promise.all([
           new Promise((resolve) => client.message('/echo', (res) => {
-            res.data.echo.action.should.equal('/echo');
+            expect(res.data.echo.action).toBe('/echo');
             resolve({});
           })),
           new Promise((resolve) => client.message('/echo', {greet: 'Morgen!'}, (res) => {
-            res.data.echo.greet.should.equal('Morgen!');
+            expect(res.data.echo.greet).toBe('Morgen!');
             resolve({});
           })),
         ]);
@@ -64,7 +65,7 @@ describe('Client', () => {
       it('should NOT throw exception, and returns 202 Accepted', (ok) => {
         const client = new Client(global.chrome.runtime, false);
         return client.message('/empty').then((res) => {
-          res.status.should.equal(202);
+          expect(res.status).toBe(202);
           ok();
         });
       });
@@ -74,16 +75,16 @@ describe('Client', () => {
     it('should provide TargetedClient', () => {
       const client = new Client(global.chrome.tabs);
       return client.tab(100).message('/echo').then((res) => {
-        expect(res.data.echo.tab.id).not.be.undefined;
-        res.data.echo.tab.id.should.equal(100);
+        expect(res.data.echo.tab.id).not.toBeUndefined();
+        expect(res.data.echo.tab.id).toBe(100);
         return Promise.resolve();
       });
     });
     describe('static method `for`', () => {
       it('should be just a shorthand of constructing TargetedClient directly', () => {
         return Client.for(global.chrome.tabs, 123).message('/echo').then((res) => {
-          expect(res.data.echo.tab.id).not.be.undefined;
-          res.data.echo.tab.id.should.equal(123);
+          expect(res.data.echo.tab.id).not.toBeUndefined();
+          expect(res.data.echo.tab.id).toBe(123);
           return Promise.resolve();
         });
       });

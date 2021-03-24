@@ -25,12 +25,10 @@
   },
   "homepage": "https://github.com/otiai10/chomex#readme",
   "devDependencies": {
-    "@types/chai": "^4.1.2",
     "@types/jest": "^26.0.21",
     "@types/should": "^13.0.0",
     "@typescript-eslint/eslint-plugin": "^4.19.0",
     "@typescript-eslint/parser": "^4.19.0",
-    "chai": "^4.1.2",
     "coffee-script": "^1.12.7",
     "eslint": "^7.22.0",
     "eslint-config-google": "^0.14.0",

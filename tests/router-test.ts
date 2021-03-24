@@ -1,14 +1,3 @@
-/* tslint:disable
-    max-classes-per-file
-    variable-name
-    no-unused-expression
-    no-string-literal
-    no-shadowed-variable
-    no-empty
-*/
-
-declare let process: any;
-
 jest.unmock('../src/Router/Router');
 import {Router} from '../src';
 
@@ -20,7 +9,7 @@ describe('Router', () => {
       flag += 1;
     });
     router.listen({act: '/foo/bar'});
-    flag.should.equal(1);
+    expect(flag).toBe(1);
   });
   describe('resolveFunc for constructor', () => {
     it('should change resolve rule', () => {
@@ -42,8 +31,8 @@ describe('Router', () => {
       router.listen('spamham');
       router.listen('spamham');
 
-      count.x.should.equal(3);
-      count.y.should.equal(2);
+      expect(count.x).toBe(3);
+      expect(count.y).toBe(2);
     });
   });
   describe('when matched controller doesn\'t return anything', () => {
@@ -79,9 +68,9 @@ describe('Router', () => {
       return Promise.all([
         new Promise((resolve) => {
           router.listen({act: '/rough'}, {}, (res) => {
-            res.status.should.equal(500);
+            expect(res.status).toBe(500);
             // eslint-disable-next-line max-len
-            res.message.should.equal('Unhandled Background Error: TypeError: Cannot read property \'pointer\' of undefined');
+            expect(res.message).toBe('Unhandled Background Error: TypeError: Cannot read property \'pointer\' of undefined');
             resolve({});
           });
         }),

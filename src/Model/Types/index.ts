@@ -3,7 +3,6 @@
  */
 import {Model} from '..';
 
-/* tslint:disable interface-name */
 export declare interface TypeCheckFunc {
     (value: any, name: string): null;
     isRequired?: TypeCheckFunc;

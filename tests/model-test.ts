@@ -384,7 +384,7 @@ describe('Model', () => {
         }
         const foo: Foo = Foo.new();
         expect(foo.name).toMatch(/generated-[0-9]+/);
-        expect(foo.age).toBeGreaterThan(1);
+        expect(foo.age).toBeGreaterThanOrEqual(1);
         expect(foo.age).toBeLessThan(30);
         expect(foo._id).toBeUndefined();
       });

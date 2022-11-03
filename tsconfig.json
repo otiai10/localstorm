@@ -10,7 +10,7 @@
         "declaration": true
     },
     "files": [
-        "src/Model.tsx.ts"
+        "src/index.ts"
     ],
     "exclude": [
         "node_modules"

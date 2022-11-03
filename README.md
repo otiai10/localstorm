@@ -1,169 +1,232 @@
-chomex
+active-storage
 ========
 
-[![Latest Stable Version](https://img.shields.io/npm/v/chomex.svg)](https://www.npmjs.com/package/chomex)
-[![NPM Downloads](https://img.shields.io/npm/dt/chomex.svg)](https://www.npmjs.com/package/chomex)
-[![Node.js CI](https://github.com/otiai10/chomex/workflows/Node.js%20CI/badge.svg)](https://github.com/otiai10/chomex/actions?query=workflow%3A%22Node.js+CI%22)
-[![codecov](https://codecov.io/gh/otiai10/chomex/branch/main/graph/badge.svg?token=n6lt67hpyd)](https://codecov.io/gh/otiai10/chomex)
-
-Chrome Extension Messaging Routing Kit.
-
-- [Router](https://github.com/otiai10/chomex/tree/master/src/Router/README.md) to handle `onMessage` with routes expression
-- [Client](https://github.com/otiai10/chomex/tree/master/src/Client/README.md) to Promisify `sendMessage`
-- [Model](https://github.com/otiai10/chomex/tree/master/src/Model/README.md) to access to `localStorage` like `ActiveRecord`
-- [Types](https://github.com/otiai10/chomex/tree/master/src/Model/Types/README.md) to define data schema of `Model`
+Foo Baa Baz
 
 # Installation
 
 ```sh
-npm install chomex
+npm install active-storage
 ```
 
-# Why?
+# Model
 
-## `.onMessage` like a server routing
+`Model` is an ORM (Object-Relation Mapper) for `localStorage`, providing simple interfaces like `ActiveRecord`.
 
-:-1: Dispatching message inside `addListener` function makes my code messy and unreeadable.
+> NOTE: `Model` is NOT the best efficient accessor for `localStorage`, BUT provides the best small and easy way to manage `localStorage` and automatically map the object to your `Model` class.
 
-```javascript
-chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
-  switch(message.action) {
-  case "/users/get":
-    GetUser.apply(sender, [message, sendResponse]);
-    break;
-  default:
-    NotFound.apply(sender, [message, sendResponse]);
-  }
-  return true;
-});
-```
+- Methods
+  - [new](#new)
+  - [save](#save)
+  - [find](#find)
+  - [update](#update)
+  - [delete](#delete)
+  - [create](#create)
+  - [all](#all)
+  - [list](#list)
+  - [filter](#filter)
+- Properties
+  - [schema](#schema)
+  - [nextID](#nextID)
 
-:+1: `chomex.Router` makes it more claen and readable.
-
-```javascript
-const router = new chomex.Router();
-router.on("/users/get", GetUser);
-chrome.runtime.onMessage.addListener(router.listener());
-```
-
-_Happy_ :hugs:
-
-## `.sendMessage` like a fetch client
-
-:-1: Handling the response of `sendMessage` by callback makes my code messy and unreadable.
+# How to use
 
 ```js
-chrome.runtime.sendMessage({action:"/users/get",id:123}, (response) => {
-  if (response.status == 200) {
-    alert("User: " + response.user.name);
-  } else {
-    console.log("Error:", response);
-  }
-});
+class Player extends Model {}
+let player = new Player({name: 'otiai10', age: 31});
+player.name // 'otiai10'
+player.age // 31
+player._id // undefined, because not saved yet
+
+player.save();
+player._id // 1, because it's saved to localStorage
 ```
 
-:+1: `chomex.Client` makes it clean and readable by handling response with `Promise`.
+More complicated models with relations? See [`schema`](#schema)!
+
+# Methods
+
+## new
+
+- static
+- an alias for `constructor`
 
 ```js
-const client = new chomex.Client(chrome.runtime);
-const response = await client.message("/users/get", {id:123});
-alert("User: " + response.data.user.name);
+let player = Player.new({name: 'otiai20', age: 43});
+player.name // 'otiai10'
+player.age // 31
+player._id // undefined, because not saved yet
 ```
 
-_Happy_ :hugs:
+## save
+
+```js
+let player = new Player({name: 'otiai20'});
+player.save();
+player._id // 2
+```
+
+## find
+
+- static
+
+```js
+let player = Player.find(2);
+player.name // 'otiai10'
+```
+
+## update
+
+```js
+player.update({name: 'otiai22'});
+Player.find(player._id).name // 'otiai22'
+```
+
+## delete
+
+```js
+player.delete();
+Player.find(player._id) // undefined
+```
+
+## create
+
+- static
+- an alias for `new` and `save`
+
+```js
+let player = Player.create({name: 'otiai99', age: 99});
+player._id // 3
+
+// Is equivalent to
+Player.new({name: 'otiai99'}).save();
+```
+
+## all
+
+- static
+- returns everything as a dictionary
+
+```js
+const dict = Player.all(); // Object
+dict[1].name // 'otiai10'
+dict[1] instanceof Player // true
+```
+
+## list
+
+- static
+- returns everything as an array
+
+```js
+const players = Player.list(); // [Player]
+players.length // 2
+
+// Is equivalent to
+Player.filter(() => true);
+```
+
+## filter
+
+- static
+- returns filtered array by filterFunc
+
+```js
+const players = Player.filter(p => p.age < 40);
+players.length // 1
+```
+
+## useStorage
+
+- static
+- replace storage with anything which satisfies Storage interface
+
+```js
+Model.useStorage(window.sessionStorage);
+
+// For example, you can embed any extra operation for getItem/setItem/removeItem
+const storage = new MyStorageWithEffortAsyncPushing();
+Model.useStorage(storage);
+```
+
+# Properties
+
+## schema
+
+- static
+- optional, default `undefined`
+- can define validations for each props of this model
+- no validations, if `schema` is not set
+
+```js
+class Player extends Model {
+  static schema = {
+    name: Model.Types.string.isRequired,
+    age:  Model.Types.number, // optional
+    location: Model.Types.shape({
+      address: Model.Types.string,
+      visible: Model.Types.bool.isRequired,
+    }),
+  }
+}
+```
+
+with relations
+
+```js
+class Team extends Model {
+  static schema = {
+    name: Model.Types.string.isRequired,
+    leader: Model.Types.reference(Player),
+    members: Model.Types.arrayOf(Model.Types.reference(Player)),
+  }
+}
+```
+
+## nextID
+
+- static
+- optional, default `timestampID`
+- replace it if you want to change algorythm of generating next id
+
+```js
+Player.nextID = () => Date.now();
+Player.create({name: 'otiai2017'})._id // 1488061388247
+Player.create({name: 'otiai1986'})._id // 1488061388928
+```
+
+# Types
+
+`Types` API provides followings:
+
+1. Validation data type of `Model` when it's saved.
+2. Resolving relationship of `Model`s.
 
 # Examples
 
-> NOTE: These examples are using async/await on top-level. I believe you are familiar with asyc/await.
+```js
+import {Model, Types} from "active-storage";
 
-## `background.js` as a server
-
-```javascript
-import {Router, Model, Types} from 'chomex';
-
-// Define your model
 class User extends Model {
-  static schema = {
+  protected static schema = {
     name: Types.string.isRequired,
-    age:  Types.number,
+    age: Types.number,
+    langs: Types.arrayOf(Types.string),
   }
 }
 
-const router = new Router();
-
-// Define your routes
-router.on("/users/create", message => {
-  const obj = message.user;
-  const user = User.new(obj).save();
-  return user;
-});
-
-router.on("/users/get", message => {
-  const userId = message.id;
-  const user = User.find(userId);
-  if (!user) {
-    return {status:404,error:"not found"};
+class Team extends Model {
+  protected static schema = {
+    name: Types.string.isRequired,
+    active: Types.bool.isRequired,
+    address: Types.shape({
+      country: Types.string,
+      street: Types.string,
+      postcode: Types.number,
+    }),
+    leader: Types.reference(User, {eager: true}),
+    members: Types.arrayOf(Types.reference(User)),
+    roles: Types.dictOf(Types.reference(User)),
   }
-  // You can also return async Promise
-  return Promise.resolve(user);
-});
-
-// Of course, you can separate files
-// in which controller functions are defined.
-import {UserDelete} from "./Controllers/Users";
-router.on("/users/delete", UserDelete);
-
-// Don't forget to add listener to chrome modules.
-chrome.runtime.onMessage.addListener(router.listener());
+}
 ```
-
-## `content_script.js` as a client
-
-```javascript
-import {Client} from 'chomex';
-
-const client = new Client(chrome.runtime);
-
-// it sends message to "/users/get" route.
-const user = {name: 'otiai10', age: 30};
-const response = await client.message('/users/create', {user});
-console.log("Created!", response.data);
-
-const {data: user} = await client.message('/users/get', {id: 12345});
-console.log("Found:", res.data);
-```
-
-# Customize `Router` for other listeners
-
-You can also customize resolver for routing.
-It's helpful when you want to make routings for EventListener modules on `chrome`, such as `chrome.notifications.onClicked`, `chrome.webRequest.onBeforeRequest` or so.
-
-```javascript
-// Resolver rule, which resolve given "id" to routing name.
-const resolve = (id) => {
-  const prefix = id.split(".")[0];
-  return {name: prefix};
-};
-
-const router = new Router(resolve);
-// You see, this controller is invoked when
-// a notification with ID "quest.xxxx" is clicked.
-router.on('quest', NotificaionOnClickController.Quest);
-
-chrome.notifications.onClicked.addListener(router.listener());
-```
-
-# For more information
-
-- [Router](https://github.com/otiai10/chomex/tree/master/src/Router/README.md)
-- [Client](https://github.com/otiai10/chomex/tree/master/src/Client/README.md)
-- [Model](https://github.com/otiai10/chomex/tree/master/src/Model/README.md)
-- [Types](https://github.com/otiai10/chomex/tree/master/src/Model/Types/README.md)
-
-# Reference Projects
-
-Projects using `chomex`
-
-- [otiai10/kanColleWidget: `Route` / `Controller`](https://github.com/otiai10/kanColleWidget/blob/master/src/js/Application/Routes/MessageRoutes.js)
-- [otiai10/chant: `Model`](https://github.com/otiai10/chant/blob/master/client/src/js/models/index.js)
-- [henry40408/awesome-stars: `Router` with `async/await`](https://github.com/henry40408/awesome-stars/blob/6417543a998d9bfb5504c60dc35fe38d04a9b694/app/scripts/background/messageRouter.js#L25-L33)

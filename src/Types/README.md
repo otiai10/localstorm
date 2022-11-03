@@ -1,4 +1,4 @@
-# chomex.Types
+# Types
 
 `Types` API provides followings:
 
@@ -8,7 +8,7 @@
 # Examples
 
 ```js
-import {Model, Types} from "chomex";
+import {Model, Types} from "active-storage";
 
 class User extends Model {
   protected static schema = {

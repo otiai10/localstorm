@@ -31,9 +31,9 @@ export class Model {
 
   /**
    * implementNativeStorage
-   * Implements chomex.Storage interface from localStorage/sessionStorage.
+   * Implements Storage interface from localStorage/sessionStorage.
    * @param {Storage} nativeStorage: Object which has window.Storage interface.
-   * @return {storage} storage: class Object which has chomex.Storage interface.
+   * @return {storage} storage: class Object which has Storage interface.
    */
   public static implementNativeStorage(nativeStorage) {
     return new (function() {
@@ -95,7 +95,7 @@ export class Model {
    */
   public static create<T extends Model>(dict = (this.template || {})): T {
     if (typeof dict !== 'object') {
-      return;
+      throw new Error(`cannot create a model from ${typeof dict}`);
     }
     const all = this._all();
     const _id = dict._id || this.__nextID(all);
@@ -129,7 +129,7 @@ export class Model {
    * @param {string|number} id
    * @return {Model?}
    */
-  public static find<T extends Model>(id): T {
+  public static find<T extends Model>(id): T | null {
     const all = this._all();
     const _id = String(id);
     if (all[_id]) {
@@ -139,6 +139,7 @@ export class Model {
       const _this = new this(this.default[_id], _id, this._ns());
       return _this.decode<T>(this.default[_id]);
     }
+    return null;
   }
 
   /**
@@ -147,7 +148,7 @@ export class Model {
    */
   public static filter<T extends Model>(fn: (entry: T) => boolean): T[] {
     const all = this.all<T>();
-    const _res = [];
+    const _res: T[] = [];
     Object.keys(all).map((_id) => {
       if (fn(all[_id])) {
         _res.push(all[_id]);
@@ -266,7 +267,7 @@ export class Model {
         props[key] = (typeof template[key] === 'function') ?
           template[key]() : template[key];
       });
-      this._id = id;
+      if (id) this._id = id;
       this.decode(props);
     }
 
@@ -309,11 +310,12 @@ export class Model {
      */
     public update<T extends Model>(dict): T {
       if (typeof dict !== 'object') {
-        return this.error('Argument for `update` must be key-value dictionary');
+        this.error('Argument for `update` must be key-value dictionary');
+      } else {
+        dict = this._fixture(dict);
+        // TODO: filter preserved keywords
+        Object.keys(dict).map((key) => this[key] = dict[key]);
       }
-      dict = this._fixture(dict);
-      // TODO: filter preserved keywords
-      Object.keys(dict).map((key) => this[key] = dict[key]);
       return this.save();
     }
 

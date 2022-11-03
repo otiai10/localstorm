@@ -1,11 +1,11 @@
 /**
  * Type checker functions inspired by React.PropTypes.
  */
-import {Model} from '..';
+import {Model} from '../Model';
 
 export declare interface TypeCheckFunc {
     (value: any, name: string): null;
-    isRequired?: TypeCheckFunc;
+    isRequired: TypeCheckFunc;
 
     // For recursive reference
     load?: (value: any) => any;
@@ -69,12 +69,12 @@ const createTypeChecker = (
  * @return {TypeCheckFunc}
  */
 const arrayValueTypeChecker = (checkValue: TypeCheckFunc): TypeCheckFunc => {
-  const checkRoot = (required, rootValue, rootName) => {
+  const checkRoot = (required, rootValue, rootName): void => {
     if (typeof rootValue === 'undefined') {
       if (required) {
         throw new Error(`${rootName} is marked as required`);
       } else {
-        return null;
+        return;
       }
     }
     if (!Array.isArray(rootValue)) {
@@ -84,7 +84,7 @@ const arrayValueTypeChecker = (checkValue: TypeCheckFunc): TypeCheckFunc => {
       checkValue(rootValue[i], `element[${i}] of ${rootValue}`);
     }
   };
-  const check = checkRoot.bind(null, false);
+  const check: TypeCheckFunc = checkRoot.bind(null, false);
   check.isRequired = checkRoot.bind(null, true);
   // To decode this property as a Model, store the constructor here.
   if (typeof checkValue.ref === 'function') {
@@ -199,12 +199,12 @@ const shapeTypeChecker = (
  * @return {TypeCheckFunc}
  */
 const dictTypeChecker = (checkValue: TypeCheckFunc): TypeCheckFunc => {
-  const checkRoot = (required, rootValue, rootName): null => {
+  const checkRoot = (required, rootValue, rootName): void => {
     if (typeof rootValue === 'undefined') {
       if (required) {
         throw new Error(`${rootName} is marked as required but undefined`);
       }
-      return null;
+      return;
     }
     if (rootValue.constructor !== Object) {
       throw new Error(
@@ -215,14 +215,14 @@ const dictTypeChecker = (checkValue: TypeCheckFunc): TypeCheckFunc => {
     Object.keys(rootValue).map((key) => {
       checkValue(rootValue[key], `${rootName}[${key}]`);
     });
-    return null;
+    return;
   };
-  const check = checkRoot.bind(null, false);
+  const check: TypeCheckFunc = checkRoot.bind(null, false);
   check.isRequired = checkRoot.bind(null, true);
   if (typeof checkValue.ref === 'function') {
     check.ref = checkValue.ref;
     check.load = (raw = {}) => Object.keys(raw).reduce((prev, key) => {
-      prev[key] = checkValue.load(raw[key]);
+      if (checkValue.load) prev[key] = checkValue.load(raw[key]);
       return prev;
     }, {});
   }

@@ -1,8 +1,8 @@
-# chomex.Model
+# Model
 
-`chomex.Model` is an ORM (Object-Relation Mapper) for `localStorage`, providing simple interfaces like `ActiveRecord`.
+`Model` is an ORM (Object-Relation Mapper) for `localStorage`, providing simple interfaces like `ActiveRecord`.
 
-> NOTE: `chomex.Model` is NOT the best efficient accessor for `localStorage`, BUT provides the best small and easy way to manage `localStorage` and automatically map the object to your `Model` class.
+> NOTE: `Model` is NOT the best efficient accessor for `localStorage`, BUT provides the best small and easy way to manage `localStorage` and automatically map the object to your `Model` class.
 
 - Methods
   - [new](#new)

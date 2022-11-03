@@ -100,13 +100,13 @@ describe('Model', () => {
           },
         });
         team.save();
-        const found: Team = Team.find<Team>(team._id);
+        const found: Team | null = Team.find<Team>(team._id);
         expect(found).not.toBeUndefined();
-        expect(found.awards[0]).toBe('Academy');
-        expect(found.leader).toBeInstanceOf(User);
-        expect(found.members[0]).toBeInstanceOf(User);
-        expect(found.created).toBeInstanceOf(Date);
-        expect(found.roles['captain']).toBeInstanceOf(User);
+        expect(found?.awards[0]).toBe('Academy');
+        expect(found?.leader).toBeInstanceOf(User);
+        expect(found?.members[0]).toBeInstanceOf(User);
+        expect(found?.created).toBeInstanceOf(Date);
+        expect(found?.roles['captain']).toBeInstanceOf(User);
       });
       it('should load the latest properties if `eager: true` is specified', () => {
         const leader = User.create({name: 'otiai1000', age: 21, langs: ['ja']});
@@ -120,18 +120,18 @@ describe('Model', () => {
           watchers: [user_1],
         });
         team.save();
-        let found: Team = Team.find<Team>(team._id);
-        expect(found.members[0].age).toBe(17);
-        expect(found.members[1].age).toBe(19);
-        expect(found.watchers[0].age).toBe(17);
+        let found: Team | null= Team.find<Team>(team._id);
+        expect(found?.members[0].age).toBe(17);
+        expect(found?.members[1].age).toBe(19);
+        expect(found?.watchers[0].age).toBe(17);
         // Update only user_1, who is in `members` and `watchers`
         user_1.update({age: 88});
         found = Team.find<Team>(team._id);
         // Because `members` prop is referenced with `eager: true`,
         // it should be the latest state of that member.
-        expect(found.members[0].age).toBe(88);
-        expect(found.watchers[0].age).toBe(17);
-        expect(found.members[0]._id).toBe(found.watchers[0]._id);
+        expect(found?.members[0].age).toBe(88);
+        expect(found?.watchers[0].age).toBe(17);
+        expect(found?.members[0]._id).toBe(found?.watchers[0]._id);
       });
     });
   });
@@ -176,11 +176,11 @@ describe('Model', () => {
   describe('update', () => {
     it('should update properties of this (as a short hand for `save`)', () => {
       const foo = Foo.create({name: 'otiai10'});
-      const bar: Foo = Foo.find(foo._id);
-      expect(bar.name).toBe('otiai10');
-      expect(bar.update({name: 'otiai20'})).toBeInstanceOf(Foo);
-      const baz: Foo = Foo.find(foo._id);
-      expect(baz.name).toBe('otiai20');
+      const bar: Foo | null = Foo.find(foo._id);
+      expect(bar?.name).toBe('otiai10');
+      expect(bar?.update({name: 'otiai20'})).toBeInstanceOf(Foo);
+      const baz: Foo | null = Foo.find(foo._id);
+      expect(baz?.name).toBe('otiai20');
     });
     /* Now we're using TypeScript!! */
     // describe('when given parameter is not a dictionary', () => {
@@ -205,13 +205,13 @@ describe('Model', () => {
         expect(foobar.xxx['yyy']).toBe(1000);
         expect(foobar.zzz).toBe(true);
         foobar.update({zzz: false});
-        const x: FooBar = FooBar.find(foobar._id);
-        expect(x.zzz).toBe(false);
-        expect(x.xxx['yyy']).toBe(1000);
-        x.update({xxx: {yyy: 2000}});
-        const z: FooBar = FooBar.find(foobar._id);
-        expect(z.zzz).toBe(false);
-        expect(x.xxx['yyy']).toBe(2000);
+        const x: FooBar | null = FooBar.find(foobar._id);
+        expect(x?.zzz).toBe(false);
+        expect(x?.xxx['yyy']).toBe(1000);
+        x?.update({xxx: {yyy: 2000}});
+        const z: FooBar | null = FooBar.find(foobar._id);
+        expect(z?.zzz).toBe(false);
+        expect(x?.xxx['yyy']).toBe(2000);
       });
     });
   });
@@ -222,16 +222,16 @@ describe('Model', () => {
       expect(foo._id).not.toBeUndefined();
       expect(foo.delete()).toBe(true);
       const bar = Foo.find('foo');
-      expect(bar).toBeUndefined();
+      expect(bar).toBeNull();
     });
   });
   describe('create', () => {
     it('should construct and `save` instance with properties', () => {
       const foo: Foo = Foo.create({name: 'otiai40'});
       expect(foo._id).not.toBeUndefined();
-      const baz: Foo = Foo.find(foo._id);
-      expect(baz.name).not.toBeUndefined();
-      expect(baz.name).toBe(foo.name);
+      const baz: Foo | null = Foo.find(foo._id);
+      expect(baz?.name).not.toBeUndefined();
+      expect(baz?.name).toBe(foo.name);
     });
     describe('when given no any arguments', () => {
       it('should create model with template or empty object', () => {
@@ -263,7 +263,7 @@ describe('Model', () => {
       it('should return default value for given ID', () => {
         const another = Example.find('a');
         expect(another).not.toBeUndefined();
-        another.update({name: 'otiai10-updated'});
+        another?.update({name: 'otiai10-updated'});
         expect(Example.find('b')).not.toBeUndefined();
         // When "default" has been changed later.
         Example.default['c'] = {name: 'otiai30'};
@@ -282,7 +282,7 @@ describe('Model', () => {
       expect(Foo.filter<Foo>((foo) => foo.seq % 3 === 0).length).toBe(4);
       expect(Foo.filter<Foo>((foo) => foo.seq % 5 === 0).length).toBe(2);
       const foo = Foo.filter<Foo>((foo) => foo.seq % 2 === 0).pop();
-      expect(foo.constructor.name).toBe('Foo');
+      expect(foo?.constructor.name).toBe('Foo');
     });
   });
   describe('drop', () => {
@@ -471,9 +471,9 @@ describe('Model', () => {
       class Hoge extends Model {
                 public name: string;
       }
-      expect(Hoge.find<Hoge>(1).name).toBe('otiai10');
+      expect(Hoge.find<Hoge>(1)?.name).toBe('otiai10');
       Model.useStorage(global.localStorage);
-      expect(Hoge.find(1)).toBeUndefined();
+      expect(Hoge.find(1)).toBeNull();
     });
     it('should raise error if given storage doesn\'t satisfy Storage interface', () => {
       return Promise.all([

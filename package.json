@@ -1,7 +1,7 @@
 {
-  "name": "chomex",
-  "version": "2.2.0",
-  "description": "Chrome Extension Routing Kit",
+  "name": "active-storage",
+  "version": "1.0.0",
+  "description": "ActiveRecord-like LocalStorage accessor",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
   "files": [
@@ -14,16 +14,16 @@
     "test": "jest",
     "lint": "eslint \"./src/**/*.ts\" \"./tests/**/*.ts\""
   },
-  "repository": "https://github.com/otiai10/chomex.git",
+  "repository": "https://github.com/otiai10/active-storage.git",
   "keywords": [
     "chrome"
   ],
   "author": "otiai10",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/otiai10/chomex/issues"
+    "url": "https://github.com/otiai10/active-storage/issues"
   },
-  "homepage": "https://github.com/otiai10/chomex#readme",
+  "homepage": "https://github.com/otiai10/active-storage#readme",
   "devDependencies": {
     "@types/jest": "^27.0.1",
     "@types/should": "^13.0.0",
@@ -48,7 +48,7 @@
       "js"
     ],
     "unmockedModulePathPatterns": [
-      "<rootDir>/src/chomex"
+      "<rootDir>/src"
     ],
     "setupFilesAfterEnv": [
       "./tests/mock/setup-script.ts"

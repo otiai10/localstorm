@@ -1,7 +1,10 @@
 active-storage
 ========
 
-Foo Baa Baz
+[![npm](https://img.shields.io/npm/v/@otiai10/active-storage)](https://www.npmjs.com/package/@otiai10/active-storage)
+[![npm downloads](https://img.shields.io/npm/dy/@otiai10/active-storage)](https://www.npmjs.com/package/@otiai10/active-storage)
+[![Node.js CI](https://github.com/otiai10/active-storage/actions/workflows/node.js.yml/badge.svg)](https://github.com/otiai10/active-storage/actions/workflows/node.js.yml)
+[![codecov](https://codecov.io/github/otiai10/active-storage/branch/main/graph/badge.svg?token=aEjM39lnwW)](https://codecov.io/github/otiai10/active-storage)
 
 # Installation
 

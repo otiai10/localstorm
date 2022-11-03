@@ -6,7 +6,7 @@ Foo Baa Baz
 # Installation
 
 ```sh
-npm install active-storage
+npm install @otiai10/active-storage
 ```
 
 # Model

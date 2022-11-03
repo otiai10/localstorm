@@ -1,5 +1,5 @@
 {
-  "name": "active-storage",
+  "name": "@otiai10/active-storage",
   "version": "1.0.0",
   "description": "ActiveRecord-like LocalStorage accessor",
   "main": "lib/index.js",

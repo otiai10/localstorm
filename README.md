@@ -1,15 +1,17 @@
-active-storage
+localstorm
 ========
 
-[![npm](https://img.shields.io/npm/v/@otiai10/active-storage)](https://www.npmjs.com/package/@otiai10/active-storage)
-[![npm downloads](https://img.shields.io/npm/dy/@otiai10/active-storage)](https://www.npmjs.com/package/@otiai10/active-storage)
-[![Node.js CI](https://github.com/otiai10/active-storage/actions/workflows/node.js.yml/badge.svg)](https://github.com/otiai10/active-storage/actions/workflows/node.js.yml)
-[![codecov](https://codecov.io/github/otiai10/active-storage/branch/main/graph/badge.svg?token=aEjM39lnwW)](https://codecov.io/github/otiai10/active-storage)
+Object/Relation Mapper for LocalStorage.
+
+[![npm](https://img.shields.io/npm/v/localstorm)](https://www.npmjs.com/package/localstorm)
+[![npm downloads](https://img.shields.io/npm/dy/localstorm)](https://www.npmjs.com/package/localstorm)
+[![Node.js CI](https://github.com/otiai10/localstorm/actions/workflows/node.js.yml/badge.svg)](https://github.com/otiai10/localstorm/actions/workflows/node.js.yml)
+[![codecov](https://codecov.io/github/otiai10/localstorm/branch/main/graph/badge.svg?token=aEjM39lnwW)](https://codecov.io/github/otiai10/localstorm)
 
 # Installation
 
 ```sh
-npm install @otiai10/active-storage
+npm install localstorm
 ```
 
 # Model
@@ -208,7 +210,7 @@ Player.create({name: 'otiai1986'})._id // 1488061388928
 # Examples
 
 ```js
-import {Model, Types} from "active-storage";
+import {Model, Types} from "localstorm";
 
 class User extends Model {
   protected static schema = {

@@ -8,7 +8,7 @@
 # Examples
 
 ```js
-import {Model, Types} from "active-storage";
+import {Model, Types} from "localstorm";
 
 class User extends Model {
   protected static schema = {

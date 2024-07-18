@@ -1,9 +1,20 @@
 # Project Transfer Notice: Please check [jstorm](https://github.com/otiai10/jstorm)
 
-[**localstorm**](https://github.com/otiai10/localstorm) has been officially transferred to the [**jstorm**](https://github.com/otiai10/jstorm). This transfer aims to ensure the continuous development and improvement to support more usecases of the project.
+[**localstorm**](https://github.com/otiai10/localstorm) has been officially transferred to the [**jstorm**](https://github.com/otiai10/jstorm). This transfer aims to ensure the continuous development and improvement of the project to support more usecases.
 
-* https://www.npmjs.com/package/jstorm
-* https://github.com/otiai10/jstorm
+## Important Links
+
+* [NPM Package: `jstorm`](https://www.npmjs.com/package/jstorm)
+* [GitHub Repository](https://github.com/otiai10/jstorm)
+
+## Compatibility
+
+To use `jstorm` with `localStorage`, you can simply try:
+
+```javascript
+import { Model } from "jstorm/browser/local";
+// Then, all the same with localstorm ;)
+```
 
 -----
 <br><br>

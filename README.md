@@ -1,3 +1,13 @@
+# Project Transfer Notice: Please check [jstorm](https://github.com/otiai10/jstorm)
+
+[**localstorm**](https://github.com/otiai10/localstorm) has been officially transferred to the [**jstorm**](https://github.com/otiai10/jstorm). This transfer aims to ensure the continuous development and improvement to support more usecases of the project.
+
+* https://www.npmjs.com/package/jstorm
+* https://github.com/otiai10/jstorm
+
+-----
+<br><br>
+
 localstorm
 ========
 
